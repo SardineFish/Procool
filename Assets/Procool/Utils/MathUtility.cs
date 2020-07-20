@@ -99,6 +99,10 @@ public static class MathUtility
         return false;
     }
 
+    public static float Cross2(Vector2 u, Vector2 v)
+        => u.x * v.y - u.y * v.x;
+    
+
     public static Color Set(this Color color, float r = float.NaN, float g=float.NaN, float b=float.NaN, float a = float.NaN)
     {
         color.r = float.IsNaN(r) ? color.r : r;

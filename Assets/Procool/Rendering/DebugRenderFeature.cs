@@ -53,6 +53,8 @@ namespace Procool.Rendering
 
                 foreach (var grid in HexagonGrid.AssetsManager.Assets)
                 {
+                    if(!grid.showGrid)
+                        continue;
                     cmd.SetGlobalVector("WorldOrigin", grid.transform.position);
                     cmd.SetGlobalFloat("Size", grid.size);
                     cmd.Blit(BuiltinRenderTextureType.None, cameraColorTarget, mat);

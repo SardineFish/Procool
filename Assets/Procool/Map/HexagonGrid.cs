@@ -9,6 +9,7 @@ namespace Procool.Map
 {
     public class HexagonGrid : ManagedMonobehaviour<HexagonGrid>
     {
+        public bool showGrid = true;
         public float size = 1;
 
         // Start is called before the first frame update

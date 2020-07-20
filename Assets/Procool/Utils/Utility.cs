@@ -563,6 +563,16 @@ public static class Utility
         var transform = ProjectionToWorldMatrix(camera);
         return (mesh, transform);
     }
+
+    public static void DebugDrawTriangle(Vector2 a, Vector2 b, Vector2 c, Color color)
+    {
+        Debug.DrawLine(a, b, color);
+        Debug.DrawLine(b, c, color);
+        Debug.DrawLine(c, a, color);
+    }
+
+    public static void DebugDrawTriangle(Vector2 a, Vector2 b, Vector2 c)
+        => DebugDrawTriangle(a, b, c, Color.white);
 }
 
 
