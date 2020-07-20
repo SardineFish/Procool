@@ -86,8 +86,14 @@ public static class MathUtility
     public static Vector2Int CeilToInt(Vector2 v)
         => new Vector2Int(Mathf.CeilToInt(v.x), Mathf.CeilToInt(v.y));
 
+    public static Vector2 Min(Vector2 a, Vector2 b)
+        => new Vector2(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y));
+
     public static Vector2Int Min(Vector2Int a, Vector2Int b)
         => new Vector2Int(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y));
+
+    public static Vector2 Max(Vector2 a, Vector2 b)
+        => new Vector2(Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
 
     public static Vector2Int Max(Vector2Int a, Vector2Int b)
         => new Vector2Int(Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));

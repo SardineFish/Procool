@@ -573,6 +573,18 @@ public static class Utility
 
     public static void DebugDrawTriangle(Vector2 a, Vector2 b, Vector2 c)
         => DebugDrawTriangle(a, b, c, Color.white);
+
+    public static void DebugDrawPolygon(IEnumerable<Vector2> verts, Color color)
+    {
+        var first = verts.First();
+        var previous = first;
+        foreach (var vert in verts)
+        {
+            Debug.DrawLine(previous, vert, color);
+            previous = vert;
+        }
+        Debug.DrawLine(previous, first, color);
+    }
 }
 
 

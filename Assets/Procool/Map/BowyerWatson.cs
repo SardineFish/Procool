@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Procool.Utils;
+using UnityEditor.UIElements;
 using UnityEngine;
 
 namespace Procool.Map
@@ -41,6 +42,29 @@ namespace Procool.Map
                 else
                     throw new Exception("Triangle not found.");
             }
+
+            public Triangle GetAnyTriangle()
+            {
+                if (Triangles.Item1 != null)
+                    return Triangles.Item1;
+                else if (Triangles.Item2 != null)
+                    return Triangles.Item2;
+                else
+                    throw  new Exception("Empty edge.");
+            }
+
+            public Triangle GetAnother(Triangle triangle)
+            {
+                if (Triangles.Item1 == triangle)
+                    return Triangles.Item2;
+                else if (Triangles.Item2 == triangle)
+                    return Triangles.Item1;
+                else 
+                    throw new Exception("Edge not belongs to triangle.");
+            }
+
+            public bool HasPoint(int p)
+                => Points.Item1 == p || Points.Item2 == p;
             
             
             public static implicit operator bool(Edge edge)
@@ -54,6 +78,8 @@ namespace Procool.Map
             public (int, int, int) Points;
             public (Edge, Edge, Edge) Edges;
             public (Vector2, Vector2, Vector2) Positions;
+
+            public int UserFlag; // used in voronoi generation
 
             ~Triangle()
             {
@@ -72,12 +98,30 @@ namespace Procool.Map
                 return det.determinant > 0;
             }
 
+            public (Vector2 center, float radius) GetCircumscribedCircle()
+            {
+                var (p1, p2, p3) = Positions;
+
+                var div = 2 * Mathf.Pow(MathUtility.Cross2(p1 - p2, p2 - p3), 2);
+
+                var alpha = (p2 - p3).sqrMagnitude * Vector2.Dot(p1 - p2, p1 - p3) / div;
+                var beta = (p1 - p3).sqrMagnitude * Vector2.Dot(p2 - p1, p2 - p3) / div;
+                var gamma = (p1 - p2).sqrMagnitude * Vector2.Dot(p3 - p1, p3 - p2) / div;
+
+                var r = (p1 - p2).magnitude * (p2 - p3).magnitude * (p3 - p1).magnitude /
+                        (2 * MathUtility.Cross2(p1 - p2, p2 - p3));
+
+                var center = alpha * p1 + beta * p2 + gamma * p3;
+                return (center, r);
+            }
+            
+
             public static implicit operator bool(Triangle triangle)
                 => !(triangle is null);
             
         }
 
-        class TrianglePool : ObjectPool<Triangle>
+        class TrianglePoolBase : ObjectPoolBase<Triangle>
         {
             public Triangle Get((int, int, int) points, (Edge, Edge, Edge) edges, (Vector2, Vector2, Vector2) positions)
             {
@@ -96,7 +140,7 @@ namespace Procool.Map
             }
         }
 
-        class EdgePool : ObjectPool<Edge>
+        class EdgePoolBase : ObjectPoolBase<Edge>
         {
             public Edge Get(int a, int b)
             {
@@ -122,13 +166,17 @@ namespace Procool.Map
 
         public HashSet<Triangle> Triangles => triangles;
 
+        public List<Vector2> ExtentPoints => extentPoints;
+
+        public Edge[,] Edges => edges;
+
         private bool runned = false;
         private List<Vector2> extentPoints;
         private Edge[,] edges;
         private HashSet<Triangle> triangles = new HashSet<Triangle>();
         private List<Triangle> trianglesToDestroy = new List<Triangle>();
-        private EdgePool edgePool = new EdgePool();
-        private TrianglePool trianglePool = new TrianglePool();
+        private EdgePoolBase _edgePoolBase = new EdgePoolBase();
+        private TrianglePoolBase _trianglePoolBase = new TrianglePoolBase();
         private List<int> removedVerts = new List<int>();
         private List<Edge> remainedEdges = new List<Edge>();
         
@@ -149,9 +197,9 @@ namespace Procool.Map
 
         Triangle AddTriangle(int a, int b, int c)
         {
-            Edge u = edges[a, b] ? edges[a, b] : edgePool.Get(a, b);
-            Edge v = edges[b, c] ? edges[b, c] : edgePool.Get(b, c);
-            Edge w = edges[c, a] ? edges[c, a] : edgePool.Get(c, a);
+            Edge u = edges[a, b] ? edges[a, b] : _edgePoolBase.Get(a, b);
+            Edge v = edges[b, c] ? edges[b, c] : _edgePoolBase.Get(b, c);
+            Edge w = edges[c, a] ? edges[c, a] : _edgePoolBase.Get(c, a);
 
             edges[a, b] = edges[b, a] = u;
             edges[b, c] = edges[c, b] = v;
@@ -171,7 +219,7 @@ namespace Procool.Map
             else if (Mathf.Abs(cross) <= 1e-5f)
                 throw new Exception("Invalid triangle.");
 
-            var triangle = trianglePool.Get((a, b, c), (u, v, w), (ptA, ptB, ptC));
+            var triangle = _trianglePoolBase.Get((a, b, c), (u, v, w), (ptA, ptB, ptC));
             
             u.AddTriangle(triangle);
             v.AddTriangle(triangle);
@@ -199,7 +247,7 @@ namespace Procool.Map
             {
                 var (a, b) = edge.Points;
                 edges[a, b] = edges[b, a] = null;
-                edgePool.Release(edge);
+                _edgePoolBase.Release(edge);
                 return neighboor;
             }
 
@@ -258,7 +306,7 @@ namespace Procool.Map
                 v.RemoveTriangle(triangle);
                 w.RemoveTriangle(triangle);
                 triangles.Remove(triangle);
-                trianglePool.Release(triangle);
+                _trianglePoolBase.Release(triangle);
             }
 
             foreach (var edge in remainedEdges)
@@ -290,7 +338,7 @@ namespace Procool.Map
                     for (var j = 0; j < extentPoints.Count; j++)
                     {
                         if (edges[i, j].Valid)
-                            edgePool.Release(edges[i, j]);
+                            _edgePoolBase.Release(edges[i, j]);
                         edges[i, j] = null;
                     }
                 }
@@ -298,7 +346,7 @@ namespace Procool.Map
                 foreach (var triangle in triangles)
                 {
                     if(triangle.Valid)
-                        trianglePool.Release(triangle);
+                        _trianglePoolBase.Release(triangle);
                 }
                 triangles.Clear();
             }
