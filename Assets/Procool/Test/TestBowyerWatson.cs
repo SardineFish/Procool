@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Procool.Map;
+using Procool.Random;
 using Procool.Utils;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -14,6 +15,7 @@ namespace Procool.Test
     {
         public Transform P1, P2, P3;
         public int Count = 10;
+        public int Seed;
         private BowyerWatson trianglesGenerator;
         private VoronoiGenerator voronoiGenerator;
 
@@ -24,6 +26,13 @@ namespace Procool.Test
             if(voronoiGenerator != null)
                 voronoiGenerator.Dispose();
                 
+        }
+
+        [EditorButton]
+        public void RandomSeed()
+        {
+            Seed = (int) DateTime.Now.Ticks;
+            GameRNG.SetSeed(Seed);
         }
 
         [EditorButton()]
@@ -81,9 +90,11 @@ namespace Procool.Test
             var halfSize = new Vector2(camera.orthographicSize * camera.aspect, camera.orthographicSize);
             var rect = new Rect(camera.transform.position.ToVector2() - halfSize, halfSize * 2);
             var points = new List<Vector2>();
+            GameRNG.SetSeed(Seed);
+            var prng = GameRNG.GetPRNG(Vector2.one);
             for (int i = 0; i < Count; i++)
             {
-                points.Add(rect.center + UnityEngine.Random.insideUnitCircle * halfSize * .8f);
+                points.Add(rect.center + prng.GetVec2InUnitCircle() * halfSize * .8f);
             }
 
             voronoiGenerator = new VoronoiGenerator(points);
@@ -92,12 +103,25 @@ namespace Procool.Test
 
             while (true)
             {
+                int x = 0;
                 foreach (var spaceRegion in voronoiGenerator.Space.Regions)
                 {
                     Utility.DebugDrawPolygon(spaceRegion.Vertices.Select(v => v.Pos), Color.cyan);
+                    //yield return null;
+                    x++;
                 }
 
                 yield return null;
+            }
+        }
+
+        [EditorButton()]
+        public void Split()
+        {
+            var prng = GameRNG.GetPRNG(new Vector2(3, 5));
+            if (voronoiGenerator != null)
+            {
+                voronoiGenerator.Space.SplitByLine(prng.GetVec2InUnitCircle(), prng.GetVec2InUnitCircle());
             }
         }
         
@@ -106,10 +130,7 @@ namespace Procool.Test
         {
             if (P1 && P2 && P3)
             {
-                var triangle = new BowyerWatson.Triangle();
-                triangle.Positions = (P1.position, P2.position, P3.position);
-                var (center, radius) = triangle.GetCircumscribedCircle();
-                Gizmos.DrawWireSphere(center, radius);
+                
             }
         }
 

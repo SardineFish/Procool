@@ -4,7 +4,7 @@ namespace Procool.Map.SpacePartition
 {
     public partial class Region
     {
-        static class Utils
+        public static class Utils
         {
             public static (bool intersected, float distance, Vector2 point) EdgeIntersect(Edge edge, Vector2 origin, Vector2 direction)
             {
@@ -14,7 +14,7 @@ namespace Procool.Map.SpacePartition
                 var o2 = origin;
                 var d2 = direction.normalized;
 
-                var t1 = (-d2.y * o1.x + d2.x * o1.y + d2.y * o2.x - d2.x * o2.y) / (d1.y * d2.x - d1.x * d2.y);
+                var t1 = -(-d2.y * o1.x + d2.x * o1.y + d2.y * o2.x - d2.x * o2.y) / (d1.y * d2.x - d1.x * d2.y);
                 
                 if (t1 < 0 || t1 > (a.Pos - b.Pos).magnitude)
                     return (false, 0, Vector2.zero);

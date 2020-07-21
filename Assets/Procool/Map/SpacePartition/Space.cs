@@ -31,12 +31,33 @@ namespace Procool.Map.SpacePartition
         public Region CreateRegion(List<Vertex> vertices, List<Edge> edges)
         {
             var region = Region.Get(this);
-            region.Vertices.AddRange(vertices);
-            region.Edges.AddRange(edges);
+            
+            region.StartConstruct();
+            region.AddVertices(vertices);
+            region.AddEdges(edges);
+            region.EndConstruct();
 
             Regions.Add(region);
 
+            foreach (var edge in edges)
+            {
+                edge.AddRegion(region);
+                var (a, b) = edge.Points;
+                a.AddEdge(edge);
+                b.AddEdge(edge);
+                
+            }
+
             return region;
+        }
+
+        public void SplitByLine(Vector2 origin, Vector2 direction)
+        {
+            var count = Regions.Count;
+            for (var i = 0; i < count; i++)
+            {
+                SplitRegionByLine(Regions[i], origin, direction);
+            }
         }
 
         public (Region, Region) SplitRegionByLine(Region region, Vector2 origin, Vector2 direction)
@@ -45,6 +66,9 @@ namespace Procool.Map.SpacePartition
                 throw new Exception("Region not belongs to space.");
 
             var (regionA, regionB) = region.SplitByLine(origin, direction);
+
+            if (!regionA)
+                return (null, null);
 
             var index = Regions.IndexOf(region);
             Regions[index] = regionA;

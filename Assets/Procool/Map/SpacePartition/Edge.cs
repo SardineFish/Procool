@@ -32,8 +32,8 @@ namespace Procool.Map.SpacePartition
             var (a, b) = Points;
             var newEdgeA = Edge.Get(a, newVert);
             var newEdgeB = Edge.Get(newVert, b);
-            newVert.Edges.Add(newEdgeA);
-            newVert.Edges.Add(newEdgeB);
+            newVert.AddEdge(newEdgeA);
+            newVert.AddEdge(newEdgeB);
             if (Regions.Item1)
                 Regions.Item1._SplitEdgeInternal(this, newVert, (newEdgeA, newEdgeB));
             if (Regions.Item2)

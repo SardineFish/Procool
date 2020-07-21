@@ -11,8 +11,9 @@ namespace Procool.Map.SpacePartition
     {
         public UInt32 ID { get; private set; }
         public Vector2 Pos;
-        public List<Edge> Edges = new List<Edge>();
-        public IEnumerable<Vertex> Neighboors => Edges.Select(edge => edge.GetAnother(this));
+        private List<Edge> edges = new List<Edge>();
+        public IReadOnlyList<Edge> Edges => edges.AsReadOnly();
+        public IEnumerable<Vertex> Neighboors => edges.Select(edge => edge.GetAnother(this));
         public object Data;
         public bool IsBoundary = false;
 
@@ -23,18 +24,18 @@ namespace Procool.Map.SpacePartition
             vert.ID = UniqueID32.Get();
             vert.IsBoundary = false;
             vert.Data = null;
-            vert.Edges.Clear();
+            vert.edges.Clear();
             return vert;
         }
 
-        public bool CanSafeRelease => Edges.All(edge => !edge);
+        public bool CanSafeRelease => edges.All(edge => !edge);
 
         public void UpdateEdge(Edge old, Edge newEdge)
         {
             if(!old.HasVertex(this))
                 throw new Exception("Edge not connected with vertex.");
-            var idx = Edges.IndexOf(old);
-            Edges[idx] = newEdge;
+            var idx = edges.IndexOf(old);
+            edges[idx] = newEdge;
         }
 
         public static void Release(Vertex vert)
@@ -42,6 +43,13 @@ namespace Procool.Map.SpacePartition
             if(!vert)
                 return;
             ReleaseInternal(vert);
+        }
+
+        public void AddEdge(Edge edge)
+        {
+            if(!edge.HasVertex(this))
+                throw new Exception("Edge not connected with vertex.");
+            edges.Add(edge);
         }
     }
 }

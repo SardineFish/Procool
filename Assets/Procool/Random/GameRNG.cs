@@ -16,7 +16,7 @@ namespace Procool.Random
             GameRNG.seed = seed;
             random = new System.Random(seed);
             randOffset = 0;
-            randOffset = GetVec4ByScalar(seed);
+            randOffset = GetVec4ByScalar((float) random.NextDouble());
         }
         
         #region RandSequence

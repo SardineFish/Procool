@@ -14,18 +14,23 @@ namespace Procool.Map.SpacePartition
         public UInt32 ID { get; private set; }
         public Space Space { get; private set;}
         
-        public readonly List<Edge> Edges = new List<Edge>();
-        public readonly List<Vertex> Vertices  = new List<Vertex>();
+        private readonly List<Edge> edges = new List<Edge>();
+        private readonly List<Vertex> vertices  = new List<Vertex>();
 
-        public IEnumerable<Region> Neighboors => Edges.Select(edge => edge.GetAnother(this));
+        private bool canConstruct = false;
+
+        public IReadOnlyList<Edge> Edges => edges.AsReadOnly();
+        public IReadOnlyList<Vertex> Vertices => vertices.AsReadOnly();
+
+        public IEnumerable<Region> Neighboors => edges.Select(edge => edge.GetAnother(this));
 
         public static Region Get(Space parentSpace)
         {
             var region = GetInternal();
             region.ID = UniqueID32.Get();
             region.Space = parentSpace;
-            region.Edges.Clear();
-            region.Vertices.Clear();
+            region.edges.Clear();
+            region.vertices.Clear();
 
             return region;
         }
@@ -36,54 +41,103 @@ namespace Procool.Map.SpacePartition
                 return;
             ReleaseInternal(region);
 
-            foreach (var edge in region.Edges)
+            foreach (var edge in region.edges)
             {
                 if(edge.CanSafeRelease)
                     Edge.Release(edge);
             }
 
-            foreach (var vertex in region.Vertices)
+            foreach (var vertex in region.vertices)
             {
                 if(vertex.CanSafeRelease)
                     Vertex.Release(vertex);
             }
         }
 
+        public void StartConstruct()
+        {
+            canConstruct = true;
+        }
+
+        public void EndConstruct()
+        {
+            canConstruct = false;
+        }
+
+        public void AddVertices(IEnumerable<Vertex> vertices)
+        {
+            if(!canConstruct)
+                throw new Exception("Cannot modify region.");
+            this.vertices.AddRange(vertices);
+        }
+
+        public void AddVertex(Vertex vertex)
+        {
+            if (!canConstruct)
+                throw new Exception("Cannot modify region.");
+            this.vertices.Add(vertex);
+        }
+
+        public void AddEdges(IEnumerable<Edge> edges)
+        {
+            if (!canConstruct)
+                throw new Exception("Cannot modify region.");
+            this.edges.AddRange(edges);
+        }
+
+        public void AddEdge(Edge edge)
+        {
+
+            if (!canConstruct)
+                throw new Exception("Cannot modify region.");
+            this.edges.Add(edge);
+        }
+
 
         public (Region, Region) Split(Vertex vertA, Vertex vertB)
         {
-            for (var idxA = 0; idxA < Vertices.Count; idxA++)
+            for (var idxA = 0; idxA < vertices.Count; idxA++)
             {
-                var vert = Vertices[idxA];
+                var vert = vertices[idxA];
                 if (vert == vertB)
                     (vertA, vertB) = (vertB, vertA);
                 if (vert == vertA)
                 {
-                    for (var idxB = idxA + 1; idxB != idxA; idxB = (idxB + 1) % Vertices.Count)
+                    for (var idxB = idxA + 1; idxB != idxA; idxB = (idxB + 1) % vertices.Count)
                     {
-                        if (Vertices[idxB] == vertB)
+                        if (vertices[idxB] == vertB)
                         {
                             var newEdge = Edge.Get(vertA, vertB);
                             var regionA = Region.Get(Space);
                             var regionB = Region.Get(Space);
-                            for (var i = idxA; i != idxB; i = (i + 1) % Vertices.Count)
+                            regionA.StartConstruct();
+                            for (var i = idxA; i != idxB; i = (i + 1) % vertices.Count)
                             {
-                                regionA.Vertices.Add(Vertices[i]);
-                                regionA.Edges.Add(Edges[i]);
-                                Edges[i].UpdateRegion(this, regionA);
+                                regionA.AddVertex(vertices[i]);
+                                regionA.AddEdge(edges[i]);
+                                edges[i].UpdateRegion(this, regionA);
                             }
-                            regionA.Vertices.Add(vertB);
-                            regionA.Edges.Add(newEdge);
+
+                            // for (var i = idxB; i != idxA; i = (i + 1) % vertices.Count)
+                            // {
+                            //     if (edges[i].Regions.Item1 != this)
+                            //         throw new Exception();
+                            // }
+                            regionA.AddVertex(vertB);
+                            regionA.AddEdge(newEdge);
+                            regionA.EndConstruct();
                             newEdge.AddRegion(regionA);
 
-                            for (var i = idxB; i != idxA; i = (i + 1) % Vertices.Count)
+                            regionB.StartConstruct();
+                            for (var i = idxB; i != idxA; i = (i + 1) % vertices.Count)
                             {
-                                regionB.Vertices.Add(Vertices[i]);
-                                regionB.Edges.Add(Edges[i]);
-                                Edges[i].UpdateRegion(this, regionB);
+                                regionB.AddVertex(vertices[i]);
+                                regionB.AddEdge(edges[i]);
+                                edges[i].UpdateRegion(this, regionB);
                             }
-                            regionB.Vertices.Add(vertA);
-                            regionB.Edges.Add(newEdge);
+                            regionB.AddVertex(vertA);
+                            regionB.AddEdge(newEdge);
+                            regionB.EndConstruct();
                             newEdge.AddRegion(regionB);
 
                             return (regionA, regionB);
@@ -106,18 +160,18 @@ namespace Procool.Map.SpacePartition
             
             var (oldA, oldB) = edgeOld.Points;
             var (newA, newB) = newEdges;
-            for (var insertIndex = 0; insertIndex < Vertices.Count; insertIndex++)
+            for (var insertIndex = 0; insertIndex < vertices.Count; insertIndex++)
             {
-                var vert = Vertices[insertIndex];
-                if (vert == oldB)
+                var vert = vertices[insertIndex];
+                if (oldB == vert && vertices[(insertIndex + 1) % vertices.Count] == oldA)
                     (oldA, oldB) = (oldB, oldA);
-                if (oldA == vert)
+                if (oldA == vert && vertices[(insertIndex + 1) % vertices.Count] == oldB)
                 {
                     if (newB.HasVertex(oldA))
                         (newA, newB) = (newB, newA);
-                    Vertices.Insert(insertIndex + 1, vertNew);
-                    Edges[insertIndex] = newA;
-                    Edges.Insert(insertIndex + 1, newB);
+                    vertices.Insert(insertIndex + 1, vertNew);
+                    edges[insertIndex] = newA;
+                    edges.Insert(insertIndex + 1, newB);
                     
                     break;
                 }
@@ -139,7 +193,7 @@ namespace Procool.Map.SpacePartition
             Vertex vertA = null;
             Vertex vertB = null;
             
-            foreach (var edge in Edges)
+            foreach (var edge in edges)
             {
                 var (intersect, distance, point) = Utils.EdgeIntersect(edge, origin, direction);
                 if (intersect)
@@ -171,24 +225,36 @@ namespace Procool.Map.SpacePartition
             }
 
             // Release if cant split, and release the vertex if new created.
-            if (vertA && !vertB && vertA.Edges.Count == 0)
+            if (!vertA)
+                return (null, null);
+            else if (vertA && !vertB && vertA.Edges.Count == 0)
             {
                 Vertex.Release(vertA);
+                return (null, null);
+            }
+            else if (!vertB)
+            {
                 return (null, null);
             }
 
             if (vertA.Edges.Count == 0)
             {
                 edgeA.Split(vertA);
-                Edge.Release(edgeB);
+                Edge.Release(edgeA);
+                if(edges.Any(edge=>!edge.Valid))
+                    throw new Exception();
             }
 
             if (vertB.Edges.Count == 0)
             {
                 edgeB.Split(vertB);
                 Edge.Release(edgeB);
+                if (edges.Any(edge => !edge.Valid))
+                    throw new Exception();
             }
-            
+
+            if (edges.Any(edge => !edge.Valid))
+                throw new Exception();
             return Split(vertA, vertB);
         }
         
