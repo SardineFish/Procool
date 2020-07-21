@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Procool.Utils;
 using UnityEngine;
 
 namespace Procool.Map
@@ -35,6 +36,7 @@ namespace Procool.Map
 
             delaunayTriangulatior = new BowyerWatson(points, boundingBox);
         }
+        
         public IEnumerator RunProgressive()
         {
             yield return delaunayTriangulatior.RunProgressive();
