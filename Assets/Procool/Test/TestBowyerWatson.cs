@@ -52,7 +52,6 @@ namespace Procool.Test
             StartCoroutine(DrawVoronoiCoroutine());
         }
 
-
         IEnumerator DrawVoronoiCoroutine()
         {
             var camera = GameObject.FindWithTag("MainCamera")?.GetComponent<Camera>();

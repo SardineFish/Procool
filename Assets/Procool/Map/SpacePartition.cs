@@ -2,16 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using Procool.Utils;
+using UnityEditor.U2D.Animation;
 using UnityEngine;
 
 namespace Procool.Map
 {
-    public class SpaceParticion
+    public class Space : ObjectWithPool<Space>
     {
         public class Vertex : ObjectWithPool<Vertex>
         {
             public UInt32 ID { get; private set; }
             public Vector2 Pos;
+            public List<Edge> Edges = new List<Edge>();
+            public IEnumerable<Vertex> Neighboors => Edges.Select(edge => edge.GetAnother(this));
             public object Data;
 
             public static Vertex Get(Vector2 pos)
@@ -51,6 +54,17 @@ namespace Procool.Map
                     throw new Exception("Edge not belongs to region.");
             }
 
+            public Vertex GetAnother(Vertex vert)
+            {
+                if (Points.Item1 == vert)
+                    return Points.Item2;
+                else if (Points.Item2 == vert)
+                    return Points.Item1;
+                else
+                    throw new Exception("Edge not belongs to vertex.");
+            }
+            
+
             public static implicit operator bool(Edge edge)
                 => !(edge is null);
 
@@ -77,10 +91,11 @@ namespace Procool.Map
         public class Region : ObjectWithPool<Region>
         {
             public UInt32 ID { get; private set; }
-            public SpaceParticion ParentSpace = null;
-            public SpaceParticion SubSpace = null;
-            public List<SpaceParticion.Edge> Edges = new List<SpaceParticion.Edge>();
-            public List<SpaceParticion.Vertex> Vertices = new List<SpaceParticion.Vertex>();
+            public Space ParentSpace = null;
+            public Space SubSpace = null;
+            public List<Space.Edge> Edges = new List<Space.Edge>();
+            public List<Space.Vertex> Vertices = new List<Space.Vertex>();
+            public IEnumerable<Region> Neighboors => Edges.Select(edge => edge.GetAnother(this));
 
             public static Region Get()
             {
@@ -100,16 +115,49 @@ namespace Procool.Map
         public HashSet<Region> Regions;
         public Dictionary<UInt64, Edge> EdgesById;
         public Dictionary<Vector2, Vertex> VerticesByVector;
+        public List<Space.Vertex> Boundary;
 
         public IEnumerable<Edge> Edges => EdgesById.Values;
 
         public IEnumerable<Vertex> Vertices => VerticesByVector.Values;
 
-        public SpaceParticion(int count)
+        public Space()
         {
             Regions = new HashSet<Region>();
             VerticesByVector = new Dictionary<Vector2, Vertex>();
             EdgesById = new Dictionary<ulong, Edge>();
+            Boundary = new List<Vertex>();
+        }
+
+        public static Space Get()
+        {
+            var space = GetInternal();
+            return space;
+        }
+
+        public static void Release(Space space)
+        {
+            foreach (var region in space.Regions)
+            {
+                Region.Release(region);
+            }
+
+            foreach (var vertex in space.VerticesByVector)
+            {
+                Vertex.Release(vertex.Value);
+            }
+
+            foreach (var edge in space.EdgesById)
+            {
+                Edge.Release(edge.Value);
+            }
+            
+            space.Regions.Clear();
+            space.VerticesByVector.Clear();
+            space.EdgesById.Clear();
+            space.Boundary.Clear();
+            
+            ReleaseInternal(space);
         }
 
         public Vertex GetVertex(Vector2 pos)

@@ -10,14 +10,14 @@ namespace Procool.Map
 {
     public class BowyerWatson
     {
-        public class Edge
+        public class TriangleEdge
         {
             public bool Valid = false;
             public bool Visited = false;
             public (int, int) Points;
             public (Triangle, Triangle) Triangles = (null, null);
 
-            ~Edge()
+            ~TriangleEdge()
             {
                 if (Valid)
                     Debug.LogError($"Unexpected GC ({Points.Item1}, {Points.Item2})");
@@ -67,8 +67,8 @@ namespace Procool.Map
                 => Points.Item1 == p || Points.Item2 == p;
             
             
-            public static implicit operator bool(Edge edge)
-                => !(edge is null);
+            public static implicit operator bool(TriangleEdge triangleEdge)
+                => !(triangleEdge is null);
 
         }
 
@@ -76,7 +76,7 @@ namespace Procool.Map
         {
             public bool Valid = false;
             public (int, int, int) Points;
-            public (Edge, Edge, Edge) Edges;
+            public (TriangleEdge, TriangleEdge, TriangleEdge) Edges;
             public (Vector2, Vector2, Vector2) Positions;
 
             public int UserFlag; // used in voronoi generation
@@ -123,7 +123,7 @@ namespace Procool.Map
 
         class TrianglePoolBase : ObjectPoolBase<Triangle>
         {
-            public Triangle Get((int, int, int) points, (Edge, Edge, Edge) edges, (Vector2, Vector2, Vector2) positions)
+            public Triangle Get((int, int, int) points, (TriangleEdge, TriangleEdge, TriangleEdge) edges, (Vector2, Vector2, Vector2) positions)
             {
                 var triangle = Get();
                 triangle.Valid = true;
@@ -140,9 +140,9 @@ namespace Procool.Map
             }
         }
 
-        class EdgePoolBase : ObjectPoolBase<Edge>
+        class EdgePoolBase : ObjectPoolBase<TriangleEdge>
         {
-            public Edge Get(int a, int b)
+            public TriangleEdge Get(int a, int b)
             {
                 // Debug.Log($"Get edge for ({a}, {b})");
                 var edge = Get();
@@ -153,10 +153,10 @@ namespace Procool.Map
                 return edge;
             }
 
-            public new void Release(Edge edge)
+            public new void Release(TriangleEdge triangleEdge)
             {
-                edge.Valid = false;
-                base.Release(edge);
+                triangleEdge.Valid = false;
+                base.Release(triangleEdge);
             }
         }
         
@@ -168,17 +168,17 @@ namespace Procool.Map
 
         public List<Vector2> ExtentPoints => extentPoints;
 
-        public Edge[,] Edges => edges;
+        public TriangleEdge[,] Edges => edges;
 
         private bool runned = false;
         private List<Vector2> extentPoints;
-        private Edge[,] edges;
+        private TriangleEdge[,] edges;
         private HashSet<Triangle> triangles = new HashSet<Triangle>();
         private List<Triangle> trianglesToDestroy = new List<Triangle>();
         private EdgePoolBase _edgePoolBase = new EdgePoolBase();
         private TrianglePoolBase _trianglePoolBase = new TrianglePoolBase();
         private List<int> removedVerts = new List<int>();
-        private List<Edge> remainedEdges = new List<Edge>();
+        private List<TriangleEdge> remainedEdges = new List<TriangleEdge>();
         
         
         public BowyerWatson(List<Vector2> points, Rect boundingBox)
@@ -197,9 +197,9 @@ namespace Procool.Map
 
         Triangle AddTriangle(int a, int b, int c)
         {
-            Edge u = edges[a, b] ? edges[a, b] : _edgePoolBase.Get(a, b);
-            Edge v = edges[b, c] ? edges[b, c] : _edgePoolBase.Get(b, c);
-            Edge w = edges[c, a] ? edges[c, a] : _edgePoolBase.Get(c, a);
+            TriangleEdge u = edges[a, b] ? edges[a, b] : _edgePoolBase.Get(a, b);
+            TriangleEdge v = edges[b, c] ? edges[b, c] : _edgePoolBase.Get(b, c);
+            TriangleEdge w = edges[c, a] ? edges[c, a] : _edgePoolBase.Get(c, a);
 
             edges[a, b] = edges[b, a] = u;
             edges[b, c] = edges[c, b] = v;
@@ -230,14 +230,14 @@ namespace Procool.Map
             return triangle;
         }
 
-        Triangle CheckWithEdge(Triangle triangle, Edge edge, Vector2 pointPos)
+        Triangle CheckWithEdge(Triangle triangle, TriangleEdge triangleEdge, Vector2 pointPos)
         {
-            if (edge.Visited)
+            if (triangleEdge.Visited)
                 return null;
-            edge.Visited = true;
+            triangleEdge.Visited = true;
             
             Triangle neighboor = null;
-            var (triA, triB) = edge.Triangles;
+            var (triA, triB) = triangleEdge.Triangles;
             if (triA && triA != triangle)
                 neighboor = triA;
             else if (triB && triB != triangle)
@@ -245,9 +245,9 @@ namespace Procool.Map
             
             if (neighboor != null && neighboor.CircumscribedCircleOverlap(pointPos))
             {
-                var (a, b) = edge.Points;
+                var (a, b) = triangleEdge.Points;
                 edges[a, b] = edges[b, a] = null;
-                _edgePoolBase.Release(edge);
+                _edgePoolBase.Release(triangleEdge);
                 return neighboor;
             }
 
@@ -361,7 +361,7 @@ namespace Procool.Map
                 extentPoints.Add(new Vector2(BoundingBox.xMax, BoundingBox.yMin));
                 extentPoints.Add(new Vector2(BoundingBox.xMax, BoundingBox.yMax));
                 extentPoints.Add(new Vector2(BoundingBox.xMin, BoundingBox.yMax));
-                edges = new Edge[extentPoints.Count, extentPoints.Count];
+                edges = new TriangleEdge[extentPoints.Count, extentPoints.Count];
 
                 AddTriangle(Points.Count + 0, Points.Count + 1, Points.Count + 2);
                 AddTriangle(Points.Count + 0, Points.Count + 2, Points.Count + 3);

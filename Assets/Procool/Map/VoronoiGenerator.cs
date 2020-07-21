@@ -14,11 +14,11 @@ namespace Procool.Map
         }
 
         
-        private const float BoundaryExtend = 2;
+        private const float BoundaryExtend = 5;
         private List<Vector2> points;
         private BowyerWatson delaunayTriangulatior;
 
-        public SpaceParticion Space;
+        public Space Space;
         public VoronoiGenerator(List<Vector2> points)
         {
             this.points = points;
@@ -38,33 +38,33 @@ namespace Procool.Map
         public IEnumerator RunProgressive()
         {
             yield return delaunayTriangulatior.RunProgressive();
-            
-            Space = new SpaceParticion(points.Count);
 
-            Dictionary<BowyerWatson.Triangle, SpaceParticion.Vertex> circurmscribedCircles =
-                new Dictionary<BowyerWatson.Triangle, SpaceParticion.Vertex>();
+            Space = Space.Get();
 
-            List<SpaceParticion.Vertex> vertices = new List<SpaceParticion.Vertex>();
+            Dictionary<BowyerWatson.Triangle, Space.Vertex> circurmscribedCircles =
+                new Dictionary<BowyerWatson.Triangle, Space.Vertex>();
+
+            List<Space.Vertex> vertices = new List<Space.Vertex>();
 
             for (var i = 0; i < delaunayTriangulatior.Points.Count; i++)
             {
-                BowyerWatson.Edge startEdge = null;
+                BowyerWatson.TriangleEdge startTriangleEdge = null;
                 vertices.Clear();
                 
                 for (var j = 0; j < delaunayTriangulatior.ExtentPoints.Count; j++)
                 {
                     if (delaunayTriangulatior.Edges[i, j])
                     {
-                        startEdge = delaunayTriangulatior.Edges[i, j];
+                        startTriangleEdge = delaunayTriangulatior.Edges[i, j];
                         break;
                     }
                 }
 
-                var triangle = startEdge.GetAnyTriangle();
+                var triangle = startTriangleEdge.GetAnyTriangle();
                 while (triangle && triangle.UserFlag != i + 1)
                 {
                     triangle.UserFlag = i + 1;
-                    SpaceParticion.Vertex vert;
+                    Space.Vertex vert;
                     if (circurmscribedCircles.ContainsKey(triangle))
                         vert = circurmscribedCircles[triangle];
                     else
