@@ -8,6 +8,49 @@ namespace Procool.Map.SpacePartition
         public UInt64 ID { get; private set; }
         public (Vertex, Vertex) Points = (null, null);
         public (Region, Region) Regions = (null, null);
+        public bool IsBoundary;
+
+
+
+        public static Edge Get(Vertex a, Vertex b)
+        {
+            var edge = GetInternal();
+            edge.Points = (a, b);
+            edge.ID = IDFromVerts(a, b);
+            edge.Regions = (null, null);
+            edge.IsBoundary = false;
+            return edge;
+        }
+
+        public static void Release(Edge edge)
+        {
+            ReleaseInternal(edge);
+        }
+
+        public void Split(Vertex newVert)
+        {
+            var (a, b) = Points;
+            var newEdgeA = Edge.Get(a, newVert);
+            var newEdgeB = Edge.Get(newVert, b);
+            newVert.Edges.Add(newEdgeA);
+            newVert.Edges.Add(newEdgeB);
+            if (Regions.Item1)
+                Regions.Item1._SplitEdgeInternal(this, newVert, (newEdgeA, newEdgeB));
+            if (Regions.Item2)
+                Regions.Item2._SplitEdgeInternal(this, newVert, (newEdgeA, newEdgeB));
+            a.UpdateEdge(this, newEdgeA);
+            b.UpdateEdge(this, newEdgeB);
+        }
+        
+        public void UpdateRegion(Region old, Region newRegion)
+        {
+            if (Regions.Item1 == old)
+                Regions.Item1 = newRegion;
+            else if (Regions.Item2 == old)
+                Regions.Item2 = newRegion;
+            else
+                throw new Exception("Edge not belongs to regions.");
+        }
 
         public void AddRegion(Region region)
         {
@@ -38,28 +81,20 @@ namespace Procool.Map.SpacePartition
             else
                 throw new Exception("Edge not belongs to vertex.");
         }
-            
 
-        public static implicit operator bool(Edge edge)
-            => !(edge is null);
+        public bool IsBelongsTo(Region region)
+            => region && (Regions.Item1 == region || Regions.Item2 == region);
 
-        public static Edge Get(Vertex a, Vertex b)
-        {
-            var edge = GetInternal();
-            edge.Points = (a, b);
-            edge.ID = IDFromVerts(a, b);
-            edge.Regions = (null, null);
-            return edge;
-        }
+        public bool HasVertex(Vertex vert)
+            => vert && (Points.Item1 == vert || Points.Item2 == vert);
+
+        public bool CanSafeRelease => !Regions.Item1 && !Regions.Item2;
+
             
         public static UInt64 IDFromVerts(Vertex a, Vertex b)
             => a.ID > b.ID
                 ? (((ulong) a.ID << 32) | b.ID)
                 : (((ulong) b.ID << 32) | a.ID);
 
-        public static void Release(Edge edge)
-        {
-            ReleaseInternal(edge);
-        }
     }
 }

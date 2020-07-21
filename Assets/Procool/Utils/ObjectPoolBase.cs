@@ -58,6 +58,11 @@ namespace Procool.Utils
             obj.Valid = false;
             pool.Push(obj);
         }
+
+        public static implicit operator bool(ObjectWithPool<T> obj)
+        {
+            return !(obj is null) && obj.Valid;
+        }
         
     }
 }

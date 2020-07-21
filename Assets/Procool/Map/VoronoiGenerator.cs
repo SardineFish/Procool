@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Procool.Map.SpacePartition;
@@ -21,6 +22,10 @@ namespace Procool.Map
         private List<Vector2> points;
         private BowyerWatson delaunayTriangulatior;
 
+        public readonly Dictionary<UInt64, Edge> EdgesById = new Dictionary<ulong, Edge>();
+        public readonly Dictionary<Vector2, Vertex> VerticesByVector = new Dictionary<Vector2, Vertex>();
+
+        //public Space Space;
         public Space Space;
         public VoronoiGenerator(List<Vector2> points)
         {
@@ -38,6 +43,30 @@ namespace Procool.Map
 
             delaunayTriangulatior = new BowyerWatson(points, boundingBox);
         }
+
+        public Vertex GetVertex(Vector2 pos)
+        {
+            if (VerticesByVector.ContainsKey(pos))
+                return VerticesByVector[pos];
+            var vert = Vertex.Get(pos);
+            VerticesByVector[pos] = vert;
+            return vert;
+        }
+        
+        public Edge GetEdge(Vertex a, Vertex b)
+        {
+            var edgeID = Edge.IDFromVerts(a, b);
+            Edge edge;
+            if (EdgesById.ContainsKey(edgeID))
+                edge = EdgesById[edgeID];
+            else
+            {
+                edge = Edge.Get(a, b);
+                EdgesById[edge.ID] = edge;
+            }
+        
+            return edge;
+        }
         
         public IEnumerator RunProgressive()
         {
@@ -49,11 +78,14 @@ namespace Procool.Map
                 new Dictionary<BowyerWatson.Triangle, Vertex>();
 
             List<Vertex> vertices = new List<Vertex>();
+            List<Edge> edges = new List<Edge>();
 
             for (var i = 0; i < delaunayTriangulatior.Points.Count; i++)
             {
                 BowyerWatson.TriangleEdge startTriangleEdge = null;
                 vertices.Clear();
+                edges.Clear();
+                ;
                 
                 for (var j = 0; j < delaunayTriangulatior.ExtentPoints.Count; j++)
                 {
@@ -74,7 +106,7 @@ namespace Procool.Map
                     else
                     {
                         var (center, radius) = triangle.GetCircumscribedCircle();
-                        vert = Space.GetVertex(center);
+                        vert = GetVertex(center);
                         circurmscribedCircles[triangle] = vert;
                     }
                     vertices.Add(vert);
@@ -90,7 +122,16 @@ namespace Procool.Map
                         triangle = null;
                 }
 
-                var region = Space.CreateRegion(vertices);
+                for (var vertIdx = 0; vertIdx < vertices.Count; vertIdx++)
+                {
+                    var a = vertices[vertIdx];
+                    var b = vertices[(vertIdx + 1) % vertices.Count];
+                
+                    var edge = GetEdge(a, b);
+                    edges.Add(edge);
+                }
+
+                var region = Space.CreateRegion(vertices, edges);
 
                 Utility.DebugDrawPolygon(vertices.Select(v => v.Pos), Color.cyan);
                 
