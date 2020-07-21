@@ -23,6 +23,7 @@ namespace Procool.Map.SpacePartition
             vert.ID = UniqueID32.Get();
             vert.IsBoundary = false;
             vert.Data = null;
+            vert.Edges.Clear();
             return vert;
         }
 
@@ -36,6 +37,11 @@ namespace Procool.Map.SpacePartition
             Edges[idx] = newEdge;
         }
 
-        public static void Release(Vertex vert) => ReleaseInternal(vert);
+        public static void Release(Vertex vert)
+        {
+            if(!vert)
+                return;
+            ReleaseInternal(vert);
+        }
     }
 }

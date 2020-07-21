@@ -55,6 +55,8 @@ namespace Procool.Utils
 
         protected static void ReleaseInternal(T obj)
         {
+            if (!obj.Valid)
+                return;
             obj.Valid = false;
             pool.Push(obj);
         }

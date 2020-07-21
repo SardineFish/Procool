@@ -6,36 +6,54 @@ using Procool.Map;
 using Procool.Utils;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using Space = Procool.Map.SpacePartition.Space;
 
 namespace Procool.Test
 {
-    public class TestBowyerWatson : MonoBehaviour, ICustomEditorEX
+    public class TestBowyerWatson : MonoBehaviour, ICustomEditorEX, IDisposable
     {
         public Transform P1, P2, P3;
         public int Count = 10;
+        private BowyerWatson trianglesGenerator;
+        private VoronoiGenerator voronoiGenerator;
+
+        private void OnDestroy()
+        {
+            if(trianglesGenerator != null)
+                trianglesGenerator.Dispose();
+            if(voronoiGenerator != null)
+                voronoiGenerator.Dispose();
+                
+        }
+
         [EditorButton()]
-        void Test()
+        void BowyerWatson()
         {
             StopAllCoroutines();
+            
+            StartCoroutine(DrawTrianglesCoroutine());
+        }
+
+        IEnumerator DrawTrianglesCoroutine()
+        {
+            if(trianglesGenerator!=null)
+                trianglesGenerator.Dispose();
+            
             var camera = GameObject.FindWithTag("MainCamera")?.GetComponent<Camera>();
-            var halfSize = new Vector2( camera.orthographicSize * camera.aspect, camera.orthographicSize);
+            var halfSize = new Vector2(camera.orthographicSize * camera.aspect, camera.orthographicSize);
             var rect = new Rect(camera.transform.position.ToVector2() - halfSize, halfSize * 2);
             var points = new List<Vector2>();
             for (int i = 0; i < Count; i++)
             {
                 points.Add(rect.center + UnityEngine.Random.insideUnitCircle * halfSize * .8f);
             }
-            var runner = new BowyerWatson(points, rect);
-            StartCoroutine(Process(runner));
-        }
 
-        IEnumerator Process(BowyerWatson runner)
-        {
-            yield return runner.RunProgressive();
+            trianglesGenerator = new BowyerWatson(points, rect);
+            yield return trianglesGenerator.RunProgressive();
 
             while (true)
             {
-                foreach (var triangle in runner.Triangles)
+                foreach (var triangle in trianglesGenerator.Triangles)
                 {
                     var (a, b, c) = triangle.Positions;
                     Utility.DebugDrawTriangle(a, b, c, Color.green);
@@ -54,6 +72,11 @@ namespace Procool.Test
 
         IEnumerator DrawVoronoiCoroutine()
         {
+            if (voronoiGenerator != null)
+            {
+                voronoiGenerator.Dispose();
+                Space.Release(voronoiGenerator.Space);
+            }
             var camera = GameObject.FindWithTag("MainCamera")?.GetComponent<Camera>();
             var halfSize = new Vector2(camera.orthographicSize * camera.aspect, camera.orthographicSize);
             var rect = new Rect(camera.transform.position.ToVector2() - halfSize, halfSize * 2);
@@ -62,13 +85,14 @@ namespace Procool.Test
             {
                 points.Add(rect.center + UnityEngine.Random.insideUnitCircle * halfSize * .8f);
             }
-            var generator = new VoronoiGenerator(points);
 
-            yield return generator.RunProgressive();
+            voronoiGenerator = new VoronoiGenerator(points);
+
+            yield return voronoiGenerator.RunProgressive();
 
             while (true)
             {
-                foreach (var spaceRegion in generator.Space.Regions)
+                foreach (var spaceRegion in voronoiGenerator.Space.Regions)
                 {
                     Utility.DebugDrawPolygon(spaceRegion.Vertices.Select(v => v.Pos), Color.cyan);
                 }
@@ -87,6 +111,11 @@ namespace Procool.Test
                 var (center, radius) = triangle.GetCircumscribedCircle();
                 Gizmos.DrawWireSphere(center, radius);
             }
+        }
+
+        public void Dispose()
+        {
+            trianglesGenerator.Reset();
         }
     }
 }

@@ -9,7 +9,7 @@ using Space = Procool.Map.SpacePartition.Space;
 
 namespace Procool.Map
 {
-    public class VoronoiGenerator
+    public class VoronoiGenerator : IDisposable
     {
         public struct Polygon
         {
@@ -138,6 +138,11 @@ namespace Procool.Map
                 yield return null;
 
             }
+        }
+
+        public void Dispose()
+        {
+            delaunayTriangulatior?.Dispose();
         }
     }
 }

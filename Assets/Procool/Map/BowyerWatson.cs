@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Procool.Map
 {
-    public class BowyerWatson
+    public class BowyerWatson : IDisposable
     {
         public class TriangleEdge
         {
@@ -332,16 +332,17 @@ namespace Procool.Map
         {
             if (extentPoints != null)
             {
-                extentPoints.Clear();
                 for (var i = 0; i < extentPoints.Count; i++)
                 {
                     for (var j = 0; j < extentPoints.Count; j++)
                     {
-                        if (edges[i, j].Valid)
+                        if (edges[i, j])
                             _edgePoolBase.Release(edges[i, j]);
                         edges[i, j] = null;
                     }
                 }
+
+                extentPoints.Clear();
 
                 foreach (var triangle in triangles)
                 {
@@ -356,16 +357,20 @@ namespace Procool.Map
         {
             if (extentPoints is null)
             {
-                extentPoints = new List<Vector2>(Points);
-                extentPoints.Add(new Vector2(BoundingBox.xMin, BoundingBox.yMin));
-                extentPoints.Add(new Vector2(BoundingBox.xMax, BoundingBox.yMin));
-                extentPoints.Add(new Vector2(BoundingBox.xMax, BoundingBox.yMax));
-                extentPoints.Add(new Vector2(BoundingBox.xMin, BoundingBox.yMax));
-                edges = new TriangleEdge[extentPoints.Count, extentPoints.Count];
-
-                AddTriangle(Points.Count + 0, Points.Count + 1, Points.Count + 2);
-                AddTriangle(Points.Count + 0, Points.Count + 2, Points.Count + 3);
+                extentPoints = new List<Vector2>();
+                edges = new TriangleEdge[Points.Count + 4, Points.Count + 4];
             }
+
+            extentPoints.Clear();
+            
+            extentPoints.AddRange(Points);
+            extentPoints.Add(new Vector2(BoundingBox.xMin, BoundingBox.yMin));
+            extentPoints.Add(new Vector2(BoundingBox.xMax, BoundingBox.yMin));
+            extentPoints.Add(new Vector2(BoundingBox.xMax, BoundingBox.yMax));
+            extentPoints.Add(new Vector2(BoundingBox.xMin, BoundingBox.yMax));
+
+            AddTriangle(Points.Count + 0, Points.Count + 1, Points.Count + 2);
+            AddTriangle(Points.Count + 0, Points.Count + 2, Points.Count + 3);
             
         }
         
@@ -389,6 +394,11 @@ namespace Procool.Map
                 var iterator = AddVertex(i);
                 while (iterator.MoveNext()) ;
             }
+        }
+
+        public void Dispose()
+        {
+            Reset();
         }
     }
 }
