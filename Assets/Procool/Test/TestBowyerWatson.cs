@@ -23,7 +23,7 @@ namespace Procool.Test
             var points = new List<Vector2>();
             for (int i = 0; i < Count; i++)
             {
-                points.Add(rect.center + Random.insideUnitCircle * halfSize * .8f);
+                points.Add(rect.center + UnityEngine.Random.insideUnitCircle * halfSize * .8f);
             }
             var runner = new BowyerWatson(points, rect);
             StartCoroutine(Process(runner));
@@ -60,7 +60,7 @@ namespace Procool.Test
             var points = new List<Vector2>();
             for (int i = 0; i < Count; i++)
             {
-                points.Add(rect.center + Random.insideUnitCircle * halfSize * .8f);
+                points.Add(rect.center + UnityEngine.Random.insideUnitCircle * halfSize * .8f);
             }
             var generator = new VoronoiGenerator(points);
 

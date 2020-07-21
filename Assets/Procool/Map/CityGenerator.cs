@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Procool.Random;
 using Procool.Utils;
 using UnityEngine;
+using Space = Procool.Map.SpacePartition.Space;
 
 namespace Procool.Map
 {
@@ -19,13 +20,11 @@ namespace Procool.Map
         public Block Block { get; private set; }
         private VoronoiGenerator voronoiGenerator;
         
-
         public CityGenerator(Block block, int citiyBlocks)
         {
             CityBlocks = citiyBlocks;
             this.Block = block;
         }
-        
 
         public IEnumerator RunProgressive()
         {

@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Procool.Map.SpacePartition;
 using Procool.Utils;
 using UnityEngine;
+using Space = Procool.Map.SpacePartition.Space;
 
 namespace Procool.Map
 {
@@ -43,10 +45,10 @@ namespace Procool.Map
 
             Space = Space.Get();
 
-            Dictionary<BowyerWatson.Triangle, Space.Vertex> circurmscribedCircles =
-                new Dictionary<BowyerWatson.Triangle, Space.Vertex>();
+            Dictionary<BowyerWatson.Triangle, Vertex> circurmscribedCircles =
+                new Dictionary<BowyerWatson.Triangle, Vertex>();
 
-            List<Space.Vertex> vertices = new List<Space.Vertex>();
+            List<Vertex> vertices = new List<Vertex>();
 
             for (var i = 0; i < delaunayTriangulatior.Points.Count; i++)
             {
@@ -66,7 +68,7 @@ namespace Procool.Map
                 while (triangle && triangle.UserFlag != i + 1)
                 {
                     triangle.UserFlag = i + 1;
-                    Space.Vertex vert;
+                    Vertex vert;
                     if (circurmscribedCircles.ContainsKey(triangle))
                         vert = circurmscribedCircles[triangle];
                     else
