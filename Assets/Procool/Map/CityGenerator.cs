@@ -38,6 +38,7 @@ namespace Procool.Map
         public List<Vertex> isolatedVertices = new List<Vertex>();
         private readonly HashSet<Edge> regionsEdges = new HashSet<Edge>();
         private readonly HashSet<Vertex> regionsVertices = new HashSet<Vertex>();
+        private PathFinder pathFinder;
 
         public IEnumerable<Edge> Edges => regionsEdges.Concat(isolatedEdges);
         public IEnumerable<Vertex> Vertices => regionsVertices.Concat(isolatedVertices);
@@ -179,7 +180,30 @@ namespace Procool.Map
 
         void GenerateExpressWay()
         {
-            
+            UpdateEdgesAndVerts();
+            pathFinder = new PathFinder(Vertices, Edges);
+            pathFinder.CostEvaluator = (vertex, edge, arg3) =>
+            {
+                return 1;
+            };
+            for (var i = 0; i < isolatedVertices.Count; i++)
+            {
+                var start = isolatedVertices[i];
+                if(start.VertexType != VertexType.Entrance)
+                    continue;
+                for (var j = i + 1; j < isolatedVertices.Count; j++)
+                {
+                    var end = isolatedVertices[j];
+                    if (end.VertexType != VertexType.Entrance)
+                        continue;
+
+                    var path = pathFinder.Find(start, end);
+                    foreach (var edge in path)
+                    {
+                        edge.EdgeType = EdgeType.ExpressWay;
+                    }
+                }
+            }
         }
 
         void UpdateEdgesAndVerts()
@@ -205,6 +229,8 @@ namespace Procool.Map
             yield return GenerateFramework();
 
             GenerateEntrance();
+            
+            GenerateExpressWay();
 
             yield return SplitRoads(EdgeType.Street);
 

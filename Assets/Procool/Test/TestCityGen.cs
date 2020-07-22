@@ -66,7 +66,8 @@ namespace Procool.Test
                 {
                     var (a, b) = edge.Points;
                     Color color = Color.cyan;
-                    color.a = ((int) edge.EdgeType + 1) / 6.0f;  
+                    color.a = ((int) edge.EdgeType + 1) / 6.0f;
+                    color.a = Mathf.Pow(color.a, 4);
                     Debug.DrawLine(a.Pos, b.Pos, color);
                 }
 
