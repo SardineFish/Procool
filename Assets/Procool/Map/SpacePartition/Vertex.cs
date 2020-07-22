@@ -35,6 +35,8 @@ namespace Procool.Map.SpacePartition
             if(!old.HasVertex(this))
                 throw new Exception("Edge not connected with vertex.");
             var idx = edges.IndexOf(old);
+            if (idx < 0)
+                throw new Exception("Edge not connected with vertex.");
             edges[idx] = newEdge;
         }
 
@@ -51,5 +53,7 @@ namespace Procool.Map.SpacePartition
                 throw new Exception("Edge not connected with vertex.");
             edges.Add(edge);
         }
+
+        public bool HasEdge(Edge edge) => edges.IndexOf(edge) >= 0;
     }
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Procool.Map;
+using Procool.Misc;
 using Procool.Random;
 using Procool.Utils;
 using UnityEngine;
@@ -18,6 +19,7 @@ namespace Procool.Test
         public int Seed;
         private BowyerWatson trianglesGenerator;
         private VoronoiGenerator voronoiGenerator;
+        private CityGenerator cityGenerator;
 
         private void OnDestroy()
         {
@@ -107,8 +109,38 @@ namespace Procool.Test
                 foreach (var spaceRegion in voronoiGenerator.Space.Regions)
                 {
                     Utility.DebugDrawPolygon(spaceRegion.Vertices.Select(v => v.Pos), Color.cyan);
+                    var obb = spaceRegion.ComputeOMBB();
+                    OBB.DrawDebug(obb, Color.white);
+                    
                     //yield return null;
                     x++;
+                }
+
+                yield return null;
+            }
+        }
+
+        [EditorButton]
+        void GenCity()
+        {
+            StopAllCoroutines();
+            StartCoroutine(GenCityCoroutine());
+        }
+
+        IEnumerator GenCityCoroutine()
+        {
+            if(cityGenerator != null)
+                cityGenerator.Dispose();
+
+            cityGenerator = new CityGenerator(new Block(new Vector2Int(0, 0), 3), Count);
+            yield return cityGenerator.RunProgressive();
+
+            while (true)
+            {
+                foreach (var edge in cityGenerator.Edges)
+                {
+                    var (a, b) = edge.Points;
+                    Debug.DrawLine(a.Pos, b.Pos, Color.cyan);
                 }
 
                 yield return null;

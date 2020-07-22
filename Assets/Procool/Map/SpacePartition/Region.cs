@@ -2,20 +2,21 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Procool.Misc;
 using Procool.Utils;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace Procool.Map.SpacePartition
 {
-
     public partial class Region : ObjectWithPool<Region>
     {
         public UInt32 ID { get; private set; }
-        public Space Space { get; private set;}
-        
+        public Space Space { get; private set; }
+        public bool IsBoundary => edges.Any(edge => edge.IsBoundary);
+
         private readonly List<Edge> edges = new List<Edge>();
-        private readonly List<Vertex> vertices  = new List<Vertex>();
+        private readonly List<Vertex> vertices = new List<Vertex>();
 
         private bool canConstruct = false;
 
@@ -37,19 +38,19 @@ namespace Procool.Map.SpacePartition
 
         public static void Release(Region region)
         {
-            if(!region)
+            if (!region)
                 return;
             ReleaseInternal(region);
 
             foreach (var edge in region.edges)
             {
-                if(edge.CanSafeRelease)
+                if (edge.CanSafeRelease)
                     Edge.Release(edge);
             }
 
             foreach (var vertex in region.vertices)
             {
-                if(vertex.CanSafeRelease)
+                if (vertex.CanSafeRelease)
                     Vertex.Release(vertex);
             }
         }
@@ -66,7 +67,7 @@ namespace Procool.Map.SpacePartition
 
         public void AddVertices(IEnumerable<Vertex> vertices)
         {
-            if(!canConstruct)
+            if (!canConstruct)
                 throw new Exception("Cannot modify region.");
             this.vertices.AddRange(vertices);
         }
@@ -87,7 +88,6 @@ namespace Procool.Map.SpacePartition
 
         public void AddEdge(Edge edge)
         {
-
             if (!canConstruct)
                 throw new Exception("Cannot modify region.");
             this.edges.Add(edge);
@@ -110,6 +110,8 @@ namespace Procool.Map.SpacePartition
                             var newEdge = Edge.Get(vertA, vertB);
                             var regionA = Region.Get(Space);
                             var regionB = Region.Get(Space);
+                            vertA.AddEdge(newEdge);
+                            vertB.AddEdge(newEdge);
                             regionA.StartConstruct();
                             for (var i = idxA; i != idxB; i = (i + 1) % vertices.Count)
                             {
@@ -135,6 +137,7 @@ namespace Procool.Map.SpacePartition
                                 regionB.AddEdge(edges[i]);
                                 edges[i].UpdateRegion(this, regionB);
                             }
+
                             regionB.AddVertex(vertA);
                             regionB.AddEdge(newEdge);
                             regionB.EndConstruct();
@@ -142,22 +145,22 @@ namespace Procool.Map.SpacePartition
 
                             return (regionA, regionB);
 
-                            break;   
+                            break;
                         }
                     }
 
                     break;
                 }
             }
-            
+
             throw new Exception("Failed to split region.");
         }
-        
+
         internal void _SplitEdgeInternal(Edge edgeOld, Vertex vertNew, (Edge, Edge) newEdges)
         {
-            if(!edgeOld.IsBelongsTo(this))
+            if (!edgeOld.IsBelongsTo(this))
                 throw new Exception("Edge not belongs to this region.");
-            
+
             var (oldA, oldB) = edgeOld.Points;
             var (newA, newB) = newEdges;
             for (var insertIndex = 0; insertIndex < vertices.Count; insertIndex++)
@@ -172,12 +175,11 @@ namespace Procool.Map.SpacePartition
                     vertices.Insert(insertIndex + 1, vertNew);
                     edges[insertIndex] = newA;
                     edges.Insert(insertIndex + 1, newB);
-                    
+
                     break;
                 }
-
             }
-            
+
             newA.AddRegion(this);
             newB.AddRegion(this);
         }
@@ -192,14 +194,14 @@ namespace Procool.Map.SpacePartition
             Edge edgeB = null;
             Vertex vertA = null;
             Vertex vertB = null;
-            
+
             foreach (var edge in edges)
             {
                 var (intersect, distance, point) = Utils.EdgeIntersect(edge, origin, direction);
                 if (intersect)
                 {
                     var (a, b) = edge.Points;
-                    if(a == vertA || b == vertA || a==vertB || b==vertB)
+                    if (a == vertA || b == vertA || a == vertB || b == vertB)
                         continue;
                     if (!vertA)
                     {
@@ -218,7 +220,7 @@ namespace Procool.Map.SpacePartition
                         else if ((b.Pos - point).sqrMagnitude < 0.0001f)
                             vertB = b;
                         else
-                            vertB =Vertex.Get(point);
+                            vertB = Vertex.Get(point);
                         edgeB = edge;
                     }
                 }
@@ -241,7 +243,7 @@ namespace Procool.Map.SpacePartition
             {
                 edgeA.Split(vertA);
                 Edge.Release(edgeA);
-                if(edges.Any(edge=>!edge.Valid))
+                if (edges.Any(edge => !edge.Valid))
                     throw new Exception();
             }
 
@@ -257,6 +259,46 @@ namespace Procool.Map.SpacePartition
                 throw new Exception();
             return Split(vertA, vertB);
         }
-        
+
+        public OBB ComputeOMBB()
+        {
+            float minArea = float.MaxValue;
+            var obb = new OBB();
+            obb.Center = vertices.Sum(vert => vert.Pos) / vertices.Count;
+            foreach (var edge in edges)
+            {
+                var (a, b) = edge.Points;
+                var axisX = (b.Pos - a.Pos).normalized;
+                var axisY = MathUtility.Rotate(axisX, Mathf.PI / 2).normalized;
+                var min = new Vector2(float.MaxValue, float.MaxValue);
+                var max = new Vector2(float.MinValue, float.MinValue);
+                foreach (var vertex in vertices)
+                {
+                    var x = Vector2.Dot(vertex.Pos - obb.Center, axisX);
+                    var y = math.dot(vertex.Pos - obb.Center, axisY);
+                    min = MathUtility.Min(min, new Vector2(x, y));
+                    max = MathUtility.Max(max, new Vector2(x, y));
+                }
+
+                var area = (max.x - min.x) * (max.y - min.y);
+                if (area < minArea)
+                {
+                    minArea = area;
+                    obb.AxisX = axisX;
+                    obb.AxisY = axisY;
+                    obb.HalfSize = (max - min) / 2;
+                    var centerOffset = (max + min) / 2;
+                    obb.Center += axisX * centerOffset.x + axisY * centerOffset.y;
+                }
+            }
+
+            if (obb.HalfSize.x < obb.HalfSize.y)
+            {
+                (obb.HalfSize.x, obb.HalfSize.y) = (obb.HalfSize.y, obb.HalfSize.x);
+                (obb.AxisX, obb.AxisY) = (obb.AxisY, -obb.AxisX);
+            }
+
+            return obb;
+        }
     }
 }

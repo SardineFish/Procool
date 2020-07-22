@@ -1,5 +1,6 @@
 ﻿using System;
 using Procool.Utils;
+using UnityEngine;
 
 namespace Procool.Map.SpacePartition
 {
@@ -8,9 +9,13 @@ namespace Procool.Map.SpacePartition
         public UInt64 ID { get; private set; }
         public (Vertex, Vertex) Points = (null, null);
         public (Region, Region) Regions = (null, null);
-        public bool IsBoundary;
+        public bool IsBoundary => !Regions.Item1 || !Regions.Item2;
+        
+        #warning Debug code
+        public (Vector2, Vector2) _Pos => (Points.Item1.Pos, Points.Item2.Pos);
 
-
+        public (uint, uint) _Ids => (Points.Item1.ID, Points.Item2.ID);
+        
 
         public static Edge Get(Vertex a, Vertex b)
         {
@@ -18,7 +23,7 @@ namespace Procool.Map.SpacePartition
             edge.Points = (a, b);
             edge.ID = IDFromVerts(a, b);
             edge.Regions = (null, null);
-            edge.IsBoundary = false;
+            // edge.IsBoundary = false;
             return edge;
         }
 
@@ -30,6 +35,9 @@ namespace Procool.Map.SpacePartition
         public void Split(Vertex newVert)
         {
             var (a, b) = Points;
+            #warning Debug code
+            if(!a.HasEdge(this) || !b.HasEdge(this))
+                throw new Exception("Invalid vertex");
             var newEdgeA = Edge.Get(a, newVert);
             var newEdgeB = Edge.Get(newVert, b);
             newVert.AddEdge(newEdgeA);

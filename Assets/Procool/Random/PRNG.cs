@@ -12,7 +12,7 @@ namespace Procool.Random
         }
 
         /// <summary>
-        /// Random float in (0, 1)
+        /// Random float in [0, 1)
         /// </summary>
         /// <returns></returns>
         public float GetScalar()
@@ -27,6 +27,17 @@ namespace Procool.Random
             r = Mathf.Sqrt(r);
             rad *= Mathf.PI * 2;
             return new Vector2(r * Mathf.Cos(rad), r * Mathf.Sin(rad));
+        }
+
+        /// <summary>
+        /// Random float in [min, max)
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        public float GetInRange(float min, float max)
+        {
+            return GetScalar() * (max - min) + min;
         }
 
         /// <summary>
