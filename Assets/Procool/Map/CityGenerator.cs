@@ -19,6 +19,7 @@ namespace Procool.Map
         public float RloadRandomOffsetRatio = 0.3f;
 
         public float ActualSizeRatio = 0.6f;
+        public float BoundaryExtendRatio = 0.3f;
 
         public int CityBlocks { get; private set; }
         public Block Block { get; private set; }
@@ -100,7 +101,7 @@ namespace Procool.Map
             }
         }
 
-        void GenerateFramework()
+        IEnumerator GenerateFramework()
         {
             var points = new List<Vector2>(CityBlocks);
             var size = Block.Size * ActualSizeRatio;
@@ -110,7 +111,10 @@ namespace Procool.Map
             }
 
             voronoiGenerator = new VoronoiGenerator(points);
-            voronoiGenerator.RunProgressive();
+            voronoiGenerator.BoundaryEdges = 8;
+            voronoiGenerator.BoundaryExtend = size * BoundaryExtendRatio;
+            yield return voronoiGenerator.RunProgressive();
+            
             foreach (var edge in voronoiGenerator.Edges)
             {
                 edge.EdgeType = EdgeType.ArterialRoad;
@@ -143,7 +147,7 @@ namespace Procool.Map
 
         public IEnumerator RunProgressive()
         {
-            GenerateFramework();
+            yield return GenerateFramework();
 
             yield return SplitRoads(EdgeType.Street);
 

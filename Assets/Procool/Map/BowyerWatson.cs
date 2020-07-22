@@ -159,10 +159,12 @@ namespace Procool.Map
                 base.Release(triangleEdge);
             }
         }
-        
 
+
+
+        public int BoundEdges = 6;
+        public float BoundExtend = 3;
         public List<Vector2> Points { get; private set; }
-        public Rect BoundingBox { get; set; }
 
         public HashSet<Triangle> Triangles => triangles;
 
@@ -181,10 +183,9 @@ namespace Procool.Map
         private List<TriangleEdge> remainedEdges = new List<TriangleEdge>();
         
         
-        public BowyerWatson(List<Vector2> points, Rect boundingBox)
+        public BowyerWatson(List<Vector2> points)
         {
             this.Points = points;
-            this.BoundingBox = boundingBox;
             var pointsCount = points.Count;
         }
 
@@ -326,6 +327,9 @@ namespace Procool.Map
             Debug.DrawLine(pointPos + new Vector2(-.2f, .2f), pointPos + new Vector2(.2f, -.2f));
 
             yield return null;
+
+            #warning Debug Code
+            var _ = 0;
         }
 
         public void Reset()
@@ -358,19 +362,28 @@ namespace Procool.Map
             if (extentPoints is null)
             {
                 extentPoints = new List<Vector2>();
-                edges = new TriangleEdge[Points.Count + 4, Points.Count + 4];
+                edges = new TriangleEdge[Points.Count + BoundEdges, Points.Count + BoundEdges];
             }
 
             extentPoints.Clear();
             
             extentPoints.AddRange(Points);
-            extentPoints.Add(new Vector2(BoundingBox.xMin, BoundingBox.yMin));
-            extentPoints.Add(new Vector2(BoundingBox.xMax, BoundingBox.yMin));
-            extentPoints.Add(new Vector2(BoundingBox.xMax, BoundingBox.yMax));
-            extentPoints.Add(new Vector2(BoundingBox.xMin, BoundingBox.yMax));
 
-            AddTriangle(Points.Count + 0, Points.Count + 1, Points.Count + 2);
-            AddTriangle(Points.Count + 0, Points.Count + 2, Points.Count + 3);
+            var center = Points.Sum(p => p) / Points.Count;
+            var radius = Points.Max(p => (p - center).magnitude);
+
+            for (var i = 0; i < BoundEdges; i++)
+            {
+                var rad = Mathf.PI * 2 * i / BoundEdges;
+                var point = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * (radius + BoundExtend);
+                point += center;
+                extentPoints.Add(point);
+            }
+
+            for (var i = 1; i < BoundEdges - 1; i++)
+            {
+                AddTriangle(Points.Count + 0, Points.Count + i, Points.Count + i + 1);
+            }
             
         }
         

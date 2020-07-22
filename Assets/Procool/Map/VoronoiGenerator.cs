@@ -17,8 +17,8 @@ namespace Procool.Map
             public int SiteIndex;
         }
 
-        
-        private const float BoundaryExtend = 5;
+        public int BoundaryEdges = 6; 
+        public float BoundaryExtend = 5;
         private List<Vector2> points;
         private BowyerWatson delaunayTriangulatior;
 
@@ -44,7 +44,7 @@ namespace Procool.Map
             boundingBox.min = aabb.min - BoundaryExtend * Vector2.one;
             boundingBox.max = aabb.max + BoundaryExtend * Vector2.one;
 
-            delaunayTriangulatior = new BowyerWatson(points, boundingBox);
+            delaunayTriangulatior = new BowyerWatson(points);
         }
 
         public Vertex GetVertex(Vector2 pos)
@@ -75,6 +75,9 @@ namespace Procool.Map
         {
             VerticesByVector.Clear();
             EdgesById.Clear();
+            
+            delaunayTriangulatior.BoundEdges = BoundaryEdges;
+            delaunayTriangulatior.BoundExtend = BoundaryExtend;
             yield return delaunayTriangulatior.RunProgressive();
 
             Space = Space.Get();

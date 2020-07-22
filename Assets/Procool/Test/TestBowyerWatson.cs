@@ -17,6 +17,11 @@ namespace Procool.Test
         public Transform P1, P2, P3;
         public int Count = 10;
         public int Seed;
+        [Space]
+        public int BoundEdges = 6;
+        public int BoundExtend = 4;
+        public bool ShowOBB = false;
+        
         private BowyerWatson trianglesGenerator;
         private VoronoiGenerator voronoiGenerator;
         private CityGenerator cityGenerator;
@@ -59,7 +64,10 @@ namespace Procool.Test
                 points.Add(rect.center + UnityEngine.Random.insideUnitCircle * halfSize * .8f);
             }
 
-            trianglesGenerator = new BowyerWatson(points, rect);
+            trianglesGenerator = new BowyerWatson(points);
+            trianglesGenerator.BoundEdges = BoundEdges;
+            trianglesGenerator.BoundExtend = BoundExtend;
+            
             yield return trianglesGenerator.RunProgressive();
 
             while (true)
@@ -88,6 +96,7 @@ namespace Procool.Test
                 voronoiGenerator.Dispose();
                 Space.Release(voronoiGenerator.Space);
             }
+            
             var camera = GameObject.FindWithTag("MainCamera")?.GetComponent<Camera>();
             var halfSize = new Vector2(camera.orthographicSize * camera.aspect, camera.orthographicSize);
             var rect = new Rect(camera.transform.position.ToVector2() - halfSize, halfSize * 2);
@@ -100,6 +109,8 @@ namespace Procool.Test
             }
 
             voronoiGenerator = new VoronoiGenerator(points);
+            voronoiGenerator.BoundaryEdges = BoundEdges;
+            voronoiGenerator.BoundaryExtend = BoundExtend;
 
             yield return voronoiGenerator.RunProgressive();
 
@@ -110,7 +121,7 @@ namespace Procool.Test
                 {
                     Utility.DebugDrawPolygon(spaceRegion.Vertices.Select(v => v.Pos), Color.cyan);
                     var obb = spaceRegion.ComputeOMBB();
-                    OBB.DrawDebug(obb, Color.white);
+                    //OBB.DrawDebug(obb, Color.white);
                     
                     //yield return null;
                     x++;
