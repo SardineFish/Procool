@@ -1,43 +1,58 @@
 #ifndef __PROCOOL_HEXAGON_HELPER__
 #define __PROCOOL_HEXAGON_HELPER__
 
-#define HEXAGON_POINT_TOP
+#define HEXAGON_POINT_TOP 0
+#define HEXAGON_FLAT_TOP 1
 // #define HEXAGON_FLAT_TOP
 
 #define SQRT_3 (1.732050807568877f)
 
-float2 world_to_hexagon(float2 pos, float size)
+float2 world_to_hexagon(float2 pos, float size, int layout)
 {
-#ifdef HEXAGON_POINT_TOP
-    float2x2 mat = {
-        SQRT_3 / 3, -1.0f / 3.0f,
-        0,           2.0f / 3.0f
-    };
-#endif
-#ifdef HEXAGON_FLAT_TOP
-    float2x2 mat = {
-         2.0f / 3.0f,   0,
-        -1.0f/3.0f,     SQRT_3 / 3.0f
-    };
-#endif
-    return mul(mat, pos) / size;
+    switch (layout) {
+        case HEXAGON_POINT_TOP:
+        {
+            float2x2 mat = {
+                SQRT_3 / 3, -1.0f / 3.0f,
+                0,           2.0f / 3.0f
+            };
+            return mul(mat, pos) / size;
+        }
+        case HEXAGON_FLAT_TOP:
+        {
+            float2x2 mat = {
+                 2.0f / 3.0f,   0,
+                -1.0f/3.0f,     SQRT_3 / 3.0f
+            };
+            return mul(mat, pos) / size;
+        }
+    }
+
+    return 0;
 }
 
-float2 hexagon_to_world(float2 pos, float size)
+float2 hexagon_to_world(float2 pos, float size, int layout)
 {
-#ifdef HEXAGON_POINT_TOP
-    float2x2 mat = {
-        SQRT_3, SQRT_3 / 2.0f,
-        0,      3.0f / 2.0f,
-    };
-#endif
-#ifdef HEXAGON_FLAT_TOP
-    float2x2 mat = {
-        3.0f / 2.0f,    0,
-        SQRT_3, SQRT_3 / 2.0f,
-    };
-#endif
-    return mul(mat, pos) * size;
+    switch (layout) {
+        case HEXAGON_POINT_TOP:
+        {
+            float2x2 mat = {
+                SQRT_3, SQRT_3 / 2.0f,
+                0,      3.0f / 2.0f,
+            };
+            return mul(mat, pos) * size;
+        }
+        case HEXAGON_FLAT_TOP:
+        {
+            float2x2 mat = {
+                3.0f / 2.0f,    0,
+                SQRT_3, SQRT_3 / 2.0f,
+            };
+            return mul(mat, pos) * size;
+        }
+    }
+
+    return 0;
 }
 
 float3 axial_to_cube(float2 axial)

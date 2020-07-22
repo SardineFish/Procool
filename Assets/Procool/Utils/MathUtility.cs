@@ -50,6 +50,9 @@ public static class MathUtility
     {
         return new Vector2(v.x, v.z);
     }
+
+    public static Vector2 ToVector2(this Vector4 v)
+        => new Vector2(v.x, v.y);
     public static Vector3Int ToVector3Int(this Vector2Int v, int z = 0)
         => new Vector3Int(v.x, v.y, z);
     public static Vector2Int ToVector2Int(this Vector3Int v)

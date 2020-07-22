@@ -18,7 +18,7 @@ namespace Procool.Utils
 
         public static IEnumerable<T> Assets => Instance.assets.Where(asset => asset);
 
-        HashSet<T> assets = new HashSet<T>();
+        List<T> assets = new List<T>();
 
     }
 

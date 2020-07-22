@@ -9,8 +9,11 @@ namespace Procool.Map.SpacePartition
     public enum VertexType : byte
     {
         None = 0,
-        Entrance = 1,
-        Anchor = 2,
+        /// <summary>
+        /// Cannot destroy or move during map generation.
+        /// </summary>
+        Anchor = 1,
+        Entrance = 3,
     }
     public class Vertex : ObjectWithPool<Vertex>
     {
@@ -20,7 +23,7 @@ namespace Procool.Map.SpacePartition
         public IReadOnlyList<Edge> Edges => edges.AsReadOnly();
         public IEnumerable<Vertex> Neighboors => edges.Select(edge => edge.GetAnother(this));
         public object Data;
-        public bool IsBoundary = false;
+        public bool IsBoundary => edges.Any(edge => edge.IsBoundary);
         public VertexType VertexType;
 
         public static Vertex Get(Vector2 pos)
@@ -28,7 +31,6 @@ namespace Procool.Map.SpacePartition
             var vert = GetInternal();
             vert.Pos = pos;
             vert.ID = UniqueID32.Get();
-            vert.IsBoundary = false;
             vert.Data = null;
             vert.edges.Clear();
             vert.VertexType = VertexType.None;

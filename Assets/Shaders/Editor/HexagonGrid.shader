@@ -11,6 +11,7 @@ Shader "Procool/Editor/HexagonGrid" {
     float4 ViewWorldRect;
     float2 PixelWorldSize;
     float Size;
+    int Layout;
 
 
     float4 frag(v2f_img i) : SV_TARGET
@@ -24,10 +25,10 @@ Shader "Procool/Editor/HexagonGrid" {
             worldPos + PixelWorldSize / 2 * float2(-1,  1),
         };
         float2 hexPos[] = {
-            hexagon_round(world_to_hexagon(subPos[0], Size)),
-            hexagon_round(world_to_hexagon(subPos[1], Size)),
-            hexagon_round(world_to_hexagon(subPos[2], Size)),
-            hexagon_round(world_to_hexagon(subPos[3], Size)),
+            hexagon_round(world_to_hexagon(subPos[0], Size, Layout)),
+            hexagon_round(world_to_hexagon(subPos[1], Size, Layout)),
+            hexagon_round(world_to_hexagon(subPos[2], Size, Layout)),
+            hexagon_round(world_to_hexagon(subPos[3], Size, Layout)),
         };
 
         int diffCount = 0;
@@ -41,7 +42,7 @@ Shader "Procool/Editor/HexagonGrid" {
         
         float t = 1 - diffCount / 3.0;
 
-        float2 hex = world_to_hexagon(worldPos, Size);
+        float2 hex = world_to_hexagon(worldPos, Size, Layout);
         float3 cube = axial_to_cube(hex);
         int3 cubeInt = hexagon_round(axial_to_cube(hex));
 

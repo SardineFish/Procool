@@ -54,6 +54,36 @@ namespace Procool.Random
             p4 += math.dot(p4, p4.wzxy + 33.33f);
             return math.frac((p4.xxyz + p4.yzzw) * p4.zywx);
         }
+
+        public static Vector4 GetVec4ByVec4(Vector4 pos)
+        {
+            var p4 = new float4(pos);
+            p4 = math.frac(p4 * new float4(.1031f, .1030f, .0973f, .1099f));
+            p4 += math.dot(p4, p4.wzxy + 33.33f);
+            return math.frac((p4.xxyz + p4.yzzw) * p4.zywx);
+        }
+
+        public static float GetScalarByVec4(Vector4 pos)
+        {
+            var p4 = new float4(pos);
+            p4 = math.frac(p4 * new float4(.1031f, .1030f, .0973f, .1099f));
+            p4 += math.dot(p4, p4.wxzy + 33.33f);
+            return math.frac((p4.xxyz + p4.yzzw) * p4.zywx).x;
+        }
+
+        public static float GetScalarByVec2Pair(Vector2 a, Vector2 b)
+        {
+            Vector4 p;
+            if (a.x < b.x)
+                p = new Vector4(a.x, a.y, b.x, b.y);
+            else if (b.x < a.x)
+                p = new Vector4(b.x, b.y, a.x, a.y);
+            else if (a.y < b.y)
+                p = new Vector4(a.x, a.y, b.x, b.y);
+            else
+                p = new Vector4(b.x, b.y, a.x, a.y);
+            return GetScalarByVec4(p);
+        }
         
         #endregion
 

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Procool.Map
+namespace Procool
 {
     public struct Block
     {
@@ -27,5 +27,13 @@ namespace Procool.Map
             this.Position = pos;
             this.Level = level;
         }
+
+        public static Block operator +(Block lhs, Vector2Int rhs)
+        {
+            return new Block(lhs.Position + rhs, lhs.Level);
+        }
+        
+        public static Block operator -(Block lhs, Vector2Int rhs)
+            => new Block(lhs.Position - rhs, lhs.Level);
     }
 }

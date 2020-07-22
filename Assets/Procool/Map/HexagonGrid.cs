@@ -11,6 +11,7 @@ namespace Procool.Map
     {
         public bool showGrid = true;
         public float size = 1;
+        public HexagonLayout layout;
 
         // Start is called before the first frame update
         void Start()

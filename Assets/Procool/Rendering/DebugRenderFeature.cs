@@ -57,6 +57,7 @@ namespace Procool.Rendering
                         continue;
                     cmd.SetGlobalVector("WorldOrigin", grid.transform.position);
                     cmd.SetGlobalFloat("Size", grid.size);
+                    cmd.SetGlobalInt("Layout", (int) grid.layout);
                     cmd.Blit(BuiltinRenderTextureType.None, cameraColorTarget, mat);
                 }
                 

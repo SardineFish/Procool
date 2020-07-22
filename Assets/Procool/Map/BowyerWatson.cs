@@ -16,6 +16,8 @@ namespace Procool.Map
             public bool Visited = false;
             public (int, int) Points;
             public (Triangle, Triangle) Triangles = (null, null);
+            
+            
 
             ~TriangleEdge()
             {

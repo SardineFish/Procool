@@ -22,9 +22,16 @@ namespace Procool
 
         private static Matrix4x4 CartesianToHexagon;
 
+        private static Vector3Int[] CubeDirections = new[]
+        {
+            new Vector3Int(+1, -1, 0), new Vector3Int(+1, 0, -1), new Vector3Int(0, +1, -1),
+            new Vector3Int(-1, +1, 0), new Vector3Int(-1, 0, +1), new Vector3Int(0, -1, +1),
+        };
+
         static MathH()
         {
 #pragma warning disable 162
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (DefaultLayout == HexagonLayout.FlatTop)
             {
                 HexagonToCartesian = Matrix4x4.identity;
@@ -42,24 +49,32 @@ namespace Procool
                 CartesianToHexagon[2, 2] = 0;
 
             }
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             else if (DefaultLayout == HexagonLayout.PointTop)
             {
                 HexagonToCartesian = Matrix4x4.identity;
-                HexagonToCartesian[0, 0] = Sqrt3;
-                HexagonToCartesian[0, 1] = Sqrt3 / 2;
-                HexagonToCartesian[1, 0] = 0;
-                HexagonToCartesian[1, 1] = 3f / 2f;
-                HexagonToCartesian[2, 2] = 0;
+                HexagonToCartesian.SetColumn(0, new Vector2(Sqrt3, 0));
+                HexagonToCartesian.SetColumn(1, new Vector2(Sqrt3 / 2, -3f / 2f));
+                // HexagonToCartesian[0, 0] = Sqrt3;
+                // HexagonToCartesian[0, 1] = Sqrt3 / 2;
+                // HexagonToCartesian[1, 0] = 0;
+                // HexagonToCartesian[1, 1] = 3f / 2f;
+                // HexagonToCartesian[2, 2] = 0;
                 
                 CartesianToHexagon = Matrix4x4.identity;
-                CartesianToHexagon[0, 0] = Sqrt3 / 3;
-                CartesianToHexagon[0, 1] = -1f / 3f;
-                CartesianToHexagon[1, 0] = 0;
-                CartesianToHexagon[1, 1] = 2f / 3f;
-                CartesianToHexagon[2, 2] = 0;
+                CartesianToHexagon.SetColumn(0, new Vector2(1 / Sqrt3, 0));
+                CartesianToHexagon.SetColumn(1, new Vector2(1f / 3f, -2f / 3f));
+
+                // CartesianToHexagon[0, 0] = Sqrt3 / 3;
+                // CartesianToHexagon[0, 1] = -1f / 3f;
+                // CartesianToHexagon[1, 0] = 0;
+                // CartesianToHexagon[1, 1] = 2f / 3f;
+                // CartesianToHexagon[2, 2] = 0;
             }
 #pragma warning restore 162
         }
+        
+        
 
         // Reference https://www.redblobgames.com/grids/hexagons/#rounding
         public static Vector3Int Round(Vector3 cube)
@@ -96,17 +111,17 @@ namespace Procool
             => new Vector2(v.x, v.y);
 
         
-        public static Vector3 HexToWorld(this Vector3 hexagon, Vector3 worldOrigin, float size = DefaultSize)
-            => (Vector3) (HexagonToCartesian * hexagon * size) + worldOrigin;
+        public static Vector2 HexToWorld(this Vector3 hexagon, Vector2 worldOrigin, float size = DefaultSize)
+            => (HexagonToCartesian * new Vector4(hexagon.x, hexagon.z) * size).ToVector2() + worldOrigin;
         
-        public static Vector3 HexToWorld(this Vector3 hexagon, float size = DefaultSize)
+        public static Vector2 HexToWorld(this Vector3 hexagon, float size = DefaultSize)
             => HexToWorld(hexagon, Vector3.zero, size);
 
-        public static Vector3 HexToWorld(this Vector2Int hexagon, Vector3 worldOrigin, float size = DefaultSize)
-            => HexToWorld(hexagon.ToVector3(), worldOrigin, size);
+        public static Vector2 HexToWorld(this Vector2Int hexagon, Vector2 worldOrigin, float size = DefaultSize)
+            => HexToWorld(hexagon.ToCube(), worldOrigin, size);
 
-        public static Vector3 HexToWorld(this Vector2Int hexagon, float size = DefaultSize)
-            => HexToWorld(hexagon.ToVector3(), Vector3.zero, size);
+        public static Vector2 HexToWorld(this Vector2Int hexagon, float size = DefaultSize)
+            => HexToWorld(hexagon.ToCube(), Vector3.zero, size);
 
         public static Vector2Int WorldToHexInt(this Vector3 worldPos, Vector3 worldOrigin, float size = DefaultSize)
             => Round(ToCube(CartesianToHexagon * (worldPos - worldOrigin) / size)).ToAxial();
@@ -119,5 +134,55 @@ namespace Procool
 
         public static Vector2 WorldToHex(this Vector3 worldPos, float size = DefaultSize)
             => WorldToHex(worldPos, Vector3.zero, size);
+
+        public static Vector3Int GetCubeDirection(int idx) => CubeDirections[idx];
+        public static Vector2Int GetAxialDirection(int idx) => ToAxial(GetCubeDirection(idx));
+
+        public static int GetDirectionIndex(Vector2Int dir)
+        {
+            for (var i = 0; i < 6; i++)
+            {
+                if (dir == ToAxial(CubeDirections[i]))
+                    return i;
+            }
+
+            return -1;
+        }
+
+        public static int GetDirectionIndex(Vector3Int dir)
+            => GetDirectionIndex(ToAxial(dir));
+
+        public static Vector2 HexCorner(int idx)
+        {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (DefaultLayout == HexagonLayout.PointTop)
+            {
+                var deg = 60 * idx - 30;
+                var rad = Mathf.PI / 180 * deg;
+                return new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+            }
+            else if (DefaultLayout == HexagonLayout.FlatTop)
+            {
+                var deg = 60 * idx - 60;
+                var rad = Mathf.PI / 180 * deg;
+                return new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+            }
+        }
+
+        public static (Vector2, Vector2) HexEdge(int idx)
+            => (HexCorner(idx % 6), HexCorner((idx + 1) % 6));
+
+        public static Vector2 HexCornerToWorld(Vector2Int pos, int idx, Vector2 origin, float size = DefaultSize)
+            => HexToWorld(pos, origin, size) + HexCorner(idx) * size;
+
+        public static Vector2 HexCornerToWorld(Vector2Int pos, int idx, float size = DefaultSize)
+            => HexCornerToWorld(pos, idx, Vector2.zero, size);
+
+        public static (Vector2, Vector2) HexEdgeToWorld(Vector2Int pos, int idx, Vector2 origin, float size = DefaultSize)
+            => (HexCornerToWorld(pos, idx % 6, origin, size), HexCornerToWorld(pos, (idx + 1) % 6, origin, size));
+
+        public static (Vector2, Vector2) HexEdgeToWorld(Vector2Int pos, int idx, float size = DefaultSize)
+            => HexEdgeToWorld(pos, idx, Vector2.zero, size);
+
     }
 }

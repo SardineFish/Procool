@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 313829521}
   - component: {fileID: 313829520}
   - component: {fileID: 313829522}
+  - component: {fileID: 313829523}
   m_Layer: 0
   m_Name: HexagonGrid
   m_TagString: Untagged
@@ -151,8 +152,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aaa587289b03a084abcb27009c5ac24d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showGrid: 1
-  size: 1.47
+  showGrid: 0
+  size: 1
+  layout: 0
 --- !u!4 &313829521
 Transform:
   m_ObjectHideFlags: 0
@@ -180,6 +182,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Size: 4
+--- !u!114 &313829523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 313829519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aaa587289b03a084abcb27009c5ac24d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showGrid: 0
+  size: 3
+  layout: 0
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -324,12 +341,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ad34c20bd34c7c80ed2862e3677f32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Seed: 0
-  Count: 1
+  Seed: -543004387
+  Count: 30
   BlockLevel: 3
-  MinRoadDistance: 1
-  MaxRoadDistance: 3
+  MinRoadDistance: 10
+  MaxRoadDistance: 15
   RoadOffset: 0.3
+  BoundEdges: 12
+  BoundExtendRatio: 0.6
 --- !u!4 &1064517583
 Transform:
   m_ObjectHideFlags: 0
@@ -376,8 +395,11 @@ MonoBehaviour:
   P1: {fileID: 0}
   P2: {fileID: 0}
   P3: {fileID: 0}
-  Count: 10
+  Count: 30
   Seed: 0
+  BoundEdges: 8
+  BoundExtend: 3
+  ShowOBB: 0
 --- !u!4 &1807053691
 Transform:
   m_ObjectHideFlags: 0

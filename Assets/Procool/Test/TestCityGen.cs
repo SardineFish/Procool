@@ -18,6 +18,9 @@ namespace Procool.Test
         [Range(0, 1)]
         public float RoadOffset = 0.3f;
 
+        public int BoundEdges = 6;
+        public float BoundExtendRatio = 0.3f;
+
         private CityGenerator generator;
 
         [EditorButton]
@@ -40,10 +43,20 @@ namespace Procool.Test
             if(generator != null)
                 generator.Dispose();
 
+            var prng = GameRNG.GetPRNG(new Vector2(3, 7));
             generator = new CityGenerator(new Block(new Vector2Int(0, 0), BlockLevel), Count);
             generator.MinRoadDistance = MinRoadDistance;
             generator.MaxRoadDistance = MaxRoadDistance;
             generator.RloadRandomOffsetRatio = RoadOffset;
+            generator.BoundaryEdges = BoundEdges;
+            generator.BoundaryExtendRatio = BoundExtendRatio;
+            for (var i = 0; i < 6; i++)
+            {
+                if (prng.GetScalar() < .5f)
+                {
+                    generator.RoadConnection[i] = true;
+                }
+            }
             
             yield return generator.RunProgressive();
 
@@ -52,7 +65,9 @@ namespace Procool.Test
                 foreach (var edge in generator.Edges)
                 {
                     var (a, b) = edge.Points;
-                    Debug.DrawLine(a.Pos, b.Pos, Color.cyan);
+                    Color color = Color.cyan;
+                    color.a = ((int) edge.EdgeType + 1) / 6.0f;  
+                    Debug.DrawLine(a.Pos, b.Pos, color);
                 }
 
                 yield return null;
