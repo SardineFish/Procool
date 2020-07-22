@@ -60,15 +60,15 @@ namespace Procool.Map.SpacePartition
             }
         }
 
-        public (Region, Region) SplitRegionByLine(Region region, Vector2 origin, Vector2 direction)
+        public (Region, Region, Edge) SplitRegionByLine(Region region, Vector2 origin, Vector2 direction)
         {
             if(region.Space != this)
                 throw new Exception("Region not belongs to space.");
 
-            var (regionA, regionB) = region.SplitByLine(origin, direction);
+            var (regionA, regionB, newEdge) = region.SplitByLine(origin, direction);
 
             if (!regionA)
-                return (null, null);
+                return (null, null, null);
 
             var index = Regions.IndexOf(region);
             Regions[index] = regionA;
@@ -76,8 +76,7 @@ namespace Procool.Map.SpacePartition
             
             Region.Release(region);
             
-            return (regionA, regionB);
+            return (regionA, regionB, newEdge);
         }
-
     }
 }

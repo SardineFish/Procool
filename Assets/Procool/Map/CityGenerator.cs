@@ -26,6 +26,8 @@ namespace Procool.Map
         public Space Space => voronoiGenerator?.Space;
         
         public HashSet<Edge> Edges { get; private set; } = new HashSet<Edge>();
+        public HashSet<Vertex> Vertices { get; private set; } = new HashSet<Vertex>();
+        private bool dirty = false;
 
         private PRNG prng;
         
@@ -36,7 +38,7 @@ namespace Procool.Map
             prng = GameRNG.GetPRNG(Block.Position);
         }
 
-        IEnumerator SplitRoads()
+        IEnumerator SplitRoads(EdgeType type)
         {
             var count = Space.Regions.Count;
 
@@ -64,11 +66,14 @@ namespace Procool.Map
                     x += prng.GetInRange(-1, 1) * (gap.x / 2 * RloadRandomOffsetRatio);
                     var pos = obb.Center + obb.AxisX * x;
 
-                    var (nextA, nextB) = Space.SplitRegionByLine(regionA, pos, obb.AxisY);
+                    var (nextA, nextB, newEdge) = Space.SplitRegionByLine(regionA, pos, obb.AxisY);
                     if (!nextA && regionB)
                     {
-                        (nextA, nextB) = Space.SplitRegionByLine(regionB, pos, obb.AxisY);
+                        (nextA, nextB, newEdge) = Space.SplitRegionByLine(regionB, pos, obb.AxisY);
                     }
+
+                    if (newEdge)
+                        newEdge.EdgeType = type;
 
                     regionA = nextA;
                     regionB = nextB;
@@ -79,6 +84,8 @@ namespace Procool.Map
 
                 var _ = 0;
             }
+
+            dirty = true;
         }
 
         #warning Debug Code
@@ -93,7 +100,7 @@ namespace Procool.Map
             }
         }
 
-        public IEnumerator RunProgressive()
+        void GenerateFramework()
         {
             var points = new List<Vector2>(CityBlocks);
             var size = Block.Size * ActualSizeRatio;
@@ -101,24 +108,52 @@ namespace Procool.Map
             {
                 points.Add(prng.GetVec2InUnitCircle() * size);
             }
-            
+
             voronoiGenerator = new VoronoiGenerator(points);
-            yield return voronoiGenerator.RunProgressive();
+            voronoiGenerator.RunProgressive();
+            foreach (var edge in voronoiGenerator.Edges)
+            {
+                edge.EdgeType = EdgeType.ArterialRoad;
+            }
+            dirty = true;
+        }
 
-            yield return SplitRoads();
-
-            DrawDebugRegions();
-
-            yield return null;
+        void GenerateEntrance()
+        {
             
-            yield return SplitRoads();
+        }
 
+        void GenerateExpressWay()
+        {
+            
+        }
+
+        void UpdateEdges()
+        {
+            if(!dirty)
+               return;
+            dirty = false;
             Edges.Clear();
             foreach (var region in Space.Regions)
             {
                 foreach (var edge in region.Edges)
                     Edges.Add(edge);
             }
+        }
+
+        public IEnumerator RunProgressive()
+        {
+            GenerateFramework();
+
+            yield return SplitRoads(EdgeType.Street);
+
+            DrawDebugRegions();
+
+            yield return null;
+            
+            yield return SplitRoads(EdgeType.Street);
+
+            UpdateEdges();
         }
 
         public void Dispose()

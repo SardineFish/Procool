@@ -94,7 +94,7 @@ namespace Procool.Map.SpacePartition
         }
 
 
-        public (Region, Region) Split(Vertex vertA, Vertex vertB)
+        public (Region, Region, Edge) Split(Vertex vertA, Vertex vertB)
         {
             for (var idxA = 0; idxA < vertices.Count; idxA++)
             {
@@ -143,7 +143,7 @@ namespace Procool.Map.SpacePartition
                             regionB.EndConstruct();
                             newEdge.AddRegion(regionB);
 
-                            return (regionA, regionB);
+                            return (regionA, regionB, newEdge);
 
                             break;
                         }
@@ -188,7 +188,7 @@ namespace Procool.Map.SpacePartition
         // 2. Split edges with intersect points
         // 3. Split region with two new vertex.
         // 4. Return new regions (old region should be release by caller)
-        public (Region, Region) SplitByLine(Vector2 origin, Vector2 direction)
+        public (Region, Region, Edge) SplitByLine(Vector2 origin, Vector2 direction)
         {
             Edge edgeA = null;
             Edge edgeB = null;
@@ -228,15 +228,15 @@ namespace Procool.Map.SpacePartition
 
             // Release if cant split, and release the vertex if new created.
             if (!vertA)
-                return (null, null);
+                return (null, null, null);
             else if (vertA && !vertB && vertA.Edges.Count == 0)
             {
                 Vertex.Release(vertA);
-                return (null, null);
+                return (null, null, null);
             }
             else if (!vertB)
             {
-                return (null, null);
+                return (null, null, null);
             }
 
             if (vertA.Edges.Count == 0)

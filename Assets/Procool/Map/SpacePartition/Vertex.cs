@@ -6,7 +6,12 @@ using UnityEngine;
 
 namespace Procool.Map.SpacePartition
 {
-
+    public enum VertexType : byte
+    {
+        None = 0,
+        Entrance = 1,
+        Anchor = 2,
+    }
     public class Vertex : ObjectWithPool<Vertex>
     {
         public UInt32 ID { get; private set; }
@@ -16,6 +21,7 @@ namespace Procool.Map.SpacePartition
         public IEnumerable<Vertex> Neighboors => edges.Select(edge => edge.GetAnother(this));
         public object Data;
         public bool IsBoundary = false;
+        public VertexType VertexType;
 
         public static Vertex Get(Vector2 pos)
         {
@@ -25,6 +31,7 @@ namespace Procool.Map.SpacePartition
             vert.IsBoundary = false;
             vert.Data = null;
             vert.edges.Clear();
+            vert.VertexType = VertexType.None;
             return vert;
         }
 

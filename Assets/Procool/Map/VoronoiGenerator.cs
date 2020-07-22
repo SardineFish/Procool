@@ -22,8 +22,11 @@ namespace Procool.Map
         private List<Vector2> points;
         private BowyerWatson delaunayTriangulatior;
 
-        public readonly Dictionary<UInt64, Edge> EdgesById = new Dictionary<ulong, Edge>();
-        public readonly Dictionary<Vector2, Vertex> VerticesByVector = new Dictionary<Vector2, Vertex>();
+        private readonly Dictionary<UInt64, Edge> EdgesById = new Dictionary<ulong, Edge>();
+        private readonly Dictionary<Vector2, Vertex> VerticesByVector = new Dictionary<Vector2, Vertex>();
+
+        public IEnumerable<Edge> Edges => EdgesById.Values;
+        public IEnumerable<Vertex> Vertices => VerticesByVector.Values;
 
         //public Space Space;
         public Space Space;
@@ -70,6 +73,8 @@ namespace Procool.Map
         
         public IEnumerator RunProgressive()
         {
+            VerticesByVector.Clear();
+            EdgesById.Clear();
             yield return delaunayTriangulatior.RunProgressive();
 
             Space = Space.Get();
@@ -142,6 +147,8 @@ namespace Procool.Map
 
         public void Dispose()
         {
+            VerticesByVector.Clear();
+            EdgesById.Clear();
             delaunayTriangulatior?.Dispose();
         }
     }

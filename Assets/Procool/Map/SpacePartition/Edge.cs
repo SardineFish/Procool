@@ -4,6 +4,16 @@ using UnityEngine;
 
 namespace Procool.Map.SpacePartition
 {
+    public enum EdgeType : byte
+    {
+        None = 0,
+        Alley = 1,
+        Street = 2,
+        ArterialRoad = 3,
+        ExpressWay = 4,
+        TrunkHighway = 5,
+    }
+    
     public class Edge : ObjectWithPool<Edge>
     {
         public UInt64 ID { get; private set; }
@@ -15,6 +25,8 @@ namespace Procool.Map.SpacePartition
         public (Vector2, Vector2) _Pos => (Points.Item1.Pos, Points.Item2.Pos);
 
         public (uint, uint) _Ids => (Points.Item1.ID, Points.Item2.ID);
+
+        public EdgeType EdgeType = EdgeType.None;
         
 
         public static Edge Get(Vertex a, Vertex b)
@@ -23,6 +35,7 @@ namespace Procool.Map.SpacePartition
             edge.Points = (a, b);
             edge.ID = IDFromVerts(a, b);
             edge.Regions = (null, null);
+            edge.EdgeType = EdgeType.None;
             // edge.IsBoundary = false;
             return edge;
         }
@@ -40,6 +53,7 @@ namespace Procool.Map.SpacePartition
                 throw new Exception("Invalid vertex");
             var newEdgeA = Edge.Get(a, newVert);
             var newEdgeB = Edge.Get(newVert, b);
+            newEdgeA.EdgeType = newEdgeB.EdgeType = EdgeType;
             newVert.AddEdge(newEdgeA);
             newVert.AddEdge(newEdgeB);
             if (Regions.Item1)
