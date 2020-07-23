@@ -10,6 +10,8 @@ namespace Procool.Map.SpacePartition
     {
         public readonly List<Region> Regions = new List<Region>();
 
+        private readonly HashSet<Edge> edges = new HashSet<Edge>();
+
         public static Space Get()
         {
             var space = GetInternal();
@@ -43,9 +45,11 @@ namespace Procool.Map.SpacePartition
             {
                 edge.AddRegion(region);
                 var (a, b) = edge.Points;
-                a.AddEdge(edge);
-                b.AddEdge(edge);
-                
+                if (!a.HasEdge(edge))
+                    a.AddEdge(edge);
+                if (!b.HasEdge(edge))
+                    b.AddEdge(edge);
+
             }
 
             return region;
@@ -77,6 +81,17 @@ namespace Procool.Map.SpacePartition
             Region.Release(region);
             
             return (regionA, regionB, newEdge);
+        }
+
+        // Deleted region should release by caller.
+        public void DeleteRegion(Region region)
+        {
+            foreach (var edge in region.Edges)
+            {
+                edge.DeleteRegion(region);
+            }
+
+            Regions.Remove(region);
         }
     }
 }

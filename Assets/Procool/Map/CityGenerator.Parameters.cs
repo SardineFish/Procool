@@ -16,8 +16,18 @@ namespace Procool.Map
             [Range(0, 1)]
             public float mergeWeight;
 
-            public bool RoadStraighten;
+            public bool roadStraighten;
 
+        }
+
+        [Serializable]
+        public struct RoadParameters
+        {
+            public float minDistance;
+            public float maxDistance;
+            public float randomOffsetRatio;
+            public float crossMergeThreshold;
+            public int crossMergePass;
         }
     }
 }

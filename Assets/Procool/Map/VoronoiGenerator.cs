@@ -93,7 +93,6 @@ namespace Procool.Map
                 BowyerWatson.TriangleEdge startTriangleEdge = null;
                 vertices.Clear();
                 edges.Clear();
-                ;
                 
                 for (var j = 0; j < delaunayTriangulatior.ExtentPoints.Count; j++)
                 {

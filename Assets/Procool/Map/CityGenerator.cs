@@ -16,14 +16,15 @@ namespace Procool.Map
         public const int TinyCityBlocks = 10;
 
         #region Options
-        
-        public float MinRoadDistance = 10f;
-        public float MaxRoadDistance = 20f;
-        public float RloadRandomOffsetRatio = 0.3f;
 
-        public float ActualSizeRatio = 0.6f;
-        public float BoundaryExtendRatio = 0.3f;
-        public int BoundaryEdges = 6;
+        public RoadParameters RoadParams = new RoadParameters()
+        {
+            minDistance = 10,
+            maxDistance = 15,
+            randomOffsetRatio = .3f,
+            crossMergeThreshold = 1,
+            crossMergePass = 2,
+        };
 
         public ExpressWayParameters ExpressWayParams = new ExpressWayParameters()
         {
@@ -31,6 +32,11 @@ namespace Procool.Map
             straightRoadWeight = .2f,
             mergeWeight = .2f,
         };
+
+        public float ActualSizeRatio = 0.6f;
+        public float BoundaryExtendRatio = 0.3f;
+        public int BoundaryEdges = 6;
+
 
         public bool[] RoadConnection = new bool[6];
 
@@ -73,8 +79,8 @@ namespace Procool.Map
                 var obb = region.ComputeOMBB();
 
                 var roadCounts = new Vector2(
-                    Mathf.Floor(obb.HalfSize.x * 2 / prng.GetInRange(MinRoadDistance, MaxRoadDistance)),
-                    Mathf.Floor(obb.HalfSize.y * 2 / prng.GetInRange(MinRoadDistance, MaxRoadDistance)));
+                    Mathf.Floor(obb.HalfSize.x * 2 / prng.GetInRange(RoadParams.minDistance, RoadParams.maxDistance)),
+                    Mathf.Floor(obb.HalfSize.y * 2 / prng.GetInRange(RoadParams.minDistance, RoadParams.maxDistance)));
 
                 var gap = obb.HalfSize * 2 / (roadCounts + Vector2.one);
 
@@ -86,7 +92,7 @@ namespace Procool.Map
                     if (!regionA)
                         break;
                     var x = -obb.HalfSize.x + gap.x * i;
-                    x += prng.GetInRange(-1, 1) * (gap.x / 2 * RloadRandomOffsetRatio);
+                    x += prng.GetInRange(-1, 1) * (gap.x / 2 * RoadParams.randomOffsetRatio);
                     var pos = obb.Center + obb.AxisX * x;
 
                     var (nextA, nextB, newEdge) = Space.SplitRegionByLine(regionA, pos, obb.AxisY);
@@ -227,7 +233,7 @@ namespace Procool.Map
                         edge.EdgeType = EdgeType.ExpressWay;
                     }
 
-                    if (ExpressWayParams.RoadStraighten)
+                    if (ExpressWayParams.roadStraighten)
                         StraightenRoads(start, path);
                 }
             }
@@ -268,6 +274,39 @@ namespace Procool.Map
             }
         }
 
+        
+        void MergeCrossing()
+        {
+            for (var pass = 0; pass < RoadParams.crossMergePass; pass++)
+            {
+                UpdateEdgesAndVerts();
+                
+                foreach (var edge in regionsEdges)
+                {
+                    if(!edge.Valid)
+                        continue;
+                    if(edge.Length > RoadParams.crossMergeThreshold)
+                        continue;
+
+                    var (a, b) = edge.Points;
+                    Vector2 newPos = Vector2.zero;
+                    var typeA = a.Edges.Max(e => e.EdgeType);
+                    var typeB = b.Edges.Max(e => e.EdgeType);
+                    if (typeA > typeB)
+                        newPos = a.Pos;
+                    else if (typeA < typeB)
+                        newPos = b.Pos;
+                    else
+                        newPos = (a.Pos + b.Pos) / 2;
+                    
+                    edge.Collapse(newPos);
+                    Edge.Release(edge);
+                }
+
+                dirty = true;
+            }
+        }
+
         void UpdateEdgesAndVerts()
         {
             if(!dirty)
@@ -289,6 +328,8 @@ namespace Procool.Map
         public IEnumerator RunProgressive()
         {
             yield return GenerateFramework();
+            
+            MergeCrossing();
 
             GenerateEntrance();
             
@@ -301,6 +342,8 @@ namespace Procool.Map
             yield return null;
             
             yield return SplitRoads(EdgeType.Street);
+            
+            MergeCrossing();
             
 
             UpdateEdgesAndVerts();

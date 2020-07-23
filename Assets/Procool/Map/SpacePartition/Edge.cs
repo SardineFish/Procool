@@ -65,6 +65,93 @@ namespace Procool.Map.SpacePartition
             a.UpdateEdge(this, newEdgeA);
             b.UpdateEdge(this, newEdgeB);
         }
+
+        // Current edge should release by caller.
+        // will not get any edges from pool.
+        public void Collapse(Vector2 newVertPos)
+        {
+            var (vertA, vertB) = Points;
+            var newVert = Vertex.Get(newVertPos);
+            
+            vertA.ReplaceBy(newVert);
+            vertB.ReplaceBy(newVert);
+            foreach (var edge in vertA.Edges)
+            {
+                if(edge != this)
+                    newVert.AddEdge(edge);
+            }
+            foreach (var edge in vertB.Edges)
+            {
+                if(edge != this)
+                    newVert.AddEdge(edge);
+            }
+
+            var (regionA, regionB) = Regions;
+            if (regionA)
+            {
+                regionA.CollapseEdge(this, newVert);
+                if (regionA.Edges.Count < 3)
+                {
+                    regionA.Space.DeleteRegion(regionA);
+                    MergeEdge(regionA.Edges[0], regionA.Edges[1]);
+                    Region.Release(regionA);
+                }
+            }
+            if (regionB)
+            {
+                regionB.CollapseEdge(this, newVert);
+                if (regionB.Edges.Count < 3)
+                {
+                    regionB.Space.DeleteRegion(regionB);
+                    MergeEdge(regionB.Edges[0], regionB.Edges[1]);
+                    Region.Release(regionB);
+                }
+            }
+            
+            Vertex.Release(vertA);
+            Vertex.Release(vertB);
+        }
+
+        static void MergeEdge(Edge edgeA, Edge edgeB)
+        {
+            var (a, b) = edgeA.Points;
+            if (!edgeB.HasVertex(a) || !edgeB.HasVertex(b))
+                throw new Exception($"Cannot merge edge {edgeA} with {edgeB}.");
+            // var newEdge = Edge.Get(a, b);
+            
+            a.RemoveEdge(edgeA);
+            a.RemoveEdge(edgeB);
+            b.RemoveEdge(edgeA);
+            b.RemoveEdge(edgeB);
+            
+            // Use exists edge as new edge to avoid get one from pool.
+            var newEdge = edgeA;
+            newEdge.AddRegion(edgeB.GetARegion());
+            newEdge.EdgeType = (EdgeType) Math.Max((byte) edgeA.EdgeType, (byte) edgeB.EdgeType);
+            
+            a.AddEdge(newEdge);
+            b.AddEdge(newEdge);
+            // edgeA.ReplaceBy(newEdge);
+            edgeB.ReplaceBy(newEdge);
+            Edge.Release(edgeB);
+        }
+
+        public void ReplaceBy(Edge newEdge)
+        {
+            var (regionA, regionB) = Regions;
+            regionA?.ReplaceEdge(this, newEdge);
+            regionB?.ReplaceEdge(this, newEdge);
+        }
+        
+        public void DeleteRegion(Region region)
+        {
+            if (Regions.Item1 == region)
+                Regions.Item1 = null;
+            else if (Regions.Item2 == region)
+                Regions.Item2 = null;
+            else
+                throw new Exception("Edge not belongs to region.");
+        }
         
         public void UpdateRegion(Region old, Region newRegion)
         {
@@ -76,14 +163,32 @@ namespace Procool.Map.SpacePartition
                 throw new Exception("Edge not belongs to regions.");
         }
 
+        public void UpdateVertex(Vertex old, Vertex newVert)
+        {
+            if (Points.Item1 == old)
+                Points.Item1 = newVert;
+            else if (Points.Item2 == old)
+                Points.Item2 = newVert;
+            else
+                throw new Exception("Edge not belongs to regions.");
+        }
+
         public void AddRegion(Region region)
         {
-            if (Regions.Item1 is null)
+            if (!Regions.Item1)
                 Regions.Item1 = region;
-            else if (Regions.Item2 is null)
+            else if (!Regions.Item2)
                 Regions.Item2 = region;
             else
                 throw new Exception("Regions overflow on edge.");
+        }
+
+        public Region GetARegion()
+        {
+            if (Regions.Item1)
+                return Regions.Item1;
+            else
+                return Regions.Item2;
         }
 
         public Region GetAnother(Region region)

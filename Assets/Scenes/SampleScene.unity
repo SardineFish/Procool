@@ -349,6 +349,17 @@ MonoBehaviour:
   RoadOffset: 0.3
   BoundEdges: 12
   BoundExtendRatio: 0.6
+  ExpressWayParameters:
+    acceptableBendAngle: 60
+    straightRoadWeight: 0.644
+    mergeWeight: 0.523
+    roadStraighten: 0
+  RoadParameters:
+    minDistance: 3
+    maxDistance: 6
+    randomOffsetRatio: 0.3
+    crossMergeThreshold: 3
+    crossMergePass: 2
 --- !u!4 &1064517583
 Transform:
   m_ObjectHideFlags: 0

@@ -260,6 +260,42 @@ namespace Procool.Map.SpacePartition
             return Split(vertA, vertB);
         }
 
+        // Should call ReplaceVertex before collapse.
+        public void CollapseEdge(Edge edge, Vertex newVert)
+        {
+            var (oldA, oldB) = edge.Points;
+
+            var idxEdge = edges.IndexOf(edge);
+            if (idxEdge < 0)
+                throw new Exception("Edge not belongs to region.");
+
+
+            var idxVert = idxEdge;
+            if (vertices[idxVert] != newVert || vertices[(idxVert + 1) % vertices.Count] != newVert)
+                throw new Exception("Invalid topology.");
+            
+            vertices.RemoveAt(idxVert);
+            edges.RemoveAt(idxEdge);
+        }
+
+        public bool ReplaceVertex(Vertex old, Vertex newVert)
+        {
+            var idx = vertices.IndexOf(old);
+            if (idx < 0)
+                return false;
+            vertices[idx] = newVert;
+            return true;
+        }
+
+        public bool ReplaceEdge(Edge old, Edge newEdge)
+        {
+            var idx = edges.IndexOf(old);
+            if (idx < 0)
+                return false;
+            edges[idx] = newEdge;
+            return true;
+        }
+
         public OBB ComputeOMBB()
         {
             float minArea = float.MaxValue;

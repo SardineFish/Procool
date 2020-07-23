@@ -29,6 +29,15 @@ namespace Procool.Test
             straightRoadWeight = .8f,
         };
 
+        public CityGenerator.RoadParameters RoadParameters = new CityGenerator.RoadParameters()
+        {
+            minDistance = 10,
+            maxDistance = 15,
+            randomOffsetRatio = .3f,
+            crossMergePass = 2,
+            crossMergeThreshold = 1,
+        };
+
         private CityGenerator generator;
 
         [EditorButton]
@@ -53,9 +62,7 @@ namespace Procool.Test
 
             var prng = GameRNG.GetPRNG(new Vector2(3, 7));
             generator = new CityGenerator(new Block(new Vector2Int(0, 0), BlockLevel), Count);
-            generator.MinRoadDistance = MinRoadDistance;
-            generator.MaxRoadDistance = MaxRoadDistance;
-            generator.RloadRandomOffsetRatio = RoadOffset;
+            generator.RoadParams = RoadParameters;
             generator.BoundaryEdges = BoundEdges;
             generator.BoundaryExtendRatio = BoundExtendRatio;
             generator.ExpressWayParams = ExpressWayParameters;

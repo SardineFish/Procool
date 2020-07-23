@@ -49,11 +49,29 @@ namespace Procool.Map.SpacePartition
             edges[idx] = newEdge;
         }
 
+        public void RemoveEdge(Edge edge)
+        {
+            edges.Remove(edge);
+        }
+
         public static void Release(Vertex vert)
         {
             if(!vert)
                 return;
             ReleaseInternal(vert);
+        }
+
+        // Replace with new vertex in all reference.
+        // Current vertex should release by caller.
+        public void ReplaceBy(Vertex newVert)
+        {
+            foreach (var edge in edges)
+            {
+                edge.UpdateVertex(this, newVert);
+                var (regionA, regionB) = edge.Regions;
+                regionA?.ReplaceVertex(this, newVert);
+                regionB?.ReplaceVertex(this, newVert);
+            }
         }
 
         public void AddEdge(Edge edge)
