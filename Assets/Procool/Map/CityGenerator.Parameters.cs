@@ -27,8 +27,10 @@ namespace Procool.Map
             public Vector2 alleyDistanceRange;
             [Range(0, 1)]
             public float randomOffsetRatio;
-            public float crossMergeThreshold;
-            public int crossMergePass;
+            public float streetCrossMergeThreshold;
+            public int streetCrossMergePass;
+            public float alleyCrossMergeThreshold;
+            public float alleyCrossMergePass;
         }
     }
 }

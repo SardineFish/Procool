@@ -140,15 +140,18 @@ namespace Procool.Test
 
         IEnumerator GenCityCoroutine()
         {
-            if(cityGenerator != null)
+            if (cityGenerator != null)
+            {
+                cityGenerator.City.Dispose();
                 cityGenerator.Dispose();
+            }
 
             cityGenerator = new CityGenerator(new Block(new Vector2Int(0, 0), 3), Count);
             yield return cityGenerator.RunProgressive();
 
             while (true)
             {
-                foreach (var edge in cityGenerator.Edges)
+                foreach (var edge in cityGenerator.City.Edges)
                 {
                     var (a, b) = edge.Points;
                     Debug.DrawLine(a.Pos, b.Pos, Color.cyan);

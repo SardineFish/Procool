@@ -22,8 +22,10 @@ namespace Procool.Map
             streetDistanceRange = new Vector2(10, 15),
             alleyDistanceRange = new Vector2(1, 3),
             randomOffsetRatio = .3f,
-            crossMergeThreshold = 1,
-            crossMergePass = 2,
+            streetCrossMergeThreshold = 1,
+            streetCrossMergePass = 2,
+            alleyCrossMergeThreshold = 1,
+            alleyCrossMergePass = 1,
         };
 
         public ExpressWayParameters ExpressWayParams = new ExpressWayParameters()
@@ -31,6 +33,7 @@ namespace Procool.Map
             acceptableBendAngle = 60,
             straightRoadWeight = .2f,
             mergeWeight = .2f,
+            roadStraighten = true,
         };
 
         public float ActualSizeRatio = 0.6f;
@@ -45,16 +48,19 @@ namespace Procool.Map
         
         #endregion
         
+        public City City { get; private set; }
+        
         private VoronoiGenerator voronoiGenerator;
-        public Space Space => voronoiGenerator?.Space;
-        public List<Edge> isolatedEdges = new List<Edge>();
-        public List<Vertex> isolatedVertices = new List<Vertex>();
+        private Space Space => voronoiGenerator?.Space;
+        private List<Edge> isolatedEdges = new List<Edge>();
+        private List<Vertex> isolatedVertices = new List<Vertex>();
         private readonly HashSet<Edge> regionsEdges = new HashSet<Edge>();
         private readonly HashSet<Vertex> regionsVertices = new HashSet<Vertex>();
         private PathFinder pathFinder;
+        
 
-        public IEnumerable<Edge> Edges => regionsEdges.Concat(isolatedEdges);
-        public IEnumerable<Vertex> Vertices => regionsVertices.Concat(isolatedVertices);
+        private IEnumerable<Edge> Edges => regionsEdges.Concat(isolatedEdges);
+        private IEnumerable<Vertex> Vertices => regionsVertices.Concat(isolatedVertices);
         
         private bool dirty = false;
 
@@ -269,9 +275,9 @@ namespace Procool.Map
         }
 
         
-        void MergeCrossing()
+        void MergeCrossing(float threshold, float mergePass)
         {
-            for (var pass = 0; pass < RoadParams.crossMergePass; pass++)
+            for (var pass = 0; pass < mergePass; pass++)
             {
                 UpdateEdgesAndVerts();
                 
@@ -279,7 +285,7 @@ namespace Procool.Map
                 {
                     if(!edge.Valid)
                         continue;
-                    if(edge.Length > RoadParams.crossMergeThreshold)
+                    if(edge.Length > threshold)
                         continue;
 
                     var (a, b) = edge.Points;
@@ -323,7 +329,7 @@ namespace Procool.Map
         {
             yield return GenerateFramework();
             
-            MergeCrossing();
+            MergeCrossing(RoadParams.streetCrossMergeThreshold, RoadParams.streetCrossMergePass);
 
             GenerateEntrance();
             
@@ -331,27 +337,32 @@ namespace Procool.Map
 
             yield return SplitRoads(EdgeType.Street, RoadParams.streetDistanceRange, RoadParams.randomOffsetRatio);
             yield return SplitRoads(EdgeType.Street, RoadParams.streetDistanceRange, RoadParams.randomOffsetRatio);
-            
-            MergeCrossing();
+
+            MergeCrossing(RoadParams.streetCrossMergeThreshold, RoadParams.streetCrossMergePass);
 
             yield return SplitRoads(EdgeType.Alley, RoadParams.alleyDistanceRange, RoadParams.randomOffsetRatio);
             yield return SplitRoads(EdgeType.Alley, RoadParams.alleyDistanceRange, RoadParams.randomOffsetRatio);
-            
+
+            MergeCrossing(RoadParams.alleyCrossMergeThreshold, RoadParams.alleyCrossMergePass);
 
             UpdateEdgesAndVerts();
+            
+            City = new City(Space.Regions, Edges, Vertices);
         }
 
         public void Dispose()
         {
             voronoiGenerator?.Dispose();
-            foreach (var isolatedEdge in isolatedEdges)
-            {
-                Edge.Release(isolatedEdge);
-            }
-            foreach (var isolatedVertex in isolatedVertices)
-            {
-                Vertex.Release(isolatedVertex);
-            }
+            isolatedEdges.Clear();
+            isolatedVertices.Clear();
+            // foreach (var isolatedEdge in isolatedEdges)
+            // {
+            //     Edge.Release(isolatedEdge);
+            // }
+            // foreach (var isolatedVertex in isolatedVertices)
+            // {
+            //     Vertex.Release(isolatedVertex);
+            // }
         }
     }
 }

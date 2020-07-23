@@ -189,4 +189,18 @@ public static class MathUtility
         // (vx + vy i) * (rx + ry i)
         return new Vector2(rx * v.x - ry * v.y, rx * v.y + ry * v.x);
     }
+
+    public static bool LineIntersect(Vector2 o1, Vector2 d1, Vector2 o2, Vector2 d2, out Vector2 point)
+    {
+        var div = (d1.y * d2.x - d1.x * d2.y);
+        point = Vector2.zero;
+        if (Mathf.Abs(div) < 0.001f)
+            return false;
+
+        var t1 = -(-d2.y * o1.x + d2.x * o1.y + d2.y * o2.x - d2.x * o2.y) / div;
+
+        point = o1 + d1 * t1;
+        
+        return true;
+    }
 }
