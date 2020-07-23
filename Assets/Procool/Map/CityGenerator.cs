@@ -10,7 +10,7 @@ using Space = Procool.Map.SpacePartition.Space;
 
 namespace Procool.Map
 {
-    public class CityGenerator : IDisposable
+    public partial class CityGenerator : IDisposable
     {
         public const int LargeCityBlocks = 30;
         public const int TinyCityBlocks = 10;
@@ -24,6 +24,13 @@ namespace Procool.Map
         public float ActualSizeRatio = 0.6f;
         public float BoundaryExtendRatio = 0.3f;
         public int BoundaryEdges = 6;
+
+        public ExpressWayParameters ExpressWayParams = new ExpressWayParameters()
+        {
+            acceptableBendAngle = 60,
+            straightRoadWeight = .2f,
+            mergeWeight = .2f,
+        };
 
         public bool[] RoadConnection = new bool[6];
 
@@ -182,9 +189,26 @@ namespace Procool.Map
         {
             UpdateEdgesAndVerts();
             pathFinder = new PathFinder(Vertices, Edges);
-            pathFinder.CostEvaluator = (vertex, edge, arg3) =>
+
+
+            float cosAcceptableAngle = Mathf.Cos(Mathf.Deg2Rad * ExpressWayParams.acceptableBendAngle);
+            float maxTurnScale = 1 + (1 + cosAcceptableAngle) * ExpressWayParams.straightRoadWeight / (1 - cosAcceptableAngle);
+            float minTurnScale = 1 - ExpressWayParams.straightRoadWeight;
+            pathFinder.CostEvaluator = (vertex, nextEdge, prevEdge) =>
             {
-                return 1;
+                if (!prevEdge)
+                    return nextEdge.Length;
+                var cost = nextEdge.Length;
+                var prevVert = prevEdge.GetAnother(vertex);
+                var nextVert = nextEdge.GetAnother(vertex);
+                var cosAngle = Vector2.Dot((vertex.Pos - prevVert.Pos).normalized, (nextVert.Pos - vertex.Pos).normalized);
+
+                cost *= MathUtility.RangeMapClamped(-1, 1, maxTurnScale, minTurnScale, cosAngle);
+
+                if (nextEdge.EdgeType > EdgeType.ArterialRoad)
+                    cost *= (1 - ExpressWayParams.mergeWeight);
+
+                return cost;
             };
             for (var i = 0; i < isolatedVertices.Count; i++)
             {

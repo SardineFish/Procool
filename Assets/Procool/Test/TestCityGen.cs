@@ -21,6 +21,13 @@ namespace Procool.Test
         public int BoundEdges = 6;
         public float BoundExtendRatio = 0.3f;
 
+        public CityGenerator.ExpressWayParameters ExpressWayParameters = new CityGenerator.ExpressWayParameters()
+        {
+            mergeWeight = .2f,
+            acceptableBendAngle = 60,
+            straightRoadWeight = .8f,
+        };
+
         private CityGenerator generator;
 
         [EditorButton]
@@ -50,6 +57,7 @@ namespace Procool.Test
             generator.RloadRandomOffsetRatio = RoadOffset;
             generator.BoundaryEdges = BoundEdges;
             generator.BoundaryExtendRatio = BoundExtendRatio;
+            generator.ExpressWayParams = ExpressWayParameters;
             for (var i = 0; i < 6; i++)
             {
                 if (prng.GetScalar() < .5f)

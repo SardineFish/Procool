@@ -27,6 +27,8 @@ namespace Procool.Map.SpacePartition
         public (uint, uint) _Ids => (Points.Item1.ID, Points.Item2.ID);
 
         public EdgeType EdgeType = EdgeType.None;
+
+        public float Length => (Points.Item1.Pos - Points.Item2.Pos).magnitude;
         
 
         public static Edge Get(Vertex a, Vertex b)
