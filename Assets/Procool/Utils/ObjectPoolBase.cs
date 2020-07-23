@@ -61,6 +61,23 @@ namespace Procool.Utils
             pool.Push(obj);
         }
 
+        public static void PreAlloc(int count)
+        {
+            var newPool = new Stack<T>(pool.Count + count);
+            foreach (var obj in pool)
+            {
+                newPool.Push(obj);
+            }
+
+            pool.Clear();
+            pool = newPool;
+
+            for (var i = 0; i < count; i++)
+            {
+                pool.Push(new T());
+            }
+        }
+
         public static implicit operator bool(ObjectWithPool<T> obj)
         {
             return !(obj is null) && obj.Valid;

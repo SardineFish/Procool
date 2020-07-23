@@ -19,7 +19,7 @@ namespace Procool.Map.SpacePartition
     {
         public UInt32 ID { get; private set; }
         public Vector2 Pos;
-        private List<Edge> edges = new List<Edge>();
+        private List<Edge> edges = new List<Edge>(8);
         public IReadOnlyList<Edge> Edges => edges.AsReadOnly();
         public IEnumerable<Vertex> Neighboors => edges.Select(edge => edge.GetAnother(this));
         public object Data;

@@ -195,7 +195,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showGrid: 1
-  size: 64
+  size: 256
   layout: 0
 --- !u!1 &519420028
 GameObject:
@@ -343,7 +343,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Seed: -543004387
   Count: 30
-  BlockLevel: 3
+  BlockLevel: 4
   MinRoadDistance: 10
   MaxRoadDistance: 15
   RoadOffset: 0.3
@@ -355,10 +355,10 @@ MonoBehaviour:
     mergeWeight: 0.523
     roadStraighten: 0
   RoadParameters:
-    minDistance: 3
-    maxDistance: 6
+    streetDistanceRange: {x: 20, y: 40}
+    alleyDistanceRange: {x: 5, y: 15}
     randomOffsetRatio: 0.3
-    crossMergeThreshold: 3
+    crossMergeThreshold: 2
     crossMergePass: 2
 --- !u!4 &1064517583
 Transform:

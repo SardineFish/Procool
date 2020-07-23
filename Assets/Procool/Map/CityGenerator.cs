@@ -19,8 +19,8 @@ namespace Procool.Map
 
         public RoadParameters RoadParams = new RoadParameters()
         {
-            minDistance = 10,
-            maxDistance = 15,
+            streetDistanceRange = new Vector2(10, 15),
+            alleyDistanceRange = new Vector2(1, 3),
             randomOffsetRatio = .3f,
             crossMergeThreshold = 1,
             crossMergePass = 2,
@@ -67,32 +67,29 @@ namespace Procool.Map
             prng = GameRNG.GetPRNG(Block.Position);
         }
 
-        IEnumerator SplitRoads(EdgeType type)
+
+        IEnumerator SplitRoads(EdgeType type, Vector2 roadDistance, float randomOffset)
         {
             var count = Space.Regions.Count;
 
             for (var regionIdx = 0; regionIdx < count; regionIdx++)
             {
                 var region = Space.Regions[regionIdx];
-                // if (region.IsBoundary)
-                //     continue;
                 var obb = region.ComputeOMBB();
 
-                var roadCounts = new Vector2(
-                    Mathf.Floor(obb.HalfSize.x * 2 / prng.GetInRange(RoadParams.minDistance, RoadParams.maxDistance)),
-                    Mathf.Floor(obb.HalfSize.y * 2 / prng.GetInRange(RoadParams.minDistance, RoadParams.maxDistance)));
-
-                var gap = obb.HalfSize * 2 / (roadCounts + Vector2.one);
+                var roadCounts =
+                    Mathf.Floor(obb.HalfSize.x * 2 / prng.GetInRange(roadDistance.x, roadDistance.y));
+                var gap = obb.HalfSize.x * 2 / (roadCounts + 1);
 
                 Region regionA = region;
                 Region regionB = null;
 
-                for (int i = 1; i <= roadCounts.x; i++)
+                for (int i = 1; i <= roadCounts; i++)
                 {
                     if (!regionA)
                         break;
-                    var x = -obb.HalfSize.x + gap.x * i;
-                    x += prng.GetInRange(-1, 1) * (gap.x / 2 * RoadParams.randomOffsetRatio);
+                    var x = -obb.HalfSize.x + gap * i;
+                    x += prng.GetInRange(-1, 1) * (gap / 2 * randomOffset);
                     var pos = obb.Center + obb.AxisX * x;
 
                     var (nextA, nextB, newEdge) = Space.SplitRegionByLine(regionA, pos, obb.AxisY);
@@ -108,10 +105,7 @@ namespace Procool.Map
                     regionB = nextB;
                 }
 
-                DrawDebugEdges();
                 yield return null;
-
-                var _ = 0;
             }
 
             dirty = true;
@@ -335,15 +329,13 @@ namespace Procool.Map
             
             GenerateExpressWay();
 
-            yield return SplitRoads(EdgeType.Street);
-
-            DrawDebugEdges();
-
-            yield return null;
-            
-            yield return SplitRoads(EdgeType.Street);
+            yield return SplitRoads(EdgeType.Street, RoadParams.streetDistanceRange, RoadParams.randomOffsetRatio);
+            yield return SplitRoads(EdgeType.Street, RoadParams.streetDistanceRange, RoadParams.randomOffsetRatio);
             
             MergeCrossing();
+
+            yield return SplitRoads(EdgeType.Alley, RoadParams.alleyDistanceRange, RoadParams.randomOffsetRatio);
+            yield return SplitRoads(EdgeType.Alley, RoadParams.alleyDistanceRange, RoadParams.randomOffsetRatio);
             
 
             UpdateEdgesAndVerts();

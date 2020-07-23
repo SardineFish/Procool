@@ -23,8 +23,9 @@ namespace Procool.Map
         [Serializable]
         public struct RoadParameters
         {
-            public float minDistance;
-            public float maxDistance;
+            public Vector2 streetDistanceRange;
+            public Vector2 alleyDistanceRange;
+            [Range(0, 1)]
             public float randomOffsetRatio;
             public float crossMergeThreshold;
             public int crossMergePass;

@@ -25,7 +25,7 @@ namespace Procool.Map.SpacePartition
                 return;
             foreach (var region in space.Regions)
             {
-                Region.Release(region);
+                Region.Release(region, true);
             }
             ReleaseInternal(space);
         }

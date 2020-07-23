@@ -15,8 +15,8 @@ namespace Procool.Map.SpacePartition
         public Space Space { get; private set; }
         public bool IsBoundary => edges.Any(edge => edge.IsBoundary);
 
-        private readonly List<Edge> edges = new List<Edge>();
-        private readonly List<Vertex> vertices = new List<Vertex>();
+        private readonly List<Edge> edges = new List<Edge>(8);
+        private readonly List<Vertex> vertices = new List<Vertex>(8);
 
         private bool canConstruct = false;
 
@@ -36,22 +36,25 @@ namespace Procool.Map.SpacePartition
             return region;
         }
 
-        public static void Release(Region region)
+        public static void Release(Region region, bool releaseAll = false)
         {
             if (!region)
                 return;
             ReleaseInternal(region);
 
-            foreach (var edge in region.edges)
+            if (releaseAll)
             {
-                if (edge.CanSafeRelease)
-                    Edge.Release(edge);
-            }
+                foreach (var edge in region.edges)
+                {
+                    if (edge.CanSafeRelease)
+                        Edge.Release(edge);
+                }
 
-            foreach (var vertex in region.vertices)
-            {
-                if (vertex.CanSafeRelease)
-                    Vertex.Release(vertex);
+                foreach (var vertex in region.vertices)
+                {
+                    if (vertex.CanSafeRelease)
+                        Vertex.Release(vertex);
+                }
             }
         }
 
@@ -243,20 +246,13 @@ namespace Procool.Map.SpacePartition
             {
                 edgeA.Split(vertA);
                 Edge.Release(edgeA);
-                if (edges.Any(edge => !edge.Valid))
-                    throw new Exception();
             }
 
             if (vertB.Edges.Count == 0)
             {
                 edgeB.Split(vertB);
                 Edge.Release(edgeB);
-                if (edges.Any(edge => !edge.Valid))
-                    throw new Exception();
             }
-
-            if (edges.Any(edge => !edge.Valid))
-                throw new Exception();
             return Split(vertA, vertB);
         }
 

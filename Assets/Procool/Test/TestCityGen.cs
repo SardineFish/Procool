@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Procool.Map;
+using Procool.Map.SpacePartition;
 using Procool.Random;
 using Procool.Utils;
 using UnityEngine;
@@ -31,14 +32,21 @@ namespace Procool.Test
 
         public CityGenerator.RoadParameters RoadParameters = new CityGenerator.RoadParameters()
         {
-            minDistance = 10,
-            maxDistance = 15,
+            streetDistanceRange = new Vector2(10, 15),
+            alleyDistanceRange = new Vector2(2, 3),
             randomOffsetRatio = .3f,
             crossMergePass = 2,
             crossMergeThreshold = 1,
         };
 
         private CityGenerator generator;
+
+        private void Awake()
+        {
+            Vertex.PreAlloc(8192);
+            Edge.PreAlloc(4096);
+            Region.PreAlloc(4096);
+        }
 
         [EditorButton]
         void RandomSeed()
@@ -83,7 +91,7 @@ namespace Procool.Test
                     var (a, b) = edge.Points;
                     Color color = Color.cyan;
                     color.a = ((int) edge.EdgeType + 1) / 6.0f;
-                    color.a = Mathf.Pow(color.a, 4);
+                    color.a = Mathf.Pow(color.a, 2.5f);
                     Debug.DrawLine(a.Pos, b.Pos, color);
                 }
 
