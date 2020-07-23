@@ -102,7 +102,7 @@ namespace Procool.Map
                     regionB = nextB;
                 }
 
-                DrawDebugRegions();
+                DrawDebugEdges();
                 yield return null;
 
                 var _ = 0;
@@ -112,14 +112,14 @@ namespace Procool.Map
         }
 
         #warning Debug Code
-        void DrawDebugRegions()
+        void DrawDebugEdges()
         {
-            foreach (var region in Space.Regions)
+            foreach (var edge in Edges)
             {
-                foreach (var edge in region.Edges)
-                {
-                    Debug.DrawLine(edge.Points.Item1.Pos, edge.Points.Item2.Pos);
-                }
+                Color color = Color.cyan;
+                color.a = ((int) edge.EdgeType + 1) / 6.0f;
+                color.a = Mathf.Pow(color.a, 4);
+                Debug.DrawLine(edge.Points.Item1.Pos, edge.Points.Item2.Pos, color);
             }
         }
 
@@ -179,7 +179,7 @@ namespace Procool.Map
                 {
                     var vert = CreateIsolatedVertex(connectPoint);
                     vert.VertexType = VertexType.Entrance;
-                    nearstVert.VertexType = VertexType.Anchor;
+                    //nearstVert.VertexType = VertexType.Anchor;
                     var edge = CreateIsolatedEdge(vert, nearstVert);
                 }
             }
@@ -226,7 +226,45 @@ namespace Procool.Map
                     {
                         edge.EdgeType = EdgeType.ExpressWay;
                     }
+
+                    if (ExpressWayParams.RoadStraighten)
+                        StraightenRoads(start, path);
                 }
+            }
+
+        }
+
+        void StraightenRoads(Vertex startVert, IEnumerable<Edge> path)
+        {
+            var vertex = startVert;
+            Edge prevEdge = null;
+            var i = 0;
+            foreach (var edge in path)
+            {
+                if (i == 0)
+                {
+                    prevEdge = edge;
+                    vertex = edge.GetAnother(vertex);
+                    i++;
+                    continue;
+                }
+
+                var prevVert = prevEdge.GetAnother(vertex);
+                var nextVert = edge.GetAnother(vertex);
+
+                if (vertex.VertexType != VertexType.Anchor)
+                {
+                    var t = Vector2.Dot((vertex.Pos - prevVert.Pos), (nextVert.Pos - prevVert.Pos).normalized) /
+                            (nextVert.Pos - prevVert.Pos).magnitude;
+                    var p = MathUtility.QuadraticBezierCurve(prevVert.Pos, vertex.Pos, nextVert.Pos, t);
+                    vertex.Pos = p;
+                    vertex.VertexType = VertexType.Anchor;
+                }
+
+                prevEdge = edge;
+                vertex = nextVert;
+                
+                DrawDebugEdges();
             }
         }
 
@@ -258,7 +296,7 @@ namespace Procool.Map
 
             yield return SplitRoads(EdgeType.Street);
 
-            DrawDebugRegions();
+            DrawDebugEdges();
 
             yield return null;
             

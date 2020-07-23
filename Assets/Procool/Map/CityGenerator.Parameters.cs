@@ -16,6 +16,8 @@ namespace Procool.Map
             [Range(0, 1)]
             public float mergeWeight;
 
+            public bool RoadStraighten;
+
         }
     }
 }

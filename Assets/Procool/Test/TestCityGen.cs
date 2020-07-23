@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace Procool.Test
 {
+    [ExecuteInEditMode]
     public class TestCityGen : MonoBehaviour, ICustomEditorEX
     {
         public int Seed = 0;

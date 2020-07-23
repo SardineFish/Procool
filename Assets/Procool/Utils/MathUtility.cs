@@ -117,6 +117,11 @@ public static class MathUtility
         t = Mathf.Clamp01(t);
         return Mathf.Lerp(outA, outB, t);
     }
+
+    public static Vector3 QuadraticBezierCurve(Vector3 p0, Vector3 p1, Vector3 p2, float t)
+    {
+        return p1 + (1 - t) * (1 - t) * (p0 - p1) + t * t * (p2 - p1);
+    }
     
 
     public static Color Set(this Color color, float r = float.NaN, float g=float.NaN, float b=float.NaN, float a = float.NaN)
