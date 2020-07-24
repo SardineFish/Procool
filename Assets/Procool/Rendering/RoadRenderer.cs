@@ -1,4 +1,5 @@
-﻿using Procool.Map;
+﻿using System;
+using Procool.Map;
 using UnityEngine;
 
 namespace Procool.Rendering
@@ -14,6 +15,10 @@ namespace Procool.Rendering
             meshGenerator = new RoadMeshGenerator(city);
             meshGenerator.GenerateMesh();
             GetComponent<MeshFilter>().mesh = meshGenerator.Mesh;
+        }
+
+        private void Update()
+        {
         }
     }
 }

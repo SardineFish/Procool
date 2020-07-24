@@ -20,6 +20,7 @@ namespace Procool.Map.SpacePartition
         public UInt32 ID { get; private set; }
         public Vector2 Pos;
         private List<Edge> edges = new List<Edge>(8);
+        private object UserData = null;
         public IReadOnlyList<Edge> Edges => edges.AsReadOnly();
         public IEnumerable<Vertex> Neighboors => edges.Select(edge => edge.GetAnother(this));
         public object Data;
@@ -34,6 +35,7 @@ namespace Procool.Map.SpacePartition
             vert.Data = null;
             vert.edges.Clear();
             vert.VertexType = VertexType.None;
+            vert.UserData = null;
             return vert;
         }
 
@@ -82,5 +84,12 @@ namespace Procool.Map.SpacePartition
         }
 
         public bool HasEdge(Edge edge) => edges.IndexOf(edge) >= 0;
+
+
+        public T GetData<T>() where T : class
+            => UserData as T;
+
+        public void SetData<T>(T data) where T : class
+            => UserData = data;
     }
 }

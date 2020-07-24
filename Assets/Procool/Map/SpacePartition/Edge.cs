@@ -19,6 +19,7 @@ namespace Procool.Map.SpacePartition
         public UInt64 ID { get; private set; }
         public (Vertex, Vertex) Points = (null, null);
         public (Region, Region) Regions = (null, null);
+        private object UserData = null;
         public bool IsBoundary => !Regions.Item1 || !Regions.Item2;
         
         #warning Debug code
@@ -38,6 +39,7 @@ namespace Procool.Map.SpacePartition
             edge.ID = IDFromVerts(a, b);
             edge.Regions = (null, null);
             edge.EdgeType = EdgeType.None;
+            edge.UserData = null;
             // edge.IsBoundary = false;
             return edge;
         }
@@ -216,6 +218,12 @@ namespace Procool.Map.SpacePartition
 
         public bool HasVertex(Vertex vert)
             => vert && (Points.Item1 == vert || Points.Item2 == vert);
+
+        public T GetData<T>() where T : class
+            => UserData as T;
+
+        public void SetData<T>(T data) where T : class
+            => UserData = data;
 
         public bool CanSafeRelease => !Regions.Item1 && !Regions.Item2;
 

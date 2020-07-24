@@ -73,7 +73,6 @@ namespace Procool.Map
             prng = GameRNG.GetPRNG(Block.Position);
         }
 
-
         IEnumerator SplitRoads(EdgeType type, Vector2 roadDistance, float randomOffset)
         {
             var count = Space.Regions.Count;
@@ -313,6 +312,7 @@ namespace Procool.Map
                return;
             dirty = false;
             regionsEdges.Clear();
+            regionsVertices.Clear();
             foreach (var region in Space.Regions)
             {
                 foreach (var edge in region.Edges)
@@ -323,6 +323,27 @@ namespace Procool.Map
                     regionsVertices.Add(b);
                 }
             }
+        }
+
+        public void GenerateCityData()
+        {
+            UpdateEdgesAndVerts();
+            foreach (var edge in Edges)
+            {
+                var road = Road.Get(edge);
+                edge.SetData(road);
+            }
+
+            foreach (var vertex in Vertices)
+            {
+                var crossRoad = CrossRoad.Get(vertex);
+                vertex.SetData(crossRoad);
+                crossRoad.AddRoads(vertex.Edges.Select(edge => edge.GetData<Road>()));
+            }
+            foreach(var vertex in Vertices)
+                vertex.GetData<CrossRoad>().LinkCrossRoads();
+            foreach (var edge in Edges)
+                GenCrossPosition(edge);
         }
 
         public IEnumerator RunProgressive()
@@ -339,11 +360,13 @@ namespace Procool.Map
             yield return SplitRoads(EdgeType.Street, RoadParams.streetDistanceRange, RoadParams.randomOffsetRatio);
 
             MergeCrossing(RoadParams.streetCrossMergeThreshold, RoadParams.streetCrossMergePass);
+            
+            GenerateCityData();
 
-            yield return SplitRoads(EdgeType.Alley, RoadParams.alleyDistanceRange, RoadParams.randomOffsetRatio);
-            yield return SplitRoads(EdgeType.Alley, RoadParams.alleyDistanceRange, RoadParams.randomOffsetRatio);
-
-            MergeCrossing(RoadParams.alleyCrossMergeThreshold, RoadParams.alleyCrossMergePass);
+            // yield return SplitRoads(EdgeType.Alley, RoadParams.alleyDistanceRange, RoadParams.randomOffsetRatio);
+            // yield return SplitRoads(EdgeType.Alley, RoadParams.alleyDistanceRange, RoadParams.randomOffsetRatio);
+            //
+            // MergeCrossing(RoadParams.alleyCrossMergeThreshold, RoadParams.alleyCrossMergePass);
 
             UpdateEdgesAndVerts();
             

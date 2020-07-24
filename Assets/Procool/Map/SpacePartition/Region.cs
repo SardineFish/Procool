@@ -20,6 +20,8 @@ namespace Procool.Map.SpacePartition
 
         private bool canConstruct = false;
 
+        private object UserData = null;
+
         public IReadOnlyList<Edge> Edges => edges.AsReadOnly();
         public IReadOnlyList<Vertex> Vertices => vertices.AsReadOnly();
 
@@ -32,6 +34,7 @@ namespace Procool.Map.SpacePartition
             region.Space = parentSpace;
             region.edges.Clear();
             region.vertices.Clear();
+            region.UserData = null;
 
             return region;
         }
@@ -95,6 +98,13 @@ namespace Procool.Map.SpacePartition
                 throw new Exception("Cannot modify region.");
             this.edges.Add(edge);
         }
+
+
+        public T GetData<T>() where T : class
+            => UserData as T;
+
+        public void SetData<T>(T data) where T : class
+            => UserData = data;
 
 
         public (Region, Region, Edge) Split(Vertex vertA, Vertex vertB)
