@@ -37,5 +37,17 @@ namespace Procool.Map
             public float expressWayWidth;
             public float highwayWidth;
         }
+
+        [Serializable]
+        public struct CityParameters
+        {
+            public int blocksCount;
+            [Range(0, 1)]
+            public float size;
+            [Range(3, 24)]
+            public int boundaryEdges;
+            [Range(0, 1)]
+            public float boundaryExtend;
+        }
     }
 }

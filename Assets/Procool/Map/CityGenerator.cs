@@ -36,14 +36,17 @@ namespace Procool.Map
             roadStraighten = true,
         };
 
-        public float ActualSizeRatio = 0.6f;
-        public float BoundaryExtendRatio = 0.3f;
-        public int BoundaryEdges = 6;
+        public CityParameters CityParams = new CityParameters()
+        {
+            size = 0.6f,
+            blocksCount = 30,
+            boundaryEdges = 12,
+            boundaryExtend = .6f
+        };
 
 
         public bool[] RoadConnection = new bool[6];
 
-        public int CityBlocks { get; private set; }
         public Block Block { get; private set; }
         
         #endregion
@@ -66,9 +69,8 @@ namespace Procool.Map
 
         private PRNG prng;
         
-        public CityGenerator(Block block, int citiyBlocks)
+        public CityGenerator(Block block)
         {
-            CityBlocks = citiyBlocks;
             this.Block = block;
             prng = GameRNG.GetPRNG(Block.Position);
         }
@@ -130,16 +132,16 @@ namespace Procool.Map
 
         IEnumerator GenerateFramework()
         {
-            var points = new List<Vector2>(CityBlocks);
-            var size = Block.Size * ActualSizeRatio;
-            for (var i = 0; i < CityBlocks; i++)
+            var points = new List<Vector2>(CityParams.blocksCount);
+            var size = Block.Size * CityParams.size;
+            for (var i = 0; i < CityParams.blocksCount; i++)
             {
                 points.Add(prng.GetVec2InsideUnitCircle() * size);
             }
 
             voronoiGenerator = new VoronoiGenerator(points);
-            voronoiGenerator.BoundaryEdges = BoundaryEdges;
-            voronoiGenerator.BoundaryExtend = size * BoundaryExtendRatio;
+            voronoiGenerator.BoundaryEdges = CityParams.boundaryEdges;
+            voronoiGenerator.BoundaryExtend = size * CityParams.boundaryExtend;
             yield return voronoiGenerator.RunProgressive();
             
             foreach (var edge in voronoiGenerator.Edges)

@@ -14,16 +14,18 @@ namespace Procool.Test
     public class TestCityGen : MonoBehaviour, ICustomEditorEX
     {
         public int Seed = 0;
-        public int Count = 30;
         public int BlockLevel = 3;
-
-        public float MinRoadDistance = 1;
-        public float MaxRoadDistance = 3;
-        [Range(0, 1)]
-        public float RoadOffset = 0.3f;
 
         public int BoundEdges = 6;
         public float BoundExtendRatio = 0.3f;
+
+        public CityGenerator.CityParameters cityParameters = new CityGenerator.CityParameters()
+        {
+            size = .6f,
+            blocksCount = 30,
+            boundaryEdges = 12,
+            boundaryExtend = .6f
+        };
 
         public CityGenerator.ExpressWayParameters ExpressWayParameters = new CityGenerator.ExpressWayParameters()
         {
@@ -75,12 +77,11 @@ namespace Procool.Test
                 generator.Dispose();
             }
 
-            var prng = GameRNG.GetPRNG(new Vector2(3, 7));
-            generator = new CityGenerator(new Block(new Vector2Int(0, 0), BlockLevel), Count);
+            generator = new CityGenerator(new Block(new Vector2Int(0, 0), BlockLevel));
+            generator.CityParams = cityParameters;
             generator.RoadParams = RoadParameters;
-            generator.BoundaryEdges = BoundEdges;
-            generator.BoundaryExtendRatio = BoundExtendRatio;
             generator.ExpressWayParams = ExpressWayParameters;
+            var prng = GameRNG.GetPRNG(new Vector2(3, 7));
             for (var i = 0; i < 6; i++)
             {
                 if (prng.GetScalar() < .5f)
@@ -94,6 +95,9 @@ namespace Procool.Test
             
             // GetComponent<RoadRenderer>().Render(generator.City);
             GetComponent<CityRenderer>().DrawCity(generator.City);
+
+            yield break;
+            
 
             while (true)
             {

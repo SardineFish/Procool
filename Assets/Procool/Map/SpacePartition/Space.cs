@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Procool.Utils;
-using UnityEditor.U2D.Animation;
 using UnityEngine;
 
 namespace Procool.Map.SpacePartition

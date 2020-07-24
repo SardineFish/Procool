@@ -4,7 +4,7 @@ using Procool.Map.SpacePartition;
 
 namespace Procool.Map
 {
-    public class City : IDisposable
+    public class City : BlockContent, IDisposable
     {
         private readonly List<Region> regions;
         private readonly List<Edge> edges;

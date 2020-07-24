@@ -28,6 +28,11 @@ namespace Procool
             this.Level = level;
         }
 
+        public Block(Vector2Int pos)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public static Block operator +(Block lhs, Vector2Int rhs)
         {
             return new Block(lhs.Position + rhs, lhs.Level);

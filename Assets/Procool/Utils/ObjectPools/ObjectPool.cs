@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Procool.Utils
 {
@@ -104,5 +105,34 @@ namespace Procool.Utils
         {
             pool.Push(list);
         }
+    }
+
+    // public class GameObjectPool<T> where T : Component
+    // {
+    //     private Stack<T> pool = new Stack<T>();
+    //     public Func<T> Allocator { get; set; }
+    //     public Action<Component> ReleaseCallback;
+    //
+    //     public GameObjectPool(Func<T> allocator)
+    //     {
+    //         Allocator = allocator;
+    //     }
+    //
+    //     public T Get()
+    //     {
+    //         if (pool.Count > 0)
+    //             return pool.Pop();
+    //         return Allocator?.Invoke();
+    //     }
+    //
+    //     public void Release(T component)
+    //     {
+    //         ReleaseCallback?.Invoke(component);
+    //         pool.Push(component);
+    //     }
+    // }
+    
+    public static class StaticObjectPool
+    {
     }
 }

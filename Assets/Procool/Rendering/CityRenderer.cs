@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Procool.Rendering
 {
-    public class CityRenderer : MonoBehaviour
+    public class CityRenderer : MonoBehaviour, IBlockContentRenderer
     {
         public MeshRenderer roadRenderer;
         public MeshRenderer sidewalkRenderer;
@@ -37,6 +37,11 @@ namespace Procool.Rendering
             meshGenerator.GenerateMesh();
             roadRenderer.GetComponent<MeshFilter>().sharedMesh = meshGenerator.RoadMesh;
             sidewalkRenderer.GetComponent<MeshFilter>().sharedMesh = meshGenerator.SidewalkMesh;
+        }
+
+        public void CleanUp()
+        {
+            throw new NotImplementedException();
         }
     }
 }

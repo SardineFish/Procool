@@ -146,7 +146,7 @@ namespace Procool.Test
                 cityGenerator.Dispose();
             }
 
-            cityGenerator = new CityGenerator(new Block(new Vector2Int(0, 0), 3), Count);
+            cityGenerator = new CityGenerator(new Block(new Vector2Int(0, 0), 3));
             yield return cityGenerator.RunProgressive();
 
             while (true)
