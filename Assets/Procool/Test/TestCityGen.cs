@@ -105,6 +105,23 @@ namespace Procool.Test
                     Debug.DrawLine(a.Pos, b.Pos, color);
                 }
 
+                foreach (var region in generator.City.Regions)
+                {
+                    var buildingBlock = region.GetData<BuildingBlock>();
+                    foreach (var subRegion in buildingBlock.SubSpace.Regions)
+                    {
+                        foreach (var edge in subRegion.Edges)
+                        {
+                            var (a, b) = edge.Points;
+                            Color color = Color.cyan;
+                            color.a = ((int) edge.EdgeType + 1) / 6.0f;
+                            color.a = Mathf.Pow(color.a, 2.5f);
+                            color.a += 0.1f;
+                            Debug.DrawLine(a.Pos, b.Pos, color);
+                        }
+                    }
+                }
+
                 yield return null;
             }
         }

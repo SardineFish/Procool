@@ -197,6 +197,52 @@ MonoBehaviour:
   showGrid: 1
   size: 256
   layout: 0
+--- !u!1 &323614528
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 323614530}
+  - component: {fileID: 323614529}
+  m_Layer: 0
+  m_Name: TestShrink
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &323614529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 323614528}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cef11861c704747b00772b2803df0c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shrinkWidth: 1.76
+  sizeRange: {x: 10, y: 12}
+  seed: 1952277900
+--- !u!4 &323614530
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 323614528}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 20.84745, y: 12.9939785, z: -382.2578}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,12 +391,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Seed: -543004387
-  Count: 1
+  Count: 30
   BlockLevel: 4
   MinRoadDistance: 10
   MaxRoadDistance: 15
   RoadOffset: 0.3
-  BoundEdges: 4
+  BoundEdges: 12
   BoundExtendRatio: 0.6
   ExpressWayParameters:
     acceptableBendAngle: 60
@@ -358,17 +404,17 @@ MonoBehaviour:
     mergeWeight: 0.523
     roadStraighten: 0
   RoadParameters:
-    streetDistanceRange: {x: 40, y: 60}
+    streetDistanceRange: {x: 20, y: 40}
     alleyDistanceRange: {x: 5, y: 15}
     randomOffsetRatio: 0.3
     streetCrossMergeThreshold: 2
     streetCrossMergePass: 2
     alleyCrossMergeThreshold: 0
     alleyCrossMergePass: 0
-    streetWidth: 0
-    arterialRoadWidth: 0
-    expressWayWidth: 0
-    highwayWidth: 0
+    streetWidth: 1.2
+    arterialRoadWidth: 2
+    expressWayWidth: 3
+    highwayWidth: 3
 --- !u!4 &1064517583
 Transform:
   m_ObjectHideFlags: 0

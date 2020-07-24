@@ -325,7 +325,36 @@ namespace Procool.Map
             }
         }
 
-        public void GenerateCityData()
+        void GenAlley(BuildingBlock buildingBlock)
+        {
+            var obb = buildingBlock.Region.ComputeOMBB();
+
+            var roadCounts =
+                new Vector2Int(
+                    Mathf.FloorToInt(obb.HalfSize.x * 2 / prng.GetInRange(RoadParams.alleyDistanceRange.x,
+                        RoadParams.alleyDistanceRange.y)),
+                    Mathf.FloorToInt(obb.HalfSize.x * 2 / prng.GetInRange(RoadParams.alleyDistanceRange.x,
+                        RoadParams.alleyDistanceRange.y)));
+            
+            var gap = obb.HalfSize * 2 / (roadCounts + Vector2.one);
+            for (var i = 1; i < roadCounts.x; i++)
+            {
+                var x = -obb.HalfSize.x + gap.x * i;
+                x += prng.GetInRange(-1, 1) * (gap.x / 2 * RoadParams.randomOffsetRatio);
+                var pos = obb.Center + obb.AxisX * x;
+                buildingBlock.SubSpace.SplitByLine(pos, obb.AxisY);
+            }
+
+            for (var i = 1; i < roadCounts.y; i++)
+            {
+                var y = -obb.HalfSize.y + gap.y * i;
+                y += prng.GetInRange(-1, 1) * (gap.y / 2 * RoadParams.randomOffsetRatio);
+                var pos = obb.Center + obb.AxisY * y;
+                buildingBlock.SubSpace.SplitByLine(pos, obb.AxisX);
+            }
+        }
+
+        IEnumerator GenerateCityData()
         {
             UpdateEdgesAndVerts();
             foreach (var edge in Edges)
@@ -344,6 +373,14 @@ namespace Procool.Map
                 vertex.GetData<CrossRoad>().LinkCrossRoads();
             foreach (var edge in Edges)
                 GenCrossPosition(edge);
+            foreach (var region in Space.Regions)
+            {
+                var buildingBlock = BuildingBlock.Get(region);
+                region.SetData(buildingBlock);
+                buildingBlock.SetupSubspace();
+                GenAlley(buildingBlock);
+                yield return null;
+            }
         }
 
         public IEnumerator RunProgressive()
@@ -361,7 +398,7 @@ namespace Procool.Map
 
             MergeCrossing(RoadParams.streetCrossMergeThreshold, RoadParams.streetCrossMergePass);
             
-            GenerateCityData();
+            yield return GenerateCityData();
 
             // yield return SplitRoads(EdgeType.Alley, RoadParams.alleyDistanceRange, RoadParams.randomOffsetRatio);
             // yield return SplitRoads(EdgeType.Alley, RoadParams.alleyDistanceRange, RoadParams.randomOffsetRatio);
