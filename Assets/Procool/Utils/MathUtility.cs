@@ -108,6 +108,12 @@ public static class MathUtility
         return false;
     }
 
+    /// <summary>
+    /// Cross product following right hand rule.
+    /// </summary>
+    /// <param name="u"></param>
+    /// <param name="v"></param>
+    /// <returns></returns>
     public static float Cross2(Vector2 u, Vector2 v)
         => u.x * v.y - u.y * v.x;
 

@@ -361,6 +361,7 @@ namespace Procool.Map
             {
                 var road = Road.Get(edge);
                 edge.SetData(road);
+                road.RoadWidth = GetRoadWidth(edge.EdgeType);
             }
 
             foreach (var vertex in Vertices)
@@ -375,10 +376,17 @@ namespace Procool.Map
                 GenCrossPosition(edge);
             foreach (var region in Space.Regions)
             {
+                region.ReOrderVertices();
+                
                 var buildingBlock = BuildingBlock.Get(region);
                 region.SetData(buildingBlock);
                 buildingBlock.SetupSubspace();
                 GenAlley(buildingBlock);
+
+                foreach (var subRegion in buildingBlock.SubSpace.Regions)
+                {
+                    subRegion.ReOrderVertices();
+                }
                 yield return null;
             }
         }

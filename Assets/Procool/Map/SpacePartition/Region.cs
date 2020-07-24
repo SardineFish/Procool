@@ -342,5 +342,40 @@ namespace Procool.Map.SpacePartition
 
             return obb;
         }
+
+        public void ReOrderVertices()
+        {
+            int dir = 0;
+            for (var i = 0; i < vertices.Count; i++)
+            {
+                var edgeA = edges[i];
+                var edgeB = edges[(i + 1) % vertices.Count];
+                var vertA = vertices[i];
+                var vertB = vertices[(i + 1) % vertices.Count];
+                var dirA = edgeA.GetVector(vertA).normalized;
+                var dirB = edgeB.GetVector(vertB).normalized;
+                dir += MathUtility.SignInt(MathUtility.Cross2(dirA, dirB));
+            }
+
+            if (dir < 0)
+            {
+                var n = (vertices.Count + 1) / 2;
+                for (var i = 0; i < n; i++)
+                {
+                    var tempV = vertices[i];
+                    vertices[i] = vertices[vertices.Count - 1 - i];
+                    vertices[vertices.Count - 1 - i] = tempV;
+
+                }
+
+                n = vertices.Count / 2;
+                for (var i = 0; i < n; i++)
+                {
+                    var tempE = edges[i];
+                    edges[i] = edges[edges.Count - 2 - i];
+                    edges[edges.Count - 2 - i] = tempE;
+                }
+            }
+        }
     }
 }

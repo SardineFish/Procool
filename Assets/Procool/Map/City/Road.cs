@@ -7,6 +7,7 @@ namespace Procool.Map
     public class Road : ObjectWithPool<Road>
     {
         public Edge Edge { get; private set; }
+        public float RoadWidth = 0;
         public (Vector2, Vector2) StopLine;
         public (Vector2, Vector2, Vector2, Vector2) IntersectPoints;
 
@@ -17,6 +18,7 @@ namespace Procool.Map
         {
             var data = GetInternal();
             data.Edge = edge;
+            data.RoadWidth = 0;
             return data;
         }
 

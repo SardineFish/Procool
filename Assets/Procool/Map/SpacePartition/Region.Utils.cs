@@ -46,15 +46,27 @@ namespace Procool.Map.SpacePartition
                     var a = region.vertices[i];
                     var b = region.vertices[(i + 1) % verts.Count];
                     var width = shrinkWidthEvaluator(edge);
+                    GetTangentNormal(a.Pos, b.Pos, out var tangent, out var normal);
                     var edgeA = region.edges[(i - 1 + region.edges.Count) % region.edges.Count];
                     var edgeB = region.edges[(i + 1) % region.edges.Count];
                     var dirA = edgeA.GetVector(a).normalized;
                     var dirB = edgeB.GetVector(b).normalized;
-                    GetTangentNormal(a.Pos, b.Pos, out var tangent, out var normal);
-                    var scaleA = 1 / Vector2.Dot(dirA, normal);
-                    var scaleB = 1 / Vector2.Dot(dirB, normal);
-                    verts[i] += dirA * (width * scaleA);
-                    verts[(i + 1) % verts.Count] += dirB * (width * scaleB);
+                    // dirA = ((dirA + tangent) / 2).normalized;
+                    // dirB = ((dirB + tangent) / 2).normalized;
+                    if (Vector2.Dot(dirA, tangent) > -0.999f)
+                    {
+                        var scaleA = 1 / Vector2.Dot(dirA, normal);
+                        verts[i] += dirA * (width * scaleA);
+                    }
+                    else
+                        verts[i] += normal * width;
+
+                    if (Vector2.Dot(dirB, -tangent) > -0.999f)
+                    {
+                        var scaleB = 1 / Vector2.Dot(dirB, normal);
+                        verts[(i + 1) % verts.Count] += dirB * (width * scaleB);
+                    }
+                    
                 }
 
                 var newVerts = ListPool<Vector2>.Get();

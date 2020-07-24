@@ -7,7 +7,7 @@ using UnityEngine.Rendering;
 
 namespace Procool.Rendering
 {
-    public class RoadMeshGenerator : IDisposable
+    public partial class CityMeshGenerator : IDisposable
     {
         struct VertexData
         {
@@ -28,19 +28,12 @@ namespace Procool.Rendering
         public float ExpressWayWidth = 2;
         public float HighwayWidth = 2;
         
-        public Mesh Mesh { get; private set; }
-        public City City { get; private set; }
+        public Mesh RoadMesh { get; private set; } = new Mesh();
 
         private readonly List<VertexData> verts = new List<VertexData>(4096);
         private readonly List<int> triangles = new List<int>(4096);
         private readonly List<Vector2> vertData = new List<Vector2>(4096);
 
-        public RoadMeshGenerator(City city)
-        {
-            City = city;
-            Mesh = new Mesh();
-        }
-        
 
         void AddRoad(Vector2 v0, Vector2 v1, Vector2 v2, Vector2 v3, float length, EdgeType type)
         {
@@ -77,13 +70,13 @@ namespace Procool.Rendering
             triangles.Add(offset + 3);
         }
 
-        Mesh SetupMesh()
+        Mesh SetupRoadMesh()
         {
-            Mesh.SetVertexBufferParams(verts.Count, VertexDataLayout);
-            Mesh.SetVertexBufferData(verts, 0, 0, verts.Count);
-            Mesh.SetTriangles(triangles, 0);
-            Mesh.RecalculateBounds();
-            return Mesh;
+            RoadMesh.SetVertexBufferParams(verts.Count, VertexDataLayout);
+            RoadMesh.SetVertexBufferData(verts, 0, 0, verts.Count);
+            RoadMesh.SetTriangles(triangles, 0);
+            RoadMesh.RecalculateBounds();
+            return RoadMesh;
         }
 
         void GenerateRoadMesh(Edge edge)
@@ -125,31 +118,6 @@ namespace Procool.Rendering
                 triangles.Add(i);
                 triangles.Add(i - 1);
             }
-        }
-
-        public void GenerateMesh()
-        {
-            foreach (var edge in City.Edges)
-            {
-                if(edge.EdgeType < EdgeType.Street)
-                    continue;
-                
-                GenerateRoadMesh(edge);
-            }
-
-            foreach (var vert in City.Vertices)
-            {
-                if(vert.Edges.Count <3)
-                    continue;
-                GenerateCrossRoadMesh(vert);
-            }
-
-            SetupMesh();
-        }
-
-        public void Dispose()
-        {
-            Mesh.Clear();
         }
     }
 }

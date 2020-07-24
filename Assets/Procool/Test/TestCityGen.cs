@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Procool.Test
 {
     [ExecuteInEditMode]
-    [RequireComponent(typeof(RoadRenderer))]
+    [RequireComponent(typeof(CityRenderer))]
     public class TestCityGen : MonoBehaviour, ICustomEditorEX
     {
         public int Seed = 0;
@@ -92,7 +92,8 @@ namespace Procool.Test
             CoroutineRunner.Run(generator.RunProgressive());
             // yield return generator.RunProgressive();
             
-            GetComponent<RoadRenderer>().Render(generator.City);
+            // GetComponent<RoadRenderer>().Render(generator.City);
+            GetComponent<CityRenderer>().DrawCity(generator.City);
 
             while (true)
             {
