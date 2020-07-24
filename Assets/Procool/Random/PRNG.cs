@@ -20,13 +20,20 @@ namespace Procool.Random
             return (float)random.NextDouble();
         }
 
-        public Vector2 GetVec2InUnitCircle()
+        public Vector2 GetVec2InsideUnitCircle()
         {
             var r = GetScalar();
             var rad = GetScalar();
             r = Mathf.Sqrt(r);
             rad *= Mathf.PI * 2;
             return new Vector2(r * Mathf.Cos(rad), r * Mathf.Sin(rad));
+        }
+
+        public Vector2 GetVec2OnUnitCircle()
+        {
+            var rad = GetScalar();
+            rad *= Mathf.PI * 2;
+            return new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
         }
 
         /// <summary>

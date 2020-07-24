@@ -134,7 +134,7 @@ namespace Procool.Map
             var size = Block.Size * ActualSizeRatio;
             for (var i = 0; i < CityBlocks; i++)
             {
-                points.Add(prng.GetVec2InUnitCircle() * size);
+                points.Add(prng.GetVec2InsideUnitCircle() * size);
             }
 
             voronoiGenerator = new VoronoiGenerator(points);

@@ -225,6 +225,9 @@ namespace Procool.Map.SpacePartition
         public void SetData<T>(T data) where T : class
             => UserData = data;
 
+        public Vector2 GetVector(Vertex baseVert)
+            => GetAnother(baseVert).Pos - baseVert.Pos;
+
         public bool CanSafeRelease => !Regions.Item1 && !Regions.Item2;
 
             

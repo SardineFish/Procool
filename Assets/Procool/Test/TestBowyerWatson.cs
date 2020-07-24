@@ -105,7 +105,7 @@ namespace Procool.Test
             var prng = GameRNG.GetPRNG(Vector2.one);
             for (int i = 0; i < Count; i++)
             {
-                points.Add(rect.center + prng.GetVec2InUnitCircle() * halfSize * .8f);
+                points.Add(rect.center + prng.GetVec2InsideUnitCircle() * halfSize * .8f);
             }
 
             voronoiGenerator = new VoronoiGenerator(points);
@@ -167,7 +167,7 @@ namespace Procool.Test
             var prng = GameRNG.GetPRNG(new Vector2(3, 5));
             if (voronoiGenerator != null)
             {
-                voronoiGenerator.Space.SplitByLine(prng.GetVec2InUnitCircle(), prng.GetVec2InUnitCircle());
+                voronoiGenerator.Space.SplitByLine(prng.GetVec2InsideUnitCircle(), prng.GetVec2InsideUnitCircle());
             }
         }
         

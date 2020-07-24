@@ -84,4 +84,25 @@ namespace Procool.Utils
         }
         
     }
+
+    public static class ListPool<T>
+    {
+        private static Stack<List<T>> pool = new Stack<List<T>>();
+
+        public static List<T> Get()
+        {
+            List<T> list;
+            if (pool.Count > 0)
+                list = pool.Pop();
+            else
+                list = new List<T>();
+            list.Clear();
+            return list;
+        }
+
+        public static void Release(List<T> list)
+        {
+            pool.Push(list);
+        }
+    }
 }
