@@ -48,6 +48,17 @@ namespace Procool.Random
         }
 
         /// <summary>
+        /// Random integer in [min, max)
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        public int GetInRange(int min, int max)
+        {
+            return (int) (GetScalar() * (max - min) + min);
+        }
+
+        /// <summary>
         /// x,y ∈ (0, 1)
         /// </summary>
         /// <returns></returns>

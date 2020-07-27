@@ -108,6 +108,21 @@ public static class Utility
         }
     }
 
+    public static T RandomTake<T>(this IEnumerable<T> source, float randomValue, Func<T, float> probabilityEvaluator)
+    {
+        var totalProb = source.Sum(probabilityEvaluator);
+        var loc = randomValue * totalProb;
+        T prevVisit = default;
+        foreach (var element in source)
+        {
+            if (probabilityEvaluator(element) > loc)
+                return prevVisit;
+            prevVisit = element;
+        }
+
+        throw new Exception("Random value of range.");
+    }
+
     public static IEnumerable<GameObject> GetChildren(this GameObject gameObject)
     {
         for(var i = 0; i < gameObject.transform.childCount; i++)
