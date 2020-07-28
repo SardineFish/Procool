@@ -4,7 +4,7 @@ namespace Procool.Utils
 {
     public static class ObjectPool<T> where T : new()
     {
-        private static Stack<T> pool;
+        private static Stack<T> pool = new Stack<T>();
 
         public static T Get()
         {

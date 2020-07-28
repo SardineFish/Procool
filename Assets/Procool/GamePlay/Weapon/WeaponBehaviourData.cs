@@ -1,4 +1,7 @@
-﻿namespace Procool.GamePlay.Weapon
+﻿using System;
+using System.Text;
+
+namespace Procool.GamePlay.Weapon
 {
     public class WeaponBehaviourData
     {
@@ -9,7 +12,33 @@
         {
             Behaviour = behaviour;
         }
-        
+
+        public override string ToString()
+        {
+            if (!NextStage)
+                return Behaviour.GetType().Name;
+
+            var selfName = Behaviour.GetType().Name;
+            var lines = NextStage.ToString().Split(new string[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
+            StringBuilder sb = new StringBuilder();
+            for (var i = 0; i < lines.Length; i++)
+            {
+                if (i == 0)
+                {
+                    sb.Append(selfName);
+                    sb.Append(" - ");
+                    sb.AppendLine(lines[i]);
+                }
+                else
+                {
+                    for (var j = 0; j < selfName.Length + 3; j++)
+                        sb.Append(" ");
+                    sb.AppendLine(lines[i]);
+                }
+            }
+
+            return sb.ToString();
+        }
     }
 
     public class EmptyBehaviourData : WeaponBehaviourData

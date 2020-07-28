@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Procool.Utils;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
@@ -14,7 +15,7 @@ namespace Procool.GamePlay.Weapon
         Box,
         Circle,
     }
-    public class DamageStage : ObjectWithPool<DamageStage>
+    public class DamageStage
     {
         public ColliderType ColliderType;
         public Sprite Sprite;
@@ -45,5 +46,15 @@ namespace Procool.GamePlay.Weapon
 
             return damage * multiply;
         }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var behaviour in Behaviours)
+                sb.AppendLine(behaviour.ToString());
+            return sb.ToString();
+        }
+
+        public static implicit operator bool(DamageStage stage) => !(stage is null);
     }
 }

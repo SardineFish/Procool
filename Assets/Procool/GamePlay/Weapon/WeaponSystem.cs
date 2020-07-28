@@ -12,11 +12,13 @@ namespace Procool.GamePlay.Weapon
         [SerializeField] private List<GameObject> laserPrefabs;
         [SerializeField] private List<GameObject> bombPrefabs;
         [SerializeField] private List<GameObject> timerPrefabs;
+        [SerializeField] private List<Sprite> weaponSprites;
 
         private WeaponConstructor WeaponConstructor = new WeaponConstructor();
 
         protected override void Awake()
         {
+            base.Awake();
             WeaponConstructor.Behaviour<Laser>()
                 .Primary()
                 .Terminator()
@@ -97,7 +99,9 @@ namespace Procool.GamePlay.Weapon
 
         public Weapon GenerateWeapon(PRNG prng)
         {
-            return WeaponConstructor.BuildWeapon(prng);
+            var weapon = WeaponConstructor.BuildWeapon(prng);
+            weapon.Sprite = weaponSprites.RandomTake(prng.GetScalar(), _ => 1);
+            return weapon;
         }
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 namespace Procool.GamePlay.Controller
 {
-    [RequireComponent(typeof(Rigidbody2D), typeof(DeviceChangeDetector))]
+    [RequireComponent(typeof(Player), typeof(Rigidbody2D), typeof(DeviceChangeDetector))]
     public partial class PlayerController : MonoBehaviour
     {
         public float maxSpeed = 3;

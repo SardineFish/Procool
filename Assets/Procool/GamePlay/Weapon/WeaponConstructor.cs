@@ -138,7 +138,7 @@ namespace Procool.GamePlay.Weapon
             return ConstructDatas[type] as BehaviourConstructor<T>;
         }
 
-        public DamageStage BuildStage(PRNG prng, IEnumerable<PossibleBehaviour> behaviours, bool firstStage, int depth,
+        public DamageStage BuildStage(PRNG prng, IEnumerable<PossibleBehaviour> behaviours, bool firstStage, bool requirePrimary, int depth,
             int depthLimit)
         {
             if (depth >= depthLimit)
@@ -155,6 +155,12 @@ namespace Procool.GamePlay.Weapon
             var pendingBehaviours = ObjectPool<List<BehaviourConstructData>>.Get();
             pendingBehaviours.Clear();
 
+            if (possibleBehaviours.Count <= 0)
+            {
+                ObjectPool<Dictionary<IWeaponBehaviour, PossibleBehaviour>>.Release(possibleBehaviours);
+                return null;
+            }
+
             var stage = new DamageStage();
 
             if (firstStage)
@@ -170,7 +176,7 @@ namespace Procool.GamePlay.Weapon
                 for (var i = 0; i < maxComponents; i++)
                 {
                     PossibleBehaviour behaviour;
-                    if (i == 0)
+                    if (i == 0 && requirePrimary)
                         behaviour = possibleBehaviours.Values
                             .Where(data => data.ConstructData.IsPrimary)
                             .RandomTake(prng.GetScalar(), b => b.Probability);
@@ -236,7 +242,7 @@ namespace Procool.GamePlay.Weapon
                 var nextDepthLimit = constructData.StageDepthLimit;
                 if (nextDepthLimit < 0)
                     nextDepthLimit = depthLimit;
-                behaviourData.NextStage = BuildStage(prng, constructData.NextStages, false, depth + 1,
+                behaviourData.NextStage = BuildStage(prng, constructData.NextStages, false, constructData.IsEmitter, depth + 1,
                     nextDepthLimit);
             }
 
@@ -250,7 +256,7 @@ namespace Procool.GamePlay.Weapon
             var weapon = new Weapon();
 
             var depthLimit = prng.GetInRange(3, 5);
-            var stage = BuildStage(prng, PossibleBehaviours, true, 0, depthLimit);
+            var stage = BuildStage(prng, PossibleBehaviours, true, false, 0, depthLimit);
 
             weapon.FirstStage = stage;
             return weapon;

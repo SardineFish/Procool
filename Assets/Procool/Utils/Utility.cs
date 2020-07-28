@@ -112,12 +112,13 @@ public static class Utility
     {
         var totalProb = source.Sum(probabilityEvaluator);
         var loc = randomValue * totalProb;
-        T prevVisit = default;
+        var currentProb = 0f;
         foreach (var element in source)
         {
-            if (probabilityEvaluator(element) > loc)
-                return prevVisit;
-            prevVisit = element;
+            var prob = probabilityEvaluator(element);
+            if (currentProb + prob > loc)
+                return element;
+            currentProb += prob;
         }
 
         throw new Exception("Random value of range.");
