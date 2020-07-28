@@ -2,23 +2,21 @@
 
 namespace Procool.GamePlay.Weapon
 {
-    public class Throw : WeaponBehaviour <Throw.Data>
+    public class Timeout : WeaponBehaviour<Timeout.Data>
     {
         public class Data : WeaponBehaviourData
         {
-            public float Distance = 5;
-            public float StartSpeed = 10;
+            public float Timeout;
             public Data(IWeaponBehaviour behaviour) : base(behaviour)
             {
             }
         }
 
         public override WeaponBehaviourData GenerateBehaviourData(PRNG prng)
-        {
-            return new Throw.Data(this)
+        {   
+            return new Timeout.Data(this)
             {
-                Distance = prng.GetInRange(3, 10),
-                StartSpeed = prng.GetInRange(5, 20),
+                Timeout = prng.GetInRange(3, 5)
             };
         }
     }

@@ -1,15 +1,12 @@
-﻿using Procool.Random;
+﻿using System.Collections;
+using Procool.Random;
 using Procool.Utils;
 
 namespace Procool.GamePlay.Weapon
 {
     public interface IWeaponBehaviour
     {
-        void Start(DamageEntity entity, WeaponBehaviourData data, DamageStage stage);
-
-        void Update(DamageEntity entity, WeaponBehaviourData data, DamageStage stage);
-
-        void End(DamageEntity entity, WeaponBehaviourData data, DamageStage stage);
+        IEnumerator Run(DamageEntity entity, WeaponBehaviourData data, DamageStage stage);
 
         WeaponBehaviourData GenerateBehaviourData(PRNG prng);
 
@@ -18,16 +15,9 @@ namespace Procool.GamePlay.Weapon
     }
     public abstract class WeaponBehaviour<T> : IWeaponBehaviour where T : WeaponBehaviourData
     {
-        protected virtual void Start(DamageEntity entity, T data, DamageStage stage)
+        protected virtual IEnumerator Run(DamageEntity entity, T data, DamageStage stage)
         {
-        }
-
-        protected virtual void Update(DamageEntity entity, T data, DamageStage stage)
-        {
-        }
-
-        protected virtual void End(DamageEntity entity, T data, DamageStage stage)
-        {
+            yield break;
         }
 
         protected virtual float EvaluateAdditionalDamage(T data)
@@ -35,12 +25,7 @@ namespace Procool.GamePlay.Weapon
             if (data.NextStage)
             {
                 var damage = 0f;
-                foreach (var behaviourData in data.NextStage.Behaviours)
-                {
-                    damage += behaviourData.Behaviour.EvaluateAdditionalDamage(behaviourData);
-                }
-
-                return damage;
+                return data.NextStage.EvaluateDamage();
             }
 
             return 0;
@@ -62,24 +47,20 @@ namespace Procool.GamePlay.Weapon
         }
 
 
+        public IEnumerator Run(DamageEntity entity, WeaponBehaviourData data, DamageStage stage)
+        {
+            return Run(entity, data as T, stage);
+        }
+
         public virtual WeaponBehaviourData GenerateBehaviourData(PRNG prng)
         {
-            return new WeaponBehaviourData(this);
+            return new EmptyBehaviourData(this);
         }
+        
+    }
 
-        public void Start(DamageEntity entity, WeaponBehaviourData data, DamageStage stage)
-        {
-            Start(entity, data as T, stage);
-        }
-
-        public void Update(DamageEntity entity, WeaponBehaviourData data, DamageStage stage)
-        {
-            Update(entity, data as T, stage);
-        }
-
-        public void End(DamageEntity entity, WeaponBehaviourData data, DamageStage stage)
-        {
-            End(entity, data as T, stage);
-        }
+    public class WeaponBehaviour : WeaponBehaviour<EmptyBehaviourData>
+    {
+        
     }
 }

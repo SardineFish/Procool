@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Procool.Utils;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
@@ -17,23 +19,20 @@ namespace Procool.GamePlay.Weapon
         public Sprite Sprite;
         public List<WeaponBehaviourData> Behaviours = new List<WeaponBehaviourData>();
 
-        public void Start(DamageEntity entity)
+        public IEnumerator Run()
         {
+            var entity = GameObjectPool.Get<DamageEntity>();
+            var runner = CoroutineRunner.All(Behaviours.Select(behaviour =>
+                behaviour.Behaviour.Run(entity, behaviour, this)));
+            var coroutine = entity.StartCoroutine(runner);
+            yield return coroutine;
             
-        }
-        public void Update(DamageEntity entity)
-        {
-            
-        }
-
-        public void End(DamageEntity entity)
-        {
-            
+            GameObjectPool.Release(entity);
         }
 
-        public void Terminate()
+        public void Terminate(DamageEntity entity)
         {
-            
+            entity.StopAllCoroutines();
         }
 
         public float EvaluateDamage()

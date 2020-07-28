@@ -2,25 +2,24 @@
 
 namespace Procool.GamePlay.Weapon
 {
-    public class Laser : WeaponBehaviour<Laser.Data>
+    public class EmitTick : WeaponBehaviour<EmitTick.Data>
     {
         public class Data : WeaponBehaviourData
         {
-            public float DPSMultiply = 1;
-            public float Width = .2f;
+            public float Interval = 1;
             public Data(IWeaponBehaviour behaviour) : base(behaviour)
             {
+                
             }
         }
 
-        protected override float EvaluateDamageMultiply(Data data) => data.DPSMultiply;
+        protected override float EvaluateDamageMultiply(Data data) => 1 / data.Interval;
 
         public override WeaponBehaviourData GenerateBehaviourData(PRNG prng)
         {
-            return new Laser.Data(this)
+            return new EmitTick.Data(this)
             {
-                DPSMultiply = prng.GetInRange(.5f, 2f),
-                Width = prng.GetInRange(.1f,.5f)
+                Interval = prng.GetInRange(.3f,2)
             };
         }
     }

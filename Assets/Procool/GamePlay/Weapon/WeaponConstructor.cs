@@ -25,9 +25,12 @@ namespace Procool.GamePlay.Weapon
         public class BehaviourConstructData
         {
             public IWeaponBehaviour Behaviour;
-            public bool UseInFirstStage = false;
+            public bool IsEmitter = false;
             public float Probability = 1;
             public int StageDepthLimit = -1;
+            public bool IsTerminator = false;
+            public bool IsDefaultTerminator = false;
+            public bool IsPrimary = false;
             public List<PossibleBehaviour> CompatibleParallels = new List<PossibleBehaviour>();
             public List<PossibleBehaviour> NextStages = new List<PossibleBehaviour>();
             public WeaponConstructor Constructor;
@@ -56,9 +59,9 @@ namespace Procool.GamePlay.Weapon
                 return this;
             }
 
-            public BehaviourConstructor<T> CanBeFirstStage()
+            public BehaviourConstructor<T> Emitter()
             {
-                UseInFirstStage = true;
+                IsEmitter = true;
                 return this;
             }
 
@@ -79,13 +82,32 @@ namespace Procool.GamePlay.Weapon
                 return this;
             }
 
+            public BehaviourConstructor<T> Terminator()
+            {
+                IsTerminator = true;
+                return this;
+            }
+
+            public BehaviourConstructor<T> Primary()
+            {
+                IsPrimary = true;
+                return this;
+            }
+
+            public BehaviourConstructor<T> DefaultTerminator()
+            {
+                IsTerminator = true;
+                IsDefaultTerminator = true;
+                return this;
+            }
+
             public BehaviourConstructor(IWeaponBehaviour behaviour, WeaponConstructor constructor) : base(behaviour,
                 constructor)
             {
             }
         }
 
-        public List<PossibleBehaviour> Behaviours = new List<PossibleBehaviour>();
+        private readonly List<PossibleBehaviour> PossibleBehaviours = new List<PossibleBehaviour>();
 
         Dictionary<System.Type, BehaviourConstructData> ConstructDatas =
             new Dictionary<System.Type, BehaviourConstructData>();
@@ -97,7 +119,7 @@ namespace Procool.GamePlay.Weapon
             where T : IWeaponBehaviour, new()
         {
             var constructor = GetBehaviourConstructor<T>();
-            Behaviours.Add(new PossibleBehaviour(constructor, probability));
+            PossibleBehaviours.Add(new PossibleBehaviour(constructor, probability));
             return constructor;
         }
 
@@ -127,50 +149,97 @@ namespace Procool.GamePlay.Weapon
             possibleBehaviours.Clear();
 
             behaviours
-                .Where(b => (!firstStage) || (firstStage && b.ConstructData.UseInFirstStage))
+                .Where(b => (!firstStage) || (firstStage && b.ConstructData.IsEmitter))
                 .ForEach(behaviour => possibleBehaviours.Add(behaviour.Behaviour, behaviour));
 
-            var stage = new DamageStage();
-            for (var i = 0; i < maxComponents; i++)
-            {
-                var behaviour = possibleBehaviours.Values.RandomTake(prng.GetScalar(), b => b.Probability);
+            var pendingBehaviours = ObjectPool<List<BehaviourConstructData>>.Get();
+            pendingBehaviours.Clear();
 
-                if (behaviour.ConstructData is null)
+            var stage = new DamageStage();
+
+            if (firstStage)
+            {
+                var t = prng.GetScalar();
+                var behaviour = behaviours
+                    .Where(data => data.ConstructData.IsEmitter)
+                    .RandomTake(t, data => data.Probability);
+                pendingBehaviours.Add(behaviour.ConstructData);
+            }
+            else
+            {
+                for (var i = 0; i < maxComponents; i++)
                 {
+                    PossibleBehaviour behaviour;
+                    if (i == 0)
+                        behaviour = possibleBehaviours.Values
+                            .Where(data => data.ConstructData.IsPrimary)
+                            .RandomTake(prng.GetScalar(), b => b.Probability);
+                    else
+                        behaviour = possibleBehaviours.Values.RandomTake(prng.GetScalar(), b => b.Probability);
+
+                    if (behaviour.ConstructData is null)
+                    {
+                        if (i == 0)
+                        {
+                            ObjectPool<Dictionary<IWeaponBehaviour, PossibleBehaviour>>.Release(possibleBehaviours);
+                            return null;
+                        }
+
+                        continue;
+                    }
+
+                    pendingBehaviours.Add(behaviour.ConstructData);
+                    // var behaviourData = behaviour.Behaviour.GenerateBehaviourData(prng);
+                    // stage.Behaviours.Add(behaviourData);
+
+                    var intersectSet = ObjectPool<Dictionary<IWeaponBehaviour, PossibleBehaviour>>.Get();
+                    intersectSet.Clear();
                     if (i == 0)
                     {
-                        ObjectPool<Dictionary<IWeaponBehaviour, PossibleBehaviour>>.Release(possibleBehaviours);
-                        return null;
+                        foreach (var compatibleBehaviour in behaviour.ConstructData.CompatibleParallels)
+                            intersectSet.Add(compatibleBehaviour.Behaviour, compatibleBehaviour);
                     }
-
-                    continue;
-                }
-
-                var behaviourData = behaviour.Behaviour.GenerateBehaviourData(prng);
-                stage.Behaviours.Add(behaviourData);
-
-                var intersectSet = ObjectPool<Dictionary<IWeaponBehaviour, PossibleBehaviour>>.Get();
-                intersectSet.Clear();
-                foreach (var compatibleBehaviour in behaviour.ConstructData.CompatibleParallels)
-                {
-                    if (possibleBehaviours.ContainsKey(compatibleBehaviour.Behaviour))
+                    else
                     {
-                        var currentPossible = possibleBehaviours[compatibleBehaviour.Behaviour];
-                        intersectSet.Add(compatibleBehaviour.Behaviour,
-                            new PossibleBehaviour(compatibleBehaviour.ConstructData,
-                                currentPossible.Probability + compatibleBehaviour.Probability));
+                        foreach (var compatibleBehaviour in behaviour.ConstructData.CompatibleParallels)
+                        {
+                            if (possibleBehaviours.ContainsKey(compatibleBehaviour.Behaviour))
+                            {
+                                var currentPossible = possibleBehaviours[compatibleBehaviour.Behaviour];
+                                intersectSet.Add(compatibleBehaviour.Behaviour,
+                                    new PossibleBehaviour(compatibleBehaviour.ConstructData,
+                                        currentPossible.Probability + compatibleBehaviour.Probability));
+                            }
+                        }
                     }
+
+                    ObjectPool<Dictionary<IWeaponBehaviour, PossibleBehaviour>>.Release(possibleBehaviours);
+                    possibleBehaviours = intersectSet;
+
                 }
+            }
 
-                ObjectPool<Dictionary<IWeaponBehaviour, PossibleBehaviour>>.Release(possibleBehaviours);
-                possibleBehaviours = intersectSet;
+            // We need at least one terminator to ensure damage entity will be terminated.
+            if (!pendingBehaviours.Any(data => data.IsTerminator))
+            {
+                var t = prng.GetScalar();
+                var terminator = PossibleBehaviours
+                    .Where(data => data.ConstructData.IsTerminator)
+                    .RandomTake(t, data => data.Probability);
+                pendingBehaviours.Add(terminator.ConstructData);
+            }
 
-                var nextDepthLimit = behaviour.ConstructData.StageDepthLimit;
+            foreach (var constructData in pendingBehaviours)
+            {
+                var behaviourData = constructData.Behaviour.GenerateBehaviourData(prng);
+                stage.Behaviours.Add(behaviourData);
+                var nextDepthLimit = constructData.StageDepthLimit;
                 if (nextDepthLimit < 0)
                     nextDepthLimit = depthLimit;
-                behaviourData.NextStage = BuildStage(prng, behaviour.ConstructData.NextStages, false, depth + 1,
+                behaviourData.NextStage = BuildStage(prng, constructData.NextStages, false, depth + 1,
                     nextDepthLimit);
             }
+
 
             ObjectPool<Dictionary<IWeaponBehaviour, PossibleBehaviour>>.Release(possibleBehaviours);
             return stage;
@@ -181,7 +250,7 @@ namespace Procool.GamePlay.Weapon
             var weapon = new Weapon();
 
             var depthLimit = prng.GetInRange(3, 5);
-            var stage = BuildStage(prng, Behaviours, true, 0, depthLimit);
+            var stage = BuildStage(prng, PossibleBehaviours, true, 0, depthLimit);
 
             weapon.FirstStage = stage;
             return weapon;

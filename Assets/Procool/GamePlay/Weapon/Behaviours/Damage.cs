@@ -2,9 +2,6 @@
 {
     public class Damage : WeaponBehaviour<EmptyBehaviourData>
     {
-        protected override float EvaluateAdditionalDamage(EmptyBehaviourData data)
-        {
-            return 1;
-        }
+        protected override float EvaluateAdditionalDamage(EmptyBehaviourData data) => 1;
     }
 }

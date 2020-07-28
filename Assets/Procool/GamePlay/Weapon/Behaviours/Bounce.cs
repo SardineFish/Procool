@@ -1,26 +1,19 @@
-﻿using Procool.Random;
+﻿using System.Collections;
+using Procool.Random;
 
 namespace Procool.GamePlay.Weapon
 {
-    public class Bounce : WeaponBehaviour<Bounce.Data>
+    public class Bounce : WeaponBehaviour
     {
-        public class Data : WeaponBehaviourData
+
+        protected override float EvaluateDamageMultiply(EmptyBehaviourData data) => 2;
+
+        protected override IEnumerator Run(DamageEntity entity, EmptyBehaviourData data, DamageStage stage)
         {
-            public Data(IWeaponBehaviour behaviour) : base(behaviour)
+            while (true)
             {
+                yield return null;
             }
-        }
-
-        protected override float EvaluateAdditionalDamage(Data data)
-        {
-            return 2 * base.EvaluateAdditionalDamage(data);
-        }
-
-        public override WeaponBehaviourData GenerateBehaviourData(PRNG prng)
-        {
-            var data = new Data(this);
-            // data.NextStage = stage;
-            return data;
         }
     }
 }
