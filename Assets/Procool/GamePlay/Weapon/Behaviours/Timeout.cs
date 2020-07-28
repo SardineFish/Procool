@@ -1,4 +1,5 @@
-﻿using Procool.Random;
+﻿using System.Collections;
+using Procool.Random;
 
 namespace Procool.GamePlay.Weapon
 {
@@ -18,6 +19,15 @@ namespace Procool.GamePlay.Weapon
             {
                 Timeout = prng.GetInRange(3, 5)
             };
+        }
+
+        protected override IEnumerator Run(DamageEntity entity, Data data, DamageStage stage, Weapon weapon)
+        {
+            foreach (var t in Utility.Timer(data.Timeout))
+                yield return null;
+
+            if (data.NextStage)
+                yield return data.NextStage.Run(weapon, entity.transform);
         }
     }
 }

@@ -7,11 +7,11 @@ namespace Procool.GamePlay.Weapon
     {
         public DamageStage FirstStage;
         public int Quality;
-
+        public float Damage = 1;
 
         public override IEnumerator Activate()
         {
-            yield return FirstStage.Run();
+            yield return FirstStage.Run(this);
         }
     }
 }

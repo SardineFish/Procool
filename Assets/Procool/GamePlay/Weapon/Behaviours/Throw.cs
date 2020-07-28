@@ -1,4 +1,6 @@
-﻿using Procool.Random;
+﻿using System.Collections;
+using Procool.Random;
+using UnityEngine;
 
 namespace Procool.GamePlay.Weapon
 {
@@ -20,6 +22,24 @@ namespace Procool.GamePlay.Weapon
                 Distance = prng.GetInRange(3, 10),
                 StartSpeed = prng.GetInRange(5, 20),
             };
+        }
+
+        protected override IEnumerator Run(DamageEntity entity, Data data, DamageStage stage, Weapon weapon)
+        {
+            var acceleration = data.StartSpeed * data.StartSpeed / (2 * data.Distance);
+            var speed = data.StartSpeed;
+            while (true)
+            {   
+                entity.transform.Translate(new Vector3(0, speed * Time.deltaTime, 0), Space.Self);
+
+                var v = speed - acceleration * Time.deltaTime;
+                if (MathUtility.SignInt(v) != MathUtility.SignInt(v))
+                    break;
+                speed = v;
+            }
+
+            if (data.NextStage)
+                yield return data.NextStage.Run(weapon, entity.transform);
         }
     }
 }

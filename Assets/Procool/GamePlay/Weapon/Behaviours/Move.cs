@@ -1,4 +1,6 @@
-﻿using Procool.Random;
+﻿using System.Collections;
+using Procool.Random;
+using UnityEngine;
 
 namespace Procool.GamePlay.Weapon
 {
@@ -19,6 +21,15 @@ namespace Procool.GamePlay.Weapon
             {
                 Speed = prng.GetInRange(5, 20)
             };
+        }
+
+        protected override IEnumerator Run(DamageEntity entity, Data data, DamageStage stage, Weapon weapon)
+        {
+            while (true)
+            {
+                entity.transform.Translate(new Vector3(0, data.Speed * Time.deltaTime, 0), Space.Self);
+                yield return null;
+            }
         }
     }
 }

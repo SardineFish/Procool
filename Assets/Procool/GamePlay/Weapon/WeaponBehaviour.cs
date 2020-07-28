@@ -6,7 +6,7 @@ namespace Procool.GamePlay.Weapon
 {
     public interface IWeaponBehaviour
     {
-        IEnumerator Run(DamageEntity entity, WeaponBehaviourData data, DamageStage stage);
+        IEnumerator Run(DamageEntity entity, WeaponBehaviourData data, DamageStage stage, Weapon weapon);
 
         WeaponBehaviourData GenerateBehaviourData(PRNG prng);
 
@@ -15,7 +15,7 @@ namespace Procool.GamePlay.Weapon
     }
     public abstract class WeaponBehaviour<T> : IWeaponBehaviour where T : WeaponBehaviourData
     {
-        protected virtual IEnumerator Run(DamageEntity entity, T data, DamageStage stage)
+        protected virtual IEnumerator Run(DamageEntity entity, T data, DamageStage stage, Weapon weapon)
         {
             yield break;
         }
@@ -47,9 +47,9 @@ namespace Procool.GamePlay.Weapon
         }
 
 
-        public IEnumerator Run(DamageEntity entity, WeaponBehaviourData data, DamageStage stage)
+        public IEnumerator Run(DamageEntity entity, WeaponBehaviourData data, DamageStage stage, Weapon weapon)
         {
-            return Run(entity, data as T, stage);
+            return Run(entity, data as T, stage, weapon);
         }
 
         public virtual WeaponBehaviourData GenerateBehaviourData(PRNG prng)

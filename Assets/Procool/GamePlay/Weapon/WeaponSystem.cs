@@ -35,12 +35,13 @@ namespace Procool.GamePlay.Weapon
 
             WeaponConstructor.Behaviour<Throw>()
                 .Primary()
+                .Terminator()
                 .CompatibleWith<Bounce>()
                 .CompatibleWith<Damage>()
                 .CompatibleWith<Destructor>()
                 .CompatibleWith<EmitContinuous>()
                 .CompatibleWith<EmitTick>()
-                .CompatibleWith<Timeout>();
+                .NextStage<Timeout>();
             
             WeaponConstructor.Behaviour<Bounce>()
                 .CompatibleWith<Damage>()
