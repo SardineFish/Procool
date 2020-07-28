@@ -8,11 +8,11 @@ namespace Procool.GamePlay.Weapon
 {
     public class WeaponSystem : Singleton<WeaponSystem>
     {
-        [SerializeField] private List<GameObject> bulletPrefabs;
-        [SerializeField] private List<GameObject> laserPrefabs;
-        [SerializeField] private List<GameObject> bombPrefabs;
-        [SerializeField] private List<GameObject> timerPrefabs;
-        [SerializeField] private List<Sprite> weaponSprites;
+        [SerializeField] public List<Sprite> largeBullets;
+        [SerializeField] public List<Sprite> midBullets;
+        [SerializeField] public List<Sprite> smallBullets;
+        [SerializeField] public List<Sprite> weaponSprites;
+        [SerializeField] public List<Sprite> bombSprites;
 
         private WeaponConstructor WeaponConstructor = new WeaponConstructor();
 

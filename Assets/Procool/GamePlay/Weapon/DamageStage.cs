@@ -18,8 +18,8 @@ namespace Procool.GamePlay.Weapon
     public class DamageStage
     {
         public ColliderType ColliderType;
-        public Sprite Sprite;
         public List<WeaponBehaviourData> Behaviours = new List<WeaponBehaviourData>();
+        public BulletVFX BulletVFX;
 
         public IEnumerator Run(Weapon weapon, Transform attachTo = null)
         {

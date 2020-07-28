@@ -22,6 +22,8 @@ namespace Procool.GameSystems
             player.transform.position = PlayerSpawnPosition.position;
             
             player.Inventory.Add(weapon);
+            
+            CameraManager.Instance.Follow(player);
         }
     }
 }

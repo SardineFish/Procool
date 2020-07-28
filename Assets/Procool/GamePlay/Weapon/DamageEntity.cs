@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Procool.GamePlay.Controller;
 using Procool.Utils;
+using Procool.VFX;
 using UnityEngine;
 
 namespace Procool.GamePlay.Weapon
@@ -20,6 +21,9 @@ namespace Procool.GamePlay.Weapon
         public SpriteRenderer SpriteRenderer { get; private set; }
         public BoxCollider2D BoxCollider { get; private set; }
         public CircleCollider2D CircleCollider { get; private set; }
+
+        [SerializeField] private TrailRenderer trailRenderer;
+        [SerializeField] private Flicker flicker;
 
         public event Action<DamageEntity> OnTerminated;
 
@@ -75,6 +79,15 @@ namespace Procool.GamePlay.Weapon
             ContactedPlayers.Clear();
             Weapon = weapon;
             Stage = stage;
+
+            SpriteRenderer.sprite = stage.BulletVFX.Sprite;
+            SpriteRenderer.color = stage.BulletVFX.SpriteColor;
+            flicker.enabled = stage.BulletVFX.Flicking;
+            flicker.renderer.color = stage.BulletVFX.FlickingColor;
+            trailRenderer.endColor = trailRenderer.startColor = stage.BulletVFX.SpriteColor;
+            trailRenderer.startWidth = stage.BulletVFX.TrailStartWidth;
+            trailRenderer.endWidth = stage.BulletVFX.TrailEndWidth;
+            trailRenderer.time = stage.BulletVFX.TrailLength;
         }
 
         public bool GetMostContact(out ContactPoint2D result)

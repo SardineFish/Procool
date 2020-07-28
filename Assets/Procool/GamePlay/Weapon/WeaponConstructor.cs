@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Procool.GamePlay.Weapon
 {
-    public class WeaponConstructor
+    public partial class WeaponConstructor
     {
         public struct PossibleBehaviour
         {
@@ -259,6 +259,7 @@ namespace Procool.GamePlay.Weapon
             var stage = BuildStage(prng, PossibleBehaviours, true, false, 0, depthLimit);
 
             weapon.FirstStage = stage;
+            GenerateBulletVFX(weapon, prng);
             return weapon;
         }
     }
