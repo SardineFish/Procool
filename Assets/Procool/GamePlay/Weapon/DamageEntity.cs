@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Procool.GamePlay.Controller;
+using Procool.GamePlay.Inventory;
 using Procool.Utils;
 using Procool.VFX;
 using UnityEngine;
@@ -10,14 +11,13 @@ using UnityEngine;
 namespace Procool.GamePlay.Weapon
 {
     [RequireComponent(typeof(SpriteRenderer), typeof(CircleCollider2D), typeof(BoxCollider2D))]
-    public class DamageEntity : MonoBehaviour
+    public class DamageEntity : MonoBehaviour, IUsingState
     {
         public Player Owner { get; private set; }
         public List<ContactPoint2D> Contacts { get; } = new List<ContactPoint2D>(16);
         public HashSet<Player> ContactedPlayers = new HashSet<Player>();
         public HashSet<Player> DamageRecord { get; } = new HashSet<Player>();
         public Weapon Weapon { get; private set; }
-        public DamageStage Stage { get; private set; }
         public SpriteRenderer SpriteRenderer { get; private set; }
         public BoxCollider2D BoxCollider { get; private set; }
         public CircleCollider2D CircleCollider { get; private set; }
@@ -25,7 +25,10 @@ namespace Procool.GamePlay.Weapon
         [SerializeField] private TrailRenderer trailRenderer;
         [SerializeField] private Flicker flicker;
 
-        public event Action<DamageEntity> OnTerminated;
+        private ParallelCoroutineRunner runner;
+
+        [TextArea]
+        public string StageInfo;
 
         private void Awake()
         {
@@ -61,33 +64,60 @@ namespace Procool.GamePlay.Weapon
             ContactedPlayers.Clear();
         }
 
-        public IEnumerator Run()
+        // public IEnumerator Run()
+        // {
+        //     var runner = CoroutineRunner.All(Stage.Behaviours.Select(behaviour =>
+        //         behaviour.Behaviour.Run(this, behaviour, Stage, Weapon)));
+        //     var coroutine = StartCoroutine(runner);
+        //     yield return coroutine;
+        //     
+        //     Terminate();
+        // }
+
+        public IEnumerator Wait()
         {
-            var runner = CoroutineRunner.All(Stage.Behaviours.Select(behaviour =>
-                behaviour.Behaviour.Run(this, behaviour, Stage, Weapon)));
-            var coroutine = StartCoroutine(runner);
-            yield return coroutine;
-            
-            Terminate();
+            while (runner.Tick())
+                yield return null;
+
+            if (runner.Completed)
+                Terminate();
         }
 
-        public void Init(Player player, Weapon weapon, DamageStage stage)
+        public Coroutine RunDetach()
+        {
+            return StartCoroutine(Wait());
+        }
+
+        public void AppendCoroutine(IEnumerator coroutine)
+        {
+            runner.Append(coroutine);
+        }
+
+        public void Init(Player player, Weapon weapon, Transform inheritTransform)
         {
             Owner = player;
             DamageRecord.Clear();
             Contacts.Clear();
             ContactedPlayers.Clear();
             Weapon = weapon;
-            Stage = stage;
+            transform.position = inheritTransform.position;
+            transform.rotation = inheritTransform.rotation;
 
-            SpriteRenderer.sprite = stage.BulletVFX.Sprite;
-            SpriteRenderer.color = stage.BulletVFX.SpriteColor;
-            flicker.enabled = stage.BulletVFX.Flicking;
-            flicker.renderer.color = stage.BulletVFX.FlickingColor;
-            trailRenderer.endColor = trailRenderer.startColor = stage.BulletVFX.SpriteColor;
-            trailRenderer.startWidth = stage.BulletVFX.TrailStartWidth;
-            trailRenderer.endWidth = stage.BulletVFX.TrailEndWidth;
-            trailRenderer.time = stage.BulletVFX.TrailLength;
+
+            runner = new ParallelCoroutineRunner();
+        }
+
+        public void SetVFX(ref BulletVFX vfx)
+        {
+            return;
+            SpriteRenderer.sprite = vfx.Sprite;
+            SpriteRenderer.color = vfx.SpriteColor;
+            flicker.enabled = vfx.Flicking;
+            flicker.renderer.color = vfx.FlickingColor;
+            trailRenderer.endColor = trailRenderer.startColor = vfx.SpriteColor;
+            trailRenderer.startWidth = vfx.TrailStartWidth;
+            trailRenderer.endWidth = vfx.TrailEndWidth;
+            trailRenderer.time = vfx.TrailLength;
         }
 
         public bool GetMostContact(out ContactPoint2D result)
@@ -107,13 +137,12 @@ namespace Procool.GamePlay.Weapon
 
         public void Terminate()
         {
+            runner.Abort();
+            
             Owner = null;
             Weapon = null;
-            Stage = null;
             BoxCollider.enabled = false;
             CircleCollider.enabled = false;
-            
-            OnTerminated?.Invoke(this);
             
             GameObjectPool.Release<DamageEntity>(this);
         }

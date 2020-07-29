@@ -1,11 +1,123 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Procool.Utils
 {
-    public static class CoroutineRunner
+    public class ParallelCoroutineRunner
     {
+        private List<CoroutineRunner> runners = new List<CoroutineRunner>(16);
+
+        public bool Aborted { get; private set; } = false;
+        public bool Completed { get; private set; } = false;
+
+        public bool Running => !Aborted && !Completed;
+
+        public bool Tick()
+        {
+            if (Aborted)
+                return false;
+            
+            var keepRunning = false;
+            for (var i = 0; i < runners.Count; i++)
+            {
+                if (!runners[i].Running)
+                    continue;
+
+                keepRunning |= runners[i].Tick();
+            }
+
+            if (!keepRunning)
+            {
+                Completed = true;
+                return false;
+            }
+
+            return true;
+        }
+
+        public void Append(IEnumerator coroutine)
+        {
+            if (Completed || Aborted)
+            {
+                Debug.LogWarning("Attempt to add coroutine to terminated runner.");
+                return;
+            }
+            runners.Add(new CoroutineRunner(coroutine));
+        }
+
+        public void Abort()
+        {
+            if (!Completed)
+                Aborted = true;
+        }
+    }
+    public class CoroutineRunner
+    {
+        Stack<IEnumerator> runStack = new Stack<IEnumerator>();
+        private IEnumerator iterator;
+        private bool shouldPop = false;
+        
+        public bool Aborted { get; private set; } 
+        public bool Completed { get; private set; }
+
+        public bool Running => !Aborted && !Completed;
+
+        public event Action OnAbort;
+
+        public CoroutineRunner(IEnumerator coroutine)
+        {
+            runStack.Push(coroutine);
+            shouldPop = true;
+        }
+
+        public bool Tick()
+        {
+            if (Aborted)
+            {
+                Completed = false;
+                return false;
+            }
+
+            do
+            {
+                if (shouldPop)
+                {
+                    iterator = runStack.Pop();
+                    shouldPop = false;
+                }
+
+                for (var state = iterator.MoveNext(); state; state = iterator.MoveNext())
+                {
+                    if (iterator.Current is null)
+                    {
+                        return true;
+                    }
+                    else if (iterator.Current is IEnumerator next)
+                    {
+                        runStack.Push(iterator);
+                        runStack.Push(next);
+                        shouldPop = true;
+                        break;
+                    }
+                }
+
+                shouldPop = true;
+            } while (runStack.Count > 0);
+
+            Completed = true;
+            Aborted = false;
+            return false;
+        }
+
+        public void Abort()
+        {
+            Aborted = true;
+            OnAbort?.Invoke();
+        }
+        
         
         public static void Run(IEnumerator coroutine)
         {

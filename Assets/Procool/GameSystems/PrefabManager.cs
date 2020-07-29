@@ -7,11 +7,13 @@ namespace Procool.GameSystems
     {
         public GameObject DropedItemPrefab;
         public GameObject PlayerPrefab;
+        public GameObject DamageEntityPrefab;
 
         protected override void Awake()
         {
             base.Awake();
             GameObjectPool.PreAlloc(DropedItemPrefab, 16);
+            GameObjectPool.PreAlloc(DamageEntityPrefab, 16);
         }
     }
 }

@@ -26,8 +26,7 @@ namespace Procool.GamePlay.Weapon
             foreach (var t in Utility.Timer(data.Timeout))
                 yield return null;
 
-            if (data.NextStage)
-                yield return data.NextStage.Run(weapon, entity.transform);
+            data.NextStage?.Run(weapon, entity);
         }
     }
 }

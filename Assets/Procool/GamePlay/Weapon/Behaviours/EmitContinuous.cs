@@ -9,17 +9,19 @@ namespace Procool.GamePlay.Weapon
         {
             if (data.NextStage)
             {
-                var newEntity = data.NextStage.CreateEntity(weapon, entity.transform);
-                entity.OnTerminated += OnTerminated;
-                
-                yield return data.NextStage.Run(weapon);
-
-                void OnTerminated(DamageEntity _)
-                {
-                    newEntity.Terminate();
-                    entity.OnTerminated -= OnTerminated;
-                }
+                data.NextStage.Run(weapon, entity);
+                // var newEntity = data.NextStage.CreateEntity(weapon, entity.transform);
+                // entity.OnTerminated += OnTerminated;
+                //
+                // yield return data.NextStage.Run(weapon);
+                //
+                // void OnTerminated(DamageEntity _)
+                // {
+                //     newEntity.Terminate();
+                //     entity.OnTerminated -= OnTerminated;
+                // }
             }
+            yield break;
         }
     }
 }

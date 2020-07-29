@@ -28,6 +28,8 @@ namespace Procool.GamePlay.Weapon
                         player.ApplyDamage(weapon.Damage);
                     }
                 }
+
+                yield return null;
             }
         }
     }

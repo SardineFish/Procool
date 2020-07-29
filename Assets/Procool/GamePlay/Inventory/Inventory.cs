@@ -46,6 +46,13 @@ namespace Procool.GamePlay.Inventory
             return item;
         }
 
+        public Item GetItem(int idx)
+        {
+            if (idx >= 0 && idx < items.Count)
+                return items[idx];
+            return null;
+        }
+
         public DropedItem Drop(Item item)
         {
             var idx = items.IndexOf(item);

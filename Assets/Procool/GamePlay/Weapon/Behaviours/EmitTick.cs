@@ -5,7 +5,7 @@ namespace Procool.GamePlay.Weapon
 {
     public class EmitTick : WeaponBehaviour<EmitTick.Data>
     {
-        public class Data : WeaponBehaviourData
+        public class Data : EmitterBehaviourData
         {
             public float Interval = 1;
             public Data(IWeaponBehaviour behaviour) : base(behaviour)
@@ -20,7 +20,7 @@ namespace Procool.GamePlay.Weapon
         {
             return new EmitTick.Data(this)
             {
-                Interval = prng.GetInRange(.3f,2)
+                Interval = prng.GetInRange(.3f, .6f)
             };
         }
 
@@ -28,7 +28,12 @@ namespace Procool.GamePlay.Weapon
         {
             while (true)
             {
-                data.NextStage?.Run(weapon);
+                if (data.NextStage)
+                {
+                    var emittedEntity = data.NextStage.CreateDetached(weapon, entity.transform);
+                    emittedEntity.SetVFX(ref data.BulletVFX);
+                    emittedEntity.RunDetach();
+                }
                 
                 foreach (var t in Utility.Timer(data.Interval))
                     yield return null;

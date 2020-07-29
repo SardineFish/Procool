@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Procool.GameSystems;
 using Procool.Utils;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
@@ -20,17 +21,36 @@ namespace Procool.GamePlay.Weapon
         public ColliderType ColliderType;
         public List<WeaponBehaviourData> Behaviours = new List<WeaponBehaviourData>();
         public BulletVFX BulletVFX;
+        public bool Detach = false;
 
-        public IEnumerator Run(Weapon weapon, Transform attachTo = null)
+        // public IEnumerator Run(Weapon weapon, Transform attachTo = null)
+        // {
+        //     return CreateEntity(weapon, attachTo).Run();
+        // }
+        //
+        // public DamageEntity CreateEntity(Weapon weapon, Transform attachTo = null)
+        // {
+        //     var entity = GameObjectPool.Get<DamageEntity>(PrefabManager.Instance.DamageEntityPrefab);
+        //     entity.Init(weapon.Owner, weapon, this);
+        //     entity.transform.parent = attachTo;
+        //     return entity;
+        // }
+        //
+
+        public void Run(Weapon weapon, DamageEntity entity)
         {
-            return CreateEntity(weapon, attachTo).Run();
+            var runner =
+                CoroutineRunner.All(Behaviours.Select(behaviour =>
+                    behaviour.Behaviour.Run(entity, behaviour, this, weapon)));
+            entity.AppendCoroutine(runner);
         }
 
-        public DamageEntity CreateEntity(Weapon weapon, Transform attachTo = null)
+        public DamageEntity CreateDetached(Weapon weapon, Transform parent)
         {
-            var entity = GameObjectPool.Get<DamageEntity>();
-            entity.Init(weapon.Owner, weapon, this);
-            entity.transform.parent = attachTo;
+            var entity = GameObjectPool.Get<DamageEntity>(PrefabManager.Instance.DamageEntityPrefab);
+            entity.Init(weapon.Owner, weapon, parent);
+            entity.StageInfo = this.ToString();
+            Run(weapon, entity);
             return entity;
         }
 

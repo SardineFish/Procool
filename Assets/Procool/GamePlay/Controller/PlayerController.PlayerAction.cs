@@ -10,7 +10,7 @@
             {
             }
 
-            public virtual bool Update(PlayerController player) => true;
+            public virtual bool Update(PlayerController player) => false;
 
             public virtual void FixedUpdate(PlayerController player)
             {

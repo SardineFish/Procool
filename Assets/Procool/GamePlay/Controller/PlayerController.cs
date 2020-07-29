@@ -24,6 +24,8 @@ namespace Procool.GamePlay.Controller
         private DeviceChangeDetector _deviceChangeDetector;
 
         public InputSchemeType CurrentInputScheme => _deviceChangeDetector.CurrentInputScheme;
+        
+        public Player Player { get; private set; }
 
         private void Awake()
         {
@@ -33,6 +35,7 @@ namespace Procool.GamePlay.Controller
             _deviceChangeDetector = GetComponent<DeviceChangeDetector>();
             
             _playerActions.Add(new PlayerMove());
+            Player = GetComponent<Player>();
         }
 
         private void OnEnable()

@@ -21,7 +21,6 @@ namespace Procool.GamePlay.Weapon
             base.Awake();
             WeaponConstructor.Behaviour<Laser>()
                 .Primary()
-                .Terminator()
                 .CompatibleWith<Bounce>()
                 .CompatibleWith<Damage>(10)
                 .CompatibleWith<Destructor>();
@@ -37,13 +36,14 @@ namespace Procool.GamePlay.Weapon
 
             WeaponConstructor.Behaviour<Throw>()
                 .Primary()
-                .Terminator()
                 .CompatibleWith<Bounce>()
                 .CompatibleWith<Damage>()
                 .CompatibleWith<Destructor>()
                 .CompatibleWith<EmitContinuous>()
                 .CompatibleWith<EmitTick>()
-                .NextStage<Timeout>();
+                .NextStage<EmitOnce>()
+                .NextStage<Timeout>()
+                .NextStage<Destructor>();
             
             WeaponConstructor.Behaviour<Bounce>()
                 .CompatibleWith<Damage>()
@@ -67,7 +67,6 @@ namespace Procool.GamePlay.Weapon
                 .CompatibleWith<EmitTick>();
 
             WeaponConstructor.Behaviour<Timeout>()
-                .Terminator()
                 .CompatibleWith<Bounce>()
                 .CompatibleWith<Damage>()
                 .NextStage<EmitContinuous>()
@@ -75,13 +74,13 @@ namespace Procool.GamePlay.Weapon
                 .NextStage<EmitTick>();
 
             WeaponConstructor.Behaviour<EmitOnce>()
-                .Emitter()
+                .DetachEmitter()
                 .Terminator()
                 .NextStage<Move>()
                 .NextStage<Throw>();
 
             WeaponConstructor.Behaviour<EmitTick>()
-                .Emitter()
+                .DetachEmitter()
                 .CompatibleWith<Destructor>()
                 .NextStage<Move>()
                 .NextStage<Throw>();
@@ -90,7 +89,6 @@ namespace Procool.GamePlay.Weapon
                 .Emitter()
                 .CompatibleWith<Destructor>()
                 .NextStage<Laser>();
-
                 
 
             GameObjectPool.PreAlloc<DamageEntity>(16);

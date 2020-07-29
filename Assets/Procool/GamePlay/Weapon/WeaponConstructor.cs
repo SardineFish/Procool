@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Procool.GameSystems;
 using Procool.Random;
@@ -31,6 +32,7 @@ namespace Procool.GamePlay.Weapon
             public bool IsTerminator = false;
             public bool IsDefaultTerminator = false;
             public bool IsPrimary = false;
+            public bool IsDetachEmitter = false;
             public List<PossibleBehaviour> CompatibleParallels = new List<PossibleBehaviour>();
             public List<PossibleBehaviour> NextStages = new List<PossibleBehaviour>();
             public WeaponConstructor Constructor;
@@ -62,6 +64,13 @@ namespace Procool.GamePlay.Weapon
             public BehaviourConstructor<T> Emitter()
             {
                 IsEmitter = true;
+                return this;
+            }
+
+            public BehaviourConstructor<T> DetachEmitter()
+            {
+                IsEmitter = true;
+                IsDetachEmitter = true;
                 return this;
             }
 
@@ -138,7 +147,34 @@ namespace Procool.GamePlay.Weapon
             return ConstructDatas[type] as BehaviourConstructor<T>;
         }
 
-        public DamageStage BuildStage(PRNG prng, IEnumerable<PossibleBehaviour> behaviours, bool firstStage, bool requirePrimary, int depth,
+        BehaviourConstructData GetBehaviourConstructor(IWeaponBehaviour behaviour)
+        {
+            var type = behaviour.GetType();
+            
+            if (!ConstructDatas.ContainsKey(type))
+            {
+                throw new Exception("Behaviour not found.");
+            }
+
+            return ConstructDatas[type];
+        }
+        
+
+        bool CheckTerminator(DamageStage stage)
+        {
+            if (!stage || stage.Behaviours.Count <= 0)
+                return false;
+            foreach (var behaviour in stage.Behaviours)
+            {
+                if (GetBehaviourConstructor(behaviour.Behaviour).IsTerminator)
+                    return true;
+                return CheckTerminator(behaviour.NextStage);
+            }
+            
+            throw new Exception("Unreachable code.");
+        }
+
+        public DamageStage BuildStage(PRNG prng, IEnumerable<PossibleBehaviour> behaviours, bool firstStage, bool requirePrimary, bool detach, int depth,
             int depthLimit)
         {
             if (depth >= depthLimit)
@@ -162,6 +198,7 @@ namespace Procool.GamePlay.Weapon
             }
 
             var stage = new DamageStage();
+            stage.Detach = detach;
 
             if (firstStage)
             {
@@ -175,6 +212,8 @@ namespace Procool.GamePlay.Weapon
             {
                 for (var i = 0; i < maxComponents; i++)
                 {
+                    if (possibleBehaviours.Count <= 0)
+                        break;
                     PossibleBehaviour behaviour;
                     if (i == 0 && requirePrimary)
                         behaviour = possibleBehaviours.Values
@@ -225,15 +264,6 @@ namespace Procool.GamePlay.Weapon
                 }
             }
 
-            // We need at least one terminator to ensure damage entity will be terminated.
-            if (!pendingBehaviours.Any(data => data.IsTerminator))
-            {
-                var t = prng.GetScalar();
-                var terminator = PossibleBehaviours
-                    .Where(data => data.ConstructData.IsTerminator)
-                    .RandomTake(t, data => data.Probability);
-                pendingBehaviours.Add(terminator.ConstructData);
-            }
 
             foreach (var constructData in pendingBehaviours)
             {
@@ -242,8 +272,25 @@ namespace Procool.GamePlay.Weapon
                 var nextDepthLimit = constructData.StageDepthLimit;
                 if (nextDepthLimit < 0)
                     nextDepthLimit = depthLimit;
-                behaviourData.NextStage = BuildStage(prng, constructData.NextStages, false, constructData.IsEmitter, depth + 1,
+                
+                behaviourData.NextStage = BuildStage(
+                    prng, 
+                    constructData.NextStages, 
+                    false, 
+                    constructData.IsEmitter,
+                    constructData.IsDetachEmitter, 
+                    depth + 1,
                     nextDepthLimit);
+            }
+
+            // We need at least one terminator to ensure damage entity will be terminated.
+            if (detach && !CheckTerminator(stage))
+            {
+                var t = prng.GetScalar();
+                var terminator = PossibleBehaviours
+                    .Where(data => data.ConstructData.IsTerminator)
+                    .RandomTake(t, data => data.Probability);
+                pendingBehaviours.Add(terminator.ConstructData);
             }
 
 
@@ -256,7 +303,7 @@ namespace Procool.GamePlay.Weapon
             var weapon = new Weapon();
 
             var depthLimit = prng.GetInRange(3, 5);
-            var stage = BuildStage(prng, PossibleBehaviours, true, false, 0, depthLimit);
+            var stage = BuildStage(prng, PossibleBehaviours, true, false, false, 0, depthLimit);
 
             weapon.FirstStage = stage;
             GenerateBulletVFX(weapon, prng);

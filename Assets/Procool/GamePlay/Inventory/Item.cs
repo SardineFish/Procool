@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Procool.GamePlay.Controller;
+using Procool.Utils;
 using UnityEngine;
 
 namespace Procool.GamePlay.Inventory
@@ -8,7 +9,12 @@ namespace Procool.GamePlay.Inventory
     {
         public Player Owner;
         public Sprite Sprite;
-        public abstract IEnumerator Activate();
+        public abstract IUsingState Activate();
+
+        public virtual void Abort()
+        {
+        }
+
 
     }
 }

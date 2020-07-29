@@ -1,5 +1,7 @@
-﻿using Procool.GameSystems;
+﻿using System.Collections;
+using Procool.GameSystems;
 using Procool.Input;
+using Procool.Utils;
 using UnityEngine;
 
 namespace Procool.GamePlay.Controller
@@ -8,6 +10,39 @@ namespace Procool.GamePlay.Controller
     {
         class PlayerMove : PlayerAction
         {
+            private Coroutine coroutuine;
+            public override void Enter(PlayerController player)
+            {
+                coroutuine = player.StartCoroutine(UpdateCoroutine(player));
+            }
+
+            IEnumerator UpdateCoroutine(PlayerController player)
+            {
+                while (true)
+                {
+                    if (player.Input.GamePlay.Fire.ReadValue<float>() > .5f)
+                    {
+                        var item = player.Player.Inventory.GetItem(0);
+                        if (item != null)
+                        {
+                            yield return item.Activate().Wait();
+                        }
+
+                        while ((player.Input.GamePlay.Fire.ReadValue<float>() > .5f))
+                            yield return null;
+                    }
+                    
+                    yield return null;
+                }
+            }
+
+            public override bool Update(PlayerController player) => true;
+
+            public override void Exit(PlayerController player)
+            {
+                
+            }
+
             public override void FixedUpdate(PlayerController player)
             {
                 var inputMovement = player.Input.GamePlay.Move.ReadValue<Vector2>();

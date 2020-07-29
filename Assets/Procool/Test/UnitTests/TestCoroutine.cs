@@ -16,7 +16,7 @@ namespace Procool.Test.UnitTest
         // A UnityTest behaves like a coroutine in PlayMode
         // and allows you to yield null to skip a frame in EditMode
         [UnityEngine.TestTools.UnityTest]
-        public IEnumerator TestCoroutineWithEnumeratorPasses()
+        public IEnumerator TestCoroutineRunnerStatic()
         {
             bool coroutine1Done = false;
             bool coroutine2Done = false;
@@ -76,6 +76,44 @@ namespace Procool.Test.UnitTest
             yield return CoroutineRunner.All(new[] {Coroutine5()});
             Assert.IsTrue(coroutine4Done);
             Assert.IsTrue(coroutine5Done);
+            
+        }
+
+        [UnityEngine.TestTools.UnityTest]
+        public IEnumerator TestCoroutineRunnerInstance()
+        {
+            bool coroutine1Done = false;
+            bool coroutine2Done = false;
+
+            IEnumerator Coroutine1()
+            {
+                yield return Coroutine2();
+                coroutine1Done = true;
+            }
+
+            IEnumerator Coroutine2()
+            {
+                for (var i = 0; i < 10; i++)
+                {
+                    yield return null;
+                }
+
+                coroutine2Done = true;
+            }
+
+            var runner = new CoroutineRunner(Coroutine2());
+            while (runner.Tick())
+                yield return null;
+            Assert.IsTrue(coroutine2Done);
+
+            coroutine2Done = false;
+            
+            runner = new CoroutineRunner(Coroutine1());
+            while (runner.Tick())
+                yield return null;
+            
+            Assert.IsTrue(coroutine1Done);
+            Assert.IsTrue(coroutine2Done);
         }
     }
 }

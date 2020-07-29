@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Procool.GamePlay.Inventory;
+using Procool.Utils;
 
 namespace Procool.GamePlay.Weapon
 {
@@ -9,9 +10,24 @@ namespace Procool.GamePlay.Weapon
         public int Quality;
         public float Damage = 1;
 
-        public override IEnumerator Activate()
+        private DamageEntity damageEntity = null;
+
+        // public override CoroutineRunner Activate()
+        // {
+        //     damageEntity = FirstStage.RunDetach()
+        //     var runner = new CoroutineRunner(Run());
+        //     return runner;
+        // }
+
+        public override IUsingState Activate()
         {
-            yield return FirstStage.Run(this);
+            return FirstStage.CreateDetached(this, Owner.transform);
+        }
+
+        public override void Abort()
+        {
+            if(damageEntity)
+                damageEntity.Terminate();
         }
     }
 }

@@ -41,6 +41,14 @@ namespace Procool.GamePlay.Weapon
         }
     }
 
+    public class EmitterBehaviourData : WeaponBehaviourData
+    {
+        public BulletVFX BulletVFX;
+        public EmitterBehaviourData(IWeaponBehaviour behaviour) : base(behaviour)
+        {
+        }
+    }
+
     public class EmptyBehaviourData : WeaponBehaviourData
     {
         public EmptyBehaviourData(IWeaponBehaviour behaviour) : base(behaviour)

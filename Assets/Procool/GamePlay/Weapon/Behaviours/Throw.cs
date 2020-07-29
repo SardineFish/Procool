@@ -33,13 +33,14 @@ namespace Procool.GamePlay.Weapon
                 entity.transform.Translate(new Vector3(0, speed * Time.deltaTime, 0), Space.Self);
 
                 var v = speed - acceleration * Time.deltaTime;
-                if (MathUtility.SignInt(v) != MathUtility.SignInt(v))
+                if (MathUtility.SignInt(v) != MathUtility.SignInt(speed))
                     break;
                 speed = v;
+                
+                yield return null;
             }
 
-            if (data.NextStage)
-                yield return data.NextStage.Run(weapon, entity.transform);
+            data.NextStage?.Run(weapon, entity);
         }
     }
 }
