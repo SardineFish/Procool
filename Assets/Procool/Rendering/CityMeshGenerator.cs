@@ -14,6 +14,8 @@ namespace Procool.Rendering
 
         public void GenerateMesh()
         {
+            RoadMesh.Clear();
+            SidewalkMesh.Clear();
             foreach (var edge in City.Edges)
             {
                 if (edge.EdgeType < EdgeType.Street)

@@ -13,14 +13,14 @@ namespace Procool.Rendering
         {
             public Vector3 pos;
             public Vector2 uv;
-            public Vector2 data; // (length, type)
+            public Vector4 data; // (width, length, type)
         }
 
         private static VertexAttributeDescriptor[] VertexDataLayout = new[]
         {
             new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
             new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2),
-            new VertexAttributeDescriptor(VertexAttribute.TexCoord1, VertexAttributeFormat.Float32, 2),
+            new VertexAttributeDescriptor(VertexAttribute.TexCoord1, VertexAttributeFormat.Float32, 4),
         };
 
         public float StreetWidth = 1;
@@ -35,32 +35,38 @@ namespace Procool.Rendering
         private readonly List<Vector2> vertData = new List<Vector2>(4096);
 
 
-        void AddRoad(Vector2 v0, Vector2 v1, Vector2 v2, Vector2 v3, float length, EdgeType type)
+        void AddRoad(Road road)
         {
+            var width = road.RoadWidth;
+            var type = road.Type;
+            var (v0, v1, v2, v3) = road.IntersectPoints;
+            var (stopLineA, stopLineB) = road.StopLine;
+            var length = stopLineB - stopLineA;
+            
             var offset = verts.Count;
             verts.Add(new VertexData()
             {
-                pos = v0,
-                uv = new Vector2(0, 1),
-                data = new Vector2(length, (int) type)
+                pos = road.RoadToWorld(v0),
+                uv = new Vector2((v0.x - stopLineA)/length, 0),
+                data = new Vector4(width, length, (int) type)
             });
             verts.Add(new VertexData()
             {
-                pos = v1,
-                uv = new Vector2(1, 1),
-                data = new Vector2(length, (int) type)
+                pos = road.RoadToWorld(v1),
+                uv = new Vector2((v1.x - stopLineA)/length, 1),
+                data = new Vector4(width, length, (int) type)
             });
             verts.Add(new VertexData()
             {
-                pos = v2,
-                uv = new Vector2(1, 0),
-                data = new Vector2(length, (int) type)
+                pos = road.RoadToWorld(v2),
+                uv = new Vector2((v2.x - stopLineA)/length, 1),
+                data = new Vector4(width, length, (int) type)
             });
             verts.Add(new VertexData()
             {
-                pos = v3,
-                uv = new Vector2(0, 0),
-                data = new Vector2(length, (int) type)
+                pos = road.RoadToWorld(v3),
+                uv = new Vector2((v3.x - stopLineA)/length, 0),
+                data = new Vector4(width, length, (int) type)
             });
             triangles.Add(offset + 0);
             triangles.Add(offset + 1);
@@ -82,8 +88,7 @@ namespace Procool.Rendering
         void GenerateRoadMesh(Edge edge)
         {
             var road = edge.GetData<Road>();
-            var (v0, v1, v2, v3) = road.IntersectPoints;
-            AddRoad(v1, v2, v3, v0, edge.Length, edge.EdgeType);
+            AddRoad(road);
         }
 
         void GenerateCrossRoadMesh(Vertex vertex)
@@ -97,11 +102,11 @@ namespace Procool.Rendering
                 Vector2 v0;
                 if (a.Vertex == vertex)
                 {
-                    v0 = road.IntersectPoints.Item1;
+                    v0 = road.RoadToWorld(road.IntersectPoints.Item1);
                 }
                 else
                 {
-                    v0 = road.IntersectPoints.Item3;
+                    v0 = road.RoadToWorld(road.IntersectPoints.Item3);
                 }
 
                 verts.Add(new VertexData()

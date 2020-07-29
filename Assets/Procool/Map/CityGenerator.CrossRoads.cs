@@ -116,6 +116,10 @@ namespace Procool.Map
                 v2 = RoadJoinPos(edge2, edge, b);
 
             var road = edge.GetData<Road>();
+            v0 = road.WorldToRoad(v0);
+            v1 = road.WorldToRoad(v1);
+            v2 = road.WorldToRoad(v2);
+            v3 = road.WorldToRoad(v3);
             road.IntersectPoints = (v3, v0, v1, v2);
 
             var l1 = Vector2.Dot((v1 - a.Pos), tangent);
@@ -125,11 +129,11 @@ namespace Procool.Map
             var l3 = Vector2.Dot((v3 - b.Pos), -tangent);
             var l = Mathf.Min(l1, l2);
 
-            road.StopLine = (b.Pos - tangent * Mathf.Min(l0, l3), a.Pos + tangent * Mathf.Min(l1, l2));
-            
+            road.StopLine = (Mathf.Max(v0.x, v3.x), Mathf.Min(v1.x, v2.x));
+
             // v1 = a.Pos + normal * GetRoadWidth(edge.EdgeType) + tangent * l;
             // v2 = a.Pos - normal * GetRoadWidth(edge.EdgeType) + tangent * l;
-            
+
             // l = Mathf.Min(l0, l3);
             // v0 = b.Pos + normal * GetRoadWidth(edge.EdgeType) - tangent * l;
             // v3 = b.Pos - normal * GetRoadWidth(edge.EdgeType) - tangent * l;
