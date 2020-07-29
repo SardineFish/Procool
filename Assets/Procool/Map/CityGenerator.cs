@@ -330,6 +330,7 @@ namespace Procool.Map
         void GenAlley(BuildingBlock buildingBlock)
         {
             var obb = buildingBlock.Region.ComputeOMBB();
+            
 
             var roadCounts =
                 new Vector2Int(
@@ -353,6 +354,26 @@ namespace Procool.Map
                 y += prng.GetInRange(-1, 1) * (gap.y / 2 * RoadParams.randomOffsetRatio);
                 var pos = obb.Center + obb.AxisY * y;
                 buildingBlock.SubSpace.SplitByLine(pos, obb.AxisX);
+            }
+
+            foreach (var region in buildingBlock.SubSpace.Regions)
+            {
+                region.ReOrderVertices();
+            }
+        }
+
+        void GenBuildingBlock(Region region)
+        {
+            region.ReOrderVertices();
+            
+            var buildingBlock = BuildingBlock.Get(region);
+            region.SetData(buildingBlock);
+            buildingBlock.SetupSubspace(RoadParams.sideWalkWidth);
+            GenAlley(buildingBlock);
+
+            foreach (var subRegion in buildingBlock.SubSpace.Regions)
+            {
+                subRegion.ReOrderVertices();
             }
         }
 
@@ -378,17 +399,7 @@ namespace Procool.Map
                 GenCrossPosition(edge);
             foreach (var region in Space.Regions)
             {
-                region.ReOrderVertices();
-                
-                var buildingBlock = BuildingBlock.Get(region);
-                region.SetData(buildingBlock);
-                buildingBlock.SetupSubspace();
-                GenAlley(buildingBlock);
-
-                foreach (var subRegion in buildingBlock.SubSpace.Regions)
-                {
-                    subRegion.ReOrderVertices();
-                }
+                GenBuildingBlock(region);
                 yield return null;
             }
         }

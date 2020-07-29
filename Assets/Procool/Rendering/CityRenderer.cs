@@ -8,8 +8,10 @@ namespace Procool.Rendering
     {
         public MeshRenderer roadRenderer;
         public MeshRenderer sidewalkRenderer;
+        public MeshRenderer buildingRenderer;
         public Material roadMaterial;
         public Material sidewalkMaterial;
+        public Material buildingMagerial;
         private CityMeshGenerator meshGenerator;
         private void Awake()
         {
@@ -31,9 +33,13 @@ namespace Procool.Rendering
                 roadRenderer = CreateRenderer("[RoadRenderer]");
             if (!sidewalkRenderer)
                 sidewalkRenderer = CreateRenderer("[SidewalkRenderer]");
+            if (!buildingRenderer)
+                buildingRenderer = CreateRenderer("[BuildingRenderer]");
 
             roadRenderer.sharedMaterial = roadMaterial;
             sidewalkRenderer.sharedMaterial = sidewalkMaterial;
+            buildingRenderer.sharedMaterial = buildingMagerial;
+
         }
 
         public void DrawCity(City city)
@@ -44,6 +50,7 @@ namespace Procool.Rendering
             meshGenerator.GenerateMesh();
             roadRenderer.GetComponent<MeshFilter>().sharedMesh = meshGenerator.RoadMesh;
             sidewalkRenderer.GetComponent<MeshFilter>().sharedMesh = meshGenerator.SidewalkMesh;
+            buildingRenderer.GetComponent<MeshFilter>().sharedMesh = meshGenerator.BuildingMesh;
         }
 
         public void CleanUp()

@@ -16,9 +16,6 @@ namespace Procool.Test
         public int Seed = 0;
         public int BlockLevel = 3;
 
-        public int BoundEdges = 6;
-        public float BoundExtendRatio = 0.3f;
-
         public CityGenerator.CityParameters cityParameters = new CityGenerator.CityParameters()
         {
             size = .6f,
@@ -52,6 +49,7 @@ namespace Procool.Test
             Vertex.PreAlloc(8192);
             Edge.PreAlloc(4096);
             Region.PreAlloc(4096);
+            GetComponentsInChildren<MeshFilter>().ForEach(filter =>filter.sharedMesh = null );
         }
 
         [EditorButton]
@@ -97,7 +95,6 @@ namespace Procool.Test
             GetComponent<CityRenderer>().DrawCity(generator.City);
 
             yield break;
-            
 
             while (true)
             {

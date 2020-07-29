@@ -34,9 +34,12 @@ namespace Procool.Rendering
             {
                 GenerateSidewalkMesh(region);
             }
+            
+            GenerateBuildingMesh(City);
 
             SetupRoadMesh();
             SetupSidewalkMesh();
+            SetupBuildingMesh();
         }
 
         public void Dispose()

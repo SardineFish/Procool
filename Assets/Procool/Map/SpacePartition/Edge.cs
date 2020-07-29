@@ -228,6 +228,12 @@ namespace Procool.Map.SpacePartition
         public Vector2 GetVector(Vertex baseVert)
             => GetAnother(baseVert).Pos - baseVert.Pos;
 
+        public Vector2 GetNormal(Vertex baseVert)
+        {
+            var tangent = GetVector(baseVert).normalized;
+            return Vector3.Cross(Vector3.forward, tangent).ToVector2().normalized;
+        }
+
         public bool CanSafeRelease => !Regions.Item1 && !Regions.Item2;
 
             

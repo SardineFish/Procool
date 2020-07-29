@@ -31,7 +31,9 @@ namespace Procool.Map
             public int streetCrossMergePass;
             public float alleyCrossMergeThreshold;
             public float alleyCrossMergePass;
-            
+
+            public float sideWalkWidth;
+            public float alleyWidth;
             public float streetWidth;
             public float arterialRoadWidth;
             public float expressWayWidth;
