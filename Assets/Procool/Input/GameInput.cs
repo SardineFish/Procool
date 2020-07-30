@@ -144,7 +144,7 @@ namespace Procool.Input
                     ""id"": ""d7005798-aabd-489f-92f0-6e565935c240"",
                     ""path"": ""<Mouse>/scroll/y"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""Normalize(min=-120,max=120)"",
                     ""groups"": ""Keyboard"",
                     ""action"": ""Zoom"",
                     ""isComposite"": false,

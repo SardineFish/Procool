@@ -17,10 +17,11 @@
     SubShader
     {
         Tags { "RenderType"="Opaque" }
-        LOD 100
 
         Pass
         {
+            Tags { "LightMode"="OpaqueWithLOD" }
+
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -55,6 +56,7 @@
             float _CrosswalkWidth;
             float _CrosswalkLineRatio;
             float _BikeLaneWidth;
+            int _GlobalLOD;
 
             v2f vert (appdata v)
             {
@@ -165,6 +167,8 @@
                 return 0;
             }
 
+
+
             #define ROAD_TYPE_CORSSROAD 0
             #define ROAD_TYPE_ALLEY 1
             #define ROAD_TYPE_STREET 2
@@ -172,32 +176,51 @@
             #define ROAD_TYPE_EXPRESS_WAY 4
             #define ROAD_TYPE_HIGH_WAY 5
 
-            float4 frag (v2f i) : SV_Target
+            float4 DrawRoadMarking(v2f i)
             {
-                // sample the texture
                 float4 baseColor = tex2D(_MainTex, i.uv) * _Color.rgba;
 
-                int type = i.data.z;
+                float4 overlayColor = 0;
+                int type = round(i.data.z);
                 float2 size = i.data.xy;
-                float4 dashLineColor = 0;
                 switch(type)
                 {
                     case ROAD_TYPE_STREET:
-                        dashLineColor = DrawStreet(i.uv, size);
+                        overlayColor = DrawStreet(i.uv, size);
                         break;
                     case ROAD_TYPE_ARTERIAL:
-                        dashLineColor = DrawArterial(i.uv, size);
+                        overlayColor = DrawArterial(i.uv, size);
                         break;
                     case ROAD_TYPE_EXPRESS_WAY:
-                        dashLineColor = DrawExpressWay(i.uv, size);
+                        overlayColor = DrawExpressWay(i.uv, size);
                         break;
                     case ROAD_TYPE_HIGH_WAY:
-                        dashLineColor = DrawHighway(i.uv, size);
+                        overlayColor = DrawHighway(i.uv, size);
+                        break;
+                    default:
+                        overlayColor = 0;
                         break;
                 }
 
-                float3 color = dashLineColor.rgb * dashLineColor.a + baseColor.rgb * (1 - dashLineColor.a);
+                float3 color = overlayColor.rgb * overlayColor.a + baseColor.rgb * (1 - overlayColor.a);
                 return float4(color.rgb, 1);
+            }
+
+            float4 DrawRoadColor(v2f i)
+            {
+                return tex2D(_MainTex, i.uv) * _Color.rgba;
+            }
+
+            float4 frag (v2f i) : SV_Target
+            {
+                switch(_GlobalLOD)
+                {
+                    case 0:
+                        return DrawRoadMarking(i);
+                    case 1:
+                        return DrawRoadColor(i);
+                }
+                return 0;
             }
             ENDCG
         }

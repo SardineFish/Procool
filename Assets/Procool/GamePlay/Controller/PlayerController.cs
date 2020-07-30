@@ -6,13 +6,18 @@ using UnityEngine.InputSystem;
 
 namespace Procool.GamePlay.Controller
 {
-    [RequireComponent(typeof(Player), typeof(Rigidbody2D), typeof(DeviceChangeDetector))]
+    [RequireComponent(typeof(Player), typeof(Rigidbody2D))]
     public partial class PlayerController : MonoBehaviour
     {
         public float maxSpeed = 3;
         public float maxAngularVelocity = 600f;
         public float minAngularVelocity = 300f;
         [Range(0, 1)] public float moveDamping = .3f;
+
+        public float gamePadZoomMultiplier = 1;
+        public float keyboardZoomMultiplier = 10;
+        public AnimationCurve zoomSpeedCurve = new AnimationCurve(new Keyframe(0, 10), new Keyframe(700, 50));
+        
 
         private GameInput Input;
 
@@ -21,10 +26,7 @@ namespace Procool.GamePlay.Controller
 
         private List<PlayerAction> _playerActions = new List<PlayerAction>();
         private PlayerAction _currentAction;
-        private DeviceChangeDetector _deviceChangeDetector;
 
-        public InputSchemeType CurrentInputScheme => _deviceChangeDetector.CurrentInputScheme;
-        
         public Player Player { get; private set; }
 
         private void Awake()
@@ -32,7 +34,6 @@ namespace Procool.GamePlay.Controller
             Input = new GameInput();
             rigidbody = GetComponent<Rigidbody2D>();
 
-            _deviceChangeDetector = GetComponent<DeviceChangeDetector>();
             
             _playerActions.Add(new PlayerMove());
             Player = GetComponent<Player>();

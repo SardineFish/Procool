@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_RendererFeatures:
   - {fileID: 3891574423145152229}
-  m_RendererFeatureMap: e5fe8fc451a60136
+  - {fileID: 1191992170770801827}
+  m_RendererFeatureMap: e5fe8fc451a60136a324d75990ce8a10
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   shaders:
     blitPS: {fileID: 4800000, guid: c17132b1f77d20942aa75f8429c0f8bc, type: 3}
@@ -37,6 +38,24 @@ MonoBehaviour:
     failOperation: 0
     zFailOperation: 0
   m_ShadowTransparentReceive: 1
+--- !u!114 &1191992170770801827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9441591ed64479497276ece3dc524d3, type: 3}
+  m_Name: NewLODPass
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  lodSize:
+  - 0
+  - 100
+  - 300
+  - 500
 --- !u!114 &3891574423145152229
 MonoBehaviour:
   m_ObjectHideFlags: 0

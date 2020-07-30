@@ -1,4 +1,5 @@
 ﻿using System;
+using Procool.GameSystems;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,9 +12,9 @@ namespace Procool.Input
         Keyboard,
     }
     [RequireComponent(typeof(PlayerInput))]
-    public class DeviceChangeDetector : MonoBehaviour
+    public class InputDeviceDetector : Singleton<InputDeviceDetector>
     {
-        public InputSchemeType CurrentInputScheme { get; private set; } = InputSchemeType.GamePad;
+        public static InputSchemeType CurrentInputScheme { get; private set; } = InputSchemeType.GamePad;
         private void Awake()
         {
             GetComponent<PlayerInput>().ActivateInput();

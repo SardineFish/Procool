@@ -200,6 +200,41 @@ MonoBehaviour:
   maxAngularVelocity: 900
   minAngularVelocity: 300
   moveDamping: 0.73
+  gamePadZoomMultiplier: 20
+  keyboardZoomMultiplier: 1
+  zoomSpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.519042
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 52.704483
+      value: 4.105159
+      inSlope: 0.19610204
+      outSlope: 0.19610204
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.28370538
+      outWeight: 0.037023503
+    - serializedVersion: 3
+      time: 700
+      value: 50
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &3763500940701439102
 MonoBehaviour:
   m_ObjectHideFlags: 0
