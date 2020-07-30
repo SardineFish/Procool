@@ -54,7 +54,7 @@ namespace Procool.Map.SpacePartition
                     var dirB = edgeB.GetVector(b).normalized;
                     // dirA = ((dirA + tangent) / 2).normalized;
                     // dirB = ((dirB + tangent) / 2).normalized;
-                    if (Vector2.Dot(dirA, tangent) > -0.8f)
+                    if (Vector2.Dot(dirA, tangent) > -0.99f)
                     {
                         var scaleA = 1 / Vector2.Dot(dirA, normal);
                         verts[i] += dirA * (width * scaleA);
@@ -62,7 +62,7 @@ namespace Procool.Map.SpacePartition
                     else
                         verts[i] += normal * width;
                     
-                    if (Vector2.Dot(dirB, -tangent) > -0.8f)
+                    if (Vector2.Dot(dirB, -tangent) > -0.99f)
                     {
                         var scaleB = 1 / Vector2.Dot(dirB, normal);
                         verts[(i + 1) % verts.Count] += dirB * (width * scaleB);
@@ -113,73 +113,6 @@ namespace Procool.Map.SpacePartition
                     }
                     var edge = Edge.Get(a, b);
                     edge.AddRegion(result);
-                    result.edges.Add(edge);
-                    a.AddEdge(edge);
-                    b.AddEdge(edge);
-                }
-                result.EndConstruct();
-
-                ListPool<Vector2>.Release(newVerts);
-                ListPool<Vector2>.Release(verts);
-
-                return true;
-            }
-            
-            public static bool Shrink(Region region, Region result, float width)
-            {
-                var verts = ListPool<Vector2>.Get();
-                verts.AddRange(region.Vertices.Select(v => v.Pos));
-                for (var i = 0; i < verts.Count; i++)
-                {
-                    var vertex = region.vertices[i];
-                    var edgeA = region.edges[(i - 1 + verts.Count) % verts.Count];
-                    var edgeB = region.edges[i];
-                    var normalA = -edgeA.GetNormal(vertex);
-                    var normalB = edgeB.GetNormal(vertex);
-                    var offsetNormal = ((normalA + normalB) / 2).normalized;
-                    var cos = Vector2.Dot(normalA, offsetNormal);
-                    var offset = width / cos;
-                    verts[i] += offsetNormal * offset;
-
-                }
-
-                var newVerts = ListPool<Vector2>.Get();
-
-                for (var i = 0; i < verts.Count; i++)
-                {
-                    var edge = region.Edges[i];
-                    var v1 = region.vertices[i];
-                    var dir = edge.GetVector(v1);
-                    var length = Vector2.Dot(verts[(i + 1) % verts.Count] - verts[i], dir);
-                    if (length <= 0) continue;
-                    for (var j = (i + 1) % verts.Count; j != i; j = (j + 1) % verts.Count)
-                    {
-                        var nextEdge = region.Edges[j];
-                        var v2 = region.vertices[j];
-                        var nextDir = nextEdge.GetVector(v2);
-                        var nextLength = Vector2.Dot(verts[(j + 1) % verts.Count] - verts[j], nextDir);
-                        if (nextLength <= 0) continue;
-                        if (MathUtility.LineIntersect(verts[i], dir, verts[j], nextDir, out var point))
-                            newVerts.Add(point);
-                        break;
-                    }
-                }
-
-                if (newVerts.Count <= 0)
-                    return false;
-
-                result.StartConstruct();
-                result.AddVertex(Vertex.Get(newVerts[0]));
-                for (var i = 0; i < newVerts.Count; i++)
-                {
-                    var a = result.vertices[i];
-                    var b = result.vertices[0];
-                    if (i != newVerts.Count - 1)
-                    {
-                        b = Vertex.Get(newVerts[i + 1]);
-                        result.AddVertex(b);
-                    }
-                    var edge = Edge.Get(a, b);
                     result.edges.Add(edge);
                     a.AddEdge(edge);
                     b.AddEdge(edge);

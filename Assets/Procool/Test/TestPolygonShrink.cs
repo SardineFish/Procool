@@ -42,7 +42,7 @@ namespace Procool.Test
                 Region.Release(newPolygon);
 
             newPolygon = Region.Get(null);
-            Region.Utils.Shrink(originalPolygon, newPolygon, shrinkWidth);
+            Region.Utils.Shrink(originalPolygon, newPolygon, _=>shrinkWidth);
         }
 
         [EditorButton]
