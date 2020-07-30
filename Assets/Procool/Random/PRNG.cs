@@ -48,6 +48,14 @@ namespace Procool.Random
         }
 
         /// <summary>
+        /// Random float in [x, y)
+        /// </summary>
+        /// <param name="range"></param>
+        /// <returns></returns>
+        public float GetInRange(Vector2 range)
+            => GetScalar() * (range.y - range.x) + range.x;
+
+        /// <summary>
         /// Random integer in [min, max)
         /// </summary>
         /// <param name="min"></param>

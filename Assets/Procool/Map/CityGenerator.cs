@@ -332,34 +332,55 @@ namespace Procool.Map
             var obb = buildingBlock.Region.ComputeOMBB();
             
 
-            var roadCounts =
-                new Vector2Int(
-                    Mathf.FloorToInt(obb.HalfSize.x * 2 / prng.GetInRange(RoadParams.alleyDistanceRange.x,
-                        RoadParams.alleyDistanceRange.y)),
-                    Mathf.FloorToInt(obb.HalfSize.x * 2 / prng.GetInRange(RoadParams.alleyDistanceRange.x,
-                        RoadParams.alleyDistanceRange.y)));
-            
-            var gap = obb.HalfSize * 2 / (roadCounts + Vector2.one);
-            for (var i = 1; i < roadCounts.x; i++)
+            // var roadCounts =
+            //     new Vector2Int(
+            //         Mathf.FloorToInt(obb.HalfSize.x * 2 / prng.GetInRange(RoadParams.alleyDistanceRange.x,
+            //             RoadParams.alleyDistanceRange.y)),
+            //         Mathf.FloorToInt(obb.HalfSize.x * 2 / prng.GetInRange(RoadParams.alleyDistanceRange.x,
+            //             RoadParams.alleyDistanceRange.y)));
+            //
+            // var gap = obb.HalfSize * 2 / (roadCounts + Vector2.one);
+            var width = obb.Size.x;
+            var splitX = prng.GetInRange(RoadParams.alleyDistanceRange);
+            while(splitX + RoadParams.alleyDistanceRange.x < width)
             {
-                var x = -obb.HalfSize.x + gap.x * i;
-                x += prng.GetInRange(-1, 1) * (gap.x / 2 * RoadParams.randomOffsetRatio);
-                var pos = obb.Center + obb.AxisX * x;
+                // x += prng.GetInRange(-1, 1) * (gap / 2 * RoadParams.randomOffsetRatio);
+                var pos = obb.Center + obb.AxisX * (splitX - obb.HalfSize.x);
                 buildingBlock.SubSpace.SplitByLine(pos, obb.AxisY);
+                splitX += prng.GetInRange(RoadParams.alleyDistanceRange);
             }
 
-            for (var i = 1; i < roadCounts.y; i++)
+            var height = obb.Size.y;
+            var splitY = prng.GetInRange(RoadParams.alleyDistanceRange);
+            while (splitY + RoadParams.alleyDistanceRange.x < height)
             {
-                var y = -obb.HalfSize.y + gap.y * i;
-                y += prng.GetInRange(-1, 1) * (gap.y / 2 * RoadParams.randomOffsetRatio);
-                var pos = obb.Center + obb.AxisY * y;
+                // var y = -obb.HalfSize.y + gap * i;
+                // y += prng.GetInRange(-1, 1) * (gap / 2 * RoadParams.randomOffsetRatio);
+                var pos = obb.Center + obb.AxisY * (splitY - obb.HalfSize.y);
                 buildingBlock.SubSpace.SplitByLine(pos, obb.AxisX);
+
+                splitY += prng.GetInRange(RoadParams.alleyDistanceRange);
             }
 
-            foreach (var region in buildingBlock.SubSpace.Regions)
+            var regionsToRemove = ListPool<Region>.Get();
+            regionsToRemove.Clear();
+
+            for (var i = 0; i < buildingBlock.SubSpace.Regions.Count; i++)
             {
-                region.ReOrderVertices();
+                var region = buildingBlock.SubSpace.Regions[i];
+                if (!region.Edges.Any(edge => edge.IsBoundary))
+                {
+                    regionsToRemove.Add(region);
+                }
+                else
+                    region.ReOrderVertices();
             }
+            foreach (var region in regionsToRemove)
+            {
+                buildingBlock.SubSpace.DeleteRegion(region);
+                Region.Release(region);
+            }
+            ListPool<Region>.Release(regionsToRemove);
         }
 
         void GenBuildingBlock(Region region)

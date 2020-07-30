@@ -2,6 +2,7 @@
 using Procool.GameSystems;
 using Procool.Map;
 using Procool.Map.SpacePartition;
+using Procool.Random;
 using UnityEngine;
 
 namespace Procool.Rendering
@@ -35,7 +36,7 @@ namespace Procool.Rendering
                 //AddBuilding(region);
                 region.ReOrderVertices();
                 var shrinkRegion = Region.Get(null);
-                if (Region.Utils.Shrink(region, shrinkRegion, edge=>edge.IsBoundary ? 0 : 1))
+                if (Region.Utils.Shrink(region, shrinkRegion, edge=>edge.IsBoundary ? 0 : Mathf.Lerp(1, 2, GameRNG.GetScalarByVec2(edge.Points.Item1.Pos))))
                 {
                     AddBuilding(shrinkRegion);
                 }
