@@ -17,7 +17,6 @@ namespace Procool.Input
         public static InputSchemeType CurrentInputScheme { get; private set; } = InputSchemeType.GamePad;
         private void Awake()
         {
-            GetComponent<PlayerInput>().ActivateInput();
             GetComponent<PlayerInput>().onControlsChanged += (playerInput) =>
             {
                 switch (playerInput.currentControlScheme)
@@ -32,5 +31,11 @@ namespace Procool.Input
 
             };
         }
+
+        private void OnEnable()
+        {
+            GetComponent<PlayerInput>().ActivateInput();
+        }
+        
     }
 }

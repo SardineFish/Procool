@@ -103,5 +103,12 @@ namespace Procool.Rendering
             }
 
         }
+
+        void ClearBuildingMesh()
+        {
+            BuildingMesh.Clear();
+            buildingMeshVerts.Clear();
+            buildingMeshTriangles.Clear();
+        }
     }
 }

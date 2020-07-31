@@ -7,7 +7,7 @@ using UnityEngine.Rendering;
 
 namespace Procool.Rendering
 {
-    public partial class CityMeshGenerator : IDisposable
+    public partial class CityMeshGenerator
     {
         struct VertexData
         {
@@ -16,7 +16,7 @@ namespace Procool.Rendering
             public Vector4 data; // (width, length, type)
         }
 
-        private static VertexAttributeDescriptor[] VertexDataLayout = new[]
+        private static VertexAttributeDescriptor[] RoadVertexDataLayout = new[]
         {
             new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
             new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2),
@@ -30,9 +30,8 @@ namespace Procool.Rendering
         
         public Mesh RoadMesh { get; private set; } = new Mesh();
 
-        private readonly List<VertexData> verts = new List<VertexData>(4096);
-        private readonly List<int> triangles = new List<int>(4096);
-        private readonly List<Vector2> vertData = new List<Vector2>(4096);
+        private readonly List<VertexData> roadVertices = new List<VertexData>(4096);
+        private readonly List<int> roadTriangles = new List<int>(4096);
 
 
         void AddRoad(Road road)
@@ -43,44 +42,44 @@ namespace Procool.Rendering
             var (stopLineA, stopLineB) = road.StopLine;
             var length = stopLineB - stopLineA;
             
-            var offset = verts.Count;
-            verts.Add(new VertexData()
+            var offset = roadVertices.Count;
+            roadVertices.Add(new VertexData()
             {
                 pos = road.RoadToWorld(v0),
                 uv = new Vector2((v0.x - stopLineA)/length, 0),
                 data = new Vector4(width, length, (int) type)
             });
-            verts.Add(new VertexData()
+            roadVertices.Add(new VertexData()
             {
                 pos = road.RoadToWorld(v1),
                 uv = new Vector2((v1.x - stopLineA)/length, 1),
                 data = new Vector4(width, length, (int) type)
             });
-            verts.Add(new VertexData()
+            roadVertices.Add(new VertexData()
             {
                 pos = road.RoadToWorld(v2),
                 uv = new Vector2((v2.x - stopLineA)/length, 1),
                 data = new Vector4(width, length, (int) type)
             });
-            verts.Add(new VertexData()
+            roadVertices.Add(new VertexData()
             {
                 pos = road.RoadToWorld(v3),
                 uv = new Vector2((v3.x - stopLineA)/length, 0),
                 data = new Vector4(width, length, (int) type)
             });
-            triangles.Add(offset + 0);
-            triangles.Add(offset + 1);
-            triangles.Add(offset + 2);
-            triangles.Add(offset + 0);
-            triangles.Add(offset + 2);
-            triangles.Add(offset + 3);
+            roadTriangles.Add(offset + 0);
+            roadTriangles.Add(offset + 1);
+            roadTriangles.Add(offset + 2);
+            roadTriangles.Add(offset + 0);
+            roadTriangles.Add(offset + 2);
+            roadTriangles.Add(offset + 3);
         }
 
         Mesh SetupRoadMesh()
         {
-            RoadMesh.SetVertexBufferParams(verts.Count, VertexDataLayout);
-            RoadMesh.SetVertexBufferData(verts, 0, 0, verts.Count);
-            RoadMesh.SetTriangles(triangles, 0);
+            RoadMesh.SetVertexBufferParams(roadVertices.Count, RoadVertexDataLayout);
+            RoadMesh.SetVertexBufferData(roadVertices, 0, 0, roadVertices.Count);
+            RoadMesh.SetTriangles(roadTriangles, 0);
             RoadMesh.RecalculateBounds();
             return RoadMesh;
         }
@@ -94,7 +93,7 @@ namespace Procool.Rendering
         void GenerateCrossRoadMesh(Vertex vertex)
         {
             var crossroad = vertex.GetData<CrossRoad>();
-            var offset = verts.Count;
+            var offset = roadVertices.Count;
             
             foreach(var road in crossroad.Roads)
             {
@@ -109,7 +108,7 @@ namespace Procool.Rendering
                     v0 = road.RoadToWorld(road.IntersectPoints.Item3);
                 }
 
-                verts.Add(new VertexData()
+                roadVertices.Add(new VertexData()
                 {
                     pos = v0,
                     data = Vector2.zero,
@@ -117,12 +116,19 @@ namespace Procool.Rendering
                 });
             }
 
-            for (var i = offset + 2; i < verts.Count; i++)
+            for (var i = offset + 2; i < roadVertices.Count; i++)
             {
-                triangles.Add(offset + 0);
-                triangles.Add(i);
-                triangles.Add(i - 1);
+                roadTriangles.Add(offset + 0);
+                roadTriangles.Add(i);
+                roadTriangles.Add(i - 1);
             }
+        }
+
+        void ClearRoadMesh()
+        {
+            RoadMesh.Clear();
+            roadVertices.Clear();
+            roadTriangles.Clear();
         }
     }
 }

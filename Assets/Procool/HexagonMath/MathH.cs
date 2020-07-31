@@ -1,4 +1,6 @@
-﻿using System.Net.NetworkInformation;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net.NetworkInformation;
 using UnityEngine;
 
 namespace Procool
@@ -99,16 +101,16 @@ namespace Procool
 
 
         public static Vector3Int ToCube(this Vector2Int v)
-            => new Vector3Int(v.x, v.y, 0 - v.x - v.y);
+            => new Vector3Int(v.x, 0 - v.x - v.y, v.y);
         
         public static Vector2Int ToAxial(this Vector3Int v)
-            => new Vector2Int(v.x, v.y);
+            => new Vector2Int(v.x, v.z);
 
         public static Vector3 ToCube(this Vector2 v)
-            => new Vector3(v.x, v.y, 0 - v.x - v.y);
+            => new Vector3(v.x, 0 - v.x - v.y, v.y);
 
         public static Vector2 ToAxial(this Vector3 v)
-            => new Vector2(v.x, v.y);
+            => new Vector2(v.x, v.z);
 
         
         public static Vector2 HexToWorld(this Vector3 hexagon, Vector2 worldOrigin, float size = DefaultSize)
@@ -183,6 +185,46 @@ namespace Procool
 
         public static (Vector2, Vector2) HexEdgeToWorld(Vector2Int pos, int idx, float size = DefaultSize)
             => HexEdgeToWorld(pos, idx, Vector2.zero, size);
+
+        public static int Distance(Vector3Int a, Vector3Int b)
+            => (Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y) + Mathf.Abs(a.z - b.z)) / 2;
+
+        public static int Distance(Vector2Int a, Vector2Int b)
+            => Distance(ToCube(a), ToCube(b));
+
+        public static IEnumerable<Vector3Int> Ring(Vector3Int center, int radius)
+        {
+            if (radius == 0)
+            {
+                yield return center;
+                yield break;
+            }
+
+            var cube = center + GetCubeDirection(4) * radius;
+            for (var i = 0; i < 6; i++)
+            {
+                for (var j = 0; j < radius; j++)
+                {
+                    yield return cube;
+                    cube += GetCubeDirection(i);
+                }
+            }
+        }
+
+        public static IEnumerable<Vector2Int> Ring(Vector2Int center, int radius)
+            => Ring(ToCube(center), radius).Select(ToAxial);
+
+        public static IEnumerable<Vector3Int> SpiralRing(Vector3Int center, int radius)
+        {
+            for (var r = 0; r < radius; r++)
+            {
+                foreach (var cube in Ring(center, r))
+                    yield return cube;
+            }
+        }
+
+        public static IEnumerable<Vector2Int> SpiralRing(Vector2Int center, int radius)
+            => SpiralRing(ToCube(center), radius).Select(ToAxial);
 
     }
 }

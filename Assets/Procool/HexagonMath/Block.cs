@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Procool
 {
     public struct Block
     {
+
         public const int LevelScale = 4;
         public const float MinSize = 1;
         /// <summary>
@@ -40,5 +42,52 @@ namespace Procool
         
         public static Block operator -(Block lhs, Vector2Int rhs)
             => new Block(lhs.Position - rhs, lhs.Level);
+
+        public static bool operator ==(Block lhs, Block rhs)
+            => lhs.Equals(rhs);
+
+        public static bool operator !=(Block lhs, Block rhs)
+            => !(lhs == rhs);
+        
+        public static float SizeOf(int level)
+            => MinSize * Mathf.Pow(LevelScale, level);
+
+
+        public bool Equals(Block other)
+        {
+            return Level == other.Level && Position.Equals(other.Position);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Block other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (Level * 397) ^ Position.GetHashCode();
+            }
+        }
+
+
+        private sealed class LevelPositionEqualityComparer : IEqualityComparer<Block>
+        {
+            public bool Equals(Block x, Block y)
+            {
+                return x.Level == y.Level && x.Position.Equals(y.Position);
+            }
+
+            public int GetHashCode(Block obj)
+            {
+                unchecked
+                {
+                    return (obj.Level * 397) ^ obj.Position.GetHashCode();
+                }
+            }
+        }
+
+        public static IEqualityComparer<Block> LevelPositionComparer { get; } = new LevelPositionEqualityComparer();
     }
 }

@@ -42,9 +42,11 @@ namespace Procool.Rendering
             SetupBuildingMesh();
         }
 
-        public void Dispose()
+        public void Clear()
         {
-            RoadMesh.Clear();
+            ClearRoadMesh();
+            ClearSidewalkMesh();
+            ClearBuildingMesh();
         }
     }
 }

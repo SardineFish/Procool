@@ -42,5 +42,12 @@ namespace Procool.Rendering
             SidewalkMesh.SetTriangles(sidewalkTriangles, 0);
             SidewalkMesh.RecalculateBounds();
         }
+
+        void ClearSidewalkMesh()
+        {
+            SidewalkMesh.Clear();
+            sidewalkTriangles.Clear();
+            sideWalkVerts.Clear();
+        }
     }
 }

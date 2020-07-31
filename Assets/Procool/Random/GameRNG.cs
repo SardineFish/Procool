@@ -5,6 +5,7 @@ using Unity.Mathematics;
 
 namespace Procool.Random
 {
+    
     public static class GameRNG
     {
         private static int seed;
@@ -25,7 +26,7 @@ namespace Procool.Random
         // TODO: Rewrite to use object pool & custom PRNG
         public static PRNG GetPRNG(Vector2 p)
         {
-            return new PRNG(FloatToIntBits(GetScalarByVec2(p)));
+            return new PRNG((int)FloatToIntBits(GetScalarByVec2(p)));
         }
 
         public static void ReleasePRNG(PRNG prng)
@@ -84,14 +85,80 @@ namespace Procool.Random
                 p = new Vector4(b.x, b.y, a.x, a.y);
             return GetScalarByVec4(p);
         }
+
+        public static float GetScalarByInt2(Vector2Int v)
+            => Int32ToFloat01(HashVecInt2(v));
+
+        public static float GetScalarByInt3(Vector3Int v)
+            => Int32ToFloat01(HashVecInt3(v));
         
         #endregion
 
+        #region Hash
+
+        // Reference: https://stackoverflow.com/questions/664014/what-integer-hash-function-are-good-that-accepts-an-integer-hash-key
+        public static uint HashInt32(uint x)
+        {
+            x = ((x >> 16) ^ x) * 0x45d9f3b;
+            x = ((x >> 16) ^ x) * 0x45d9f3b;
+            x = (x >> 16) ^ x;
+            return x;
+        }
+
+        public static int HashInt32(int x) => (int) HashInt32((uint) x);
+
+        public static uint UnhashInt32(uint x)
+        {
+            x = ((x >> 16) ^ x) * 0x119de1f3;
+            x = ((x >> 16) ^ x) * 0x119de1f3;
+            x = (x >> 16) ^ x;
+            return x;
+        }
+
+        public static ulong HashInt64(ulong x)
+        {
+            x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9L;
+            x = (x ^ (x >> 27)) * 0x94d049bb133111ebL;
+            x = x ^ (x >> 31);
+            return x;
+        }
+
+        public static ulong UnhashInt64(ulong x)
+        {
+            x = (x ^ (x >> 31) ^ (x >> 62)) * 0x319642b2d24d8ec3L;
+            x = (x ^ (x >> 27) ^ (x >> 54)) * 0x96de1b173f119089L;
+            x = x ^ (x >> 30) ^ (x >> 60);
+            return x;
+        }
+
+        static uint CantorPairing(uint x, uint y)
+            => (x + y) * (x + y + 1) / 2 + y;
+
+        public static uint HashVecInt2(Vector2Int v)
+        {
+            return CantorPairing((uint)HashInt32(v.x), (uint)HashInt32(v.y));
+        }
+
+        public static uint HashVecInt3(Vector3Int v)
+            => CantorPairing(CantorPairing((uint) HashInt32(v.x), (uint) HashInt32(v.y)), (uint) HashInt32(v.z));
+
+        #endregion
+        
         #region Utils
 
-        static int FloatToIntBits(float f)
+        /// <summary>
+        /// Directly convert 32 bits float into 32 bits integer
+        /// </summary>
+        /// <param name="f"></param>
+        /// <returns></returns>
+        static unsafe uint FloatToIntBits(float f)
         {
-            return BitConverter.ToInt32(BitConverter.GetBytes(f), 0);
+            return *(uint*) &f;
+        }
+        
+        static float Int32ToFloat01(uint n)
+        {
+            return (float) n / UInt32.MaxValue;
         }
 
         #endregion

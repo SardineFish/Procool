@@ -1,4 +1,5 @@
-﻿using Procool.Map;
+﻿using System;
+using Procool.Map;
 using Procool.Random;
 using Procool.Utils;
 using UnityEngine;
@@ -8,8 +9,7 @@ namespace Procool.GameSystems
     public class WorldGenerator : Singleton<WorldGenerator>
     {
         public int seed = -543004387;
-        public int cityGenerationLevel = 4;
-        private CityGenerator cityGenerator;
+        public float CityBlockPropotion = 0.3f;
 
         public CityGenerator.ExpressWayParameters expressWayParameters = new CityGenerator.ExpressWayParameters()
         {
@@ -43,12 +43,9 @@ namespace Procool.GameSystems
             GameRNG.SetSeed(seed);
         }
 
-        City GenerateCity(Block block)
-        {
-            if(cityGenerator != null)
-                cityGenerator.Dispose();
-            
-            cityGenerator = new CityGenerator(block);
+        CityGenerator CreateCityGenerator(Block block)
+        {   
+            var cityGenerator = new CityGenerator(block);
             cityGenerator.CityParams = cityParameters;
             cityGenerator.RoadParams = roadParameters;
             cityGenerator.ExpressWayParams = expressWayParameters;
@@ -62,19 +59,34 @@ namespace Procool.GameSystems
                 }
             }
             
-            CoroutineRunner.Run(cityGenerator.RunProgressive());
+            // CoroutineRunner.Run(cityGenerator.RunProgressive());
 
-            return cityGenerator.City;
+            return cityGenerator;
         }
 
-        public WorldBlock GenerateBlock(Vector2Int blockPos)
+        public static BlockType GenerateBlockType(Block block)
         {
-            var block = new Block(blockPos, cityGenerationLevel);
-            
-            var worldBlock = new WorldBlock(block);
-            worldBlock.AddContent(GenerateCity(block));
+            if (block.Position == Vector2Int.zero)
+                return BlockType.City;
+            var p = GameRNG.GetScalarByInt3(new Vector3Int(block.Position.x, block.Position.y, block.Level));
+            if (p < Instance.CityBlockPropotion)
+                return BlockType.City;
+            return BlockType.Wild;
+        }
 
-            return worldBlock;
+        public BlockGenerator GenerateBlock(Block block)
+        {
+            var blockType = GenerateBlockType(block);
+            var generator = new BlockGenerator(block, blockType);
+            
+            switch (blockType)
+            {
+                case BlockType.City:
+                    generator.AddContent(CreateCityGenerator(block));
+                    break;
+            }
+
+            return generator;
         }
     }
 }

@@ -53,9 +53,12 @@ namespace Procool.Rendering
             buildingRenderer.GetComponent<MeshFilter>().sharedMesh = meshGenerator.BuildingMesh;
         }
 
-        public void CleanUp()
+        public void Clear()
         {
-            throw new NotImplementedException();
+            meshGenerator.Clear();
+            roadRenderer.GetComponent<MeshFilter>().sharedMesh = null;
+            sidewalkRenderer.GetComponent<MeshFilter>().sharedMesh = null;
+            buildingRenderer.GetComponent<MeshFilter>().sharedMesh = null;
         }
     }
 }

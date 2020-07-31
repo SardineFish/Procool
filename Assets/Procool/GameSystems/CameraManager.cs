@@ -115,6 +115,7 @@ namespace Procool.GameSystems
 
             mapCamera.gameObject.SetActive(true);
             gameCamera.gameObject.SetActive(false);
+            Camera = mapCamera;
             mapTransitionVirtualCamera.enabled = false;
             mapVirtualCamera.enabled = true;
 
@@ -147,6 +148,7 @@ namespace Procool.GameSystems
             mapVirtualCamera.enabled = false;
             mapCamera.gameObject.SetActive(false);
             gameCamera.gameObject.SetActive(true);
+            Camera = gameCamera;
             
             foreach (var t in Utility.TimerNormalized(cameraTransitionTime))
             {

@@ -25,5 +25,12 @@ namespace Procool.Rendering
                 }
             }
         }
+
+        public void CleanUp()
+        {
+            ContentRenderers.ForEach(renderer => renderer.Clear());
+            ContentRenderers.Clear();
+            WorldBlock = null;
+        }
     }
 }

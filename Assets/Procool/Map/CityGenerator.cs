@@ -10,7 +10,7 @@ using Space = Procool.Map.SpacePartition.Space;
 
 namespace Procool.Map
 {
-    public partial class CityGenerator : IDisposable
+    public partial class CityGenerator : IBlockContentGenerator
     {
         public const int LargeCityBlocks = 30;
         public const int TinyCityBlocks = 10;
@@ -73,6 +73,11 @@ namespace Procool.Map
         {
             this.Block = block;
             prng = GameRNG.GetPRNG(Block.Position);
+        }
+
+        public BlockContent GetContent()
+        {
+            return City;
         }
 
         IEnumerator SplitRoads(EdgeType type, Vector2 roadDistance, float randomOffset)

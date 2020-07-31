@@ -2,6 +2,6 @@
 {
     public interface IBlockContentRenderer
     {
-        void CleanUp();
+        void Clear();
     }
 }
