@@ -15,9 +15,10 @@ namespace Procool.Map
                 (a, b) = (b, a);
             else if (a.Position.x == b.Position.x && a.Position.y > b.Position.y)
                 (a, b) = (b, a);
+            
             var offset = GameRNG.GetScalarByVec2Pair(a.Position, b.Position);
             var dir = b.Position - a.Position;
-            var (posA, posB) = MathH.HexEdgeToWorld(a.Position, MathH.GetDirectionIndex(dir), a.Size);
+            var (posA, posB) = MathH.HexEdgeToWorld(Vector2Int.zero, MathH.GetDirectionIndex(dir), a.Size);
             return Vector2.Lerp(posA, posB, offset);
         }
     }

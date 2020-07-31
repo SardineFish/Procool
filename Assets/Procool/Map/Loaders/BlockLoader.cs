@@ -9,7 +9,6 @@ using UnityEngine;
 
 namespace Procool.Map.Loader
 {
-    [RequireComponent(typeof(BlockRenderer))]
     public class BlockLoader : MonoBehaviour
     {
         public Block Block { get; private set; }

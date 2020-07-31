@@ -9,8 +9,8 @@ namespace Procool.Map
     public class CrossRoad : ObjectWithPool<CrossRoad>
     {
         public Vertex Vertex { get; private set; } = null;
-        private readonly List<CrossRoad> nextCrossRoad = new List<CrossRoad>(4);
-        private readonly List<Road> roads = new List<Road>(4);
+        private readonly List<CrossRoad> nextCrossRoad = new List<CrossRoad>(6);
+        private readonly List<Road> roads = new List<Road>(6);
 
         public IReadOnlyList<CrossRoad> NextCrossRoads => nextCrossRoad.AsReadOnly();
         public IReadOnlyList<Road> Roads => roads.AsReadOnly();
@@ -39,7 +39,11 @@ namespace Procool.Map
         public void LinkCrossRoads()
         {
             this.nextCrossRoad.Clear();
-            this.nextCrossRoad.AddRange(this.roads.Select(road => road.Edge.GetAnother(Vertex).GetData<CrossRoad>()));
+            foreach (var road in roads)
+            {
+                var another = road.Edge.GetAnother(Vertex).GetData<CrossRoad>();
+                nextCrossRoad.Add(another);
+            }
         }
         
     }
