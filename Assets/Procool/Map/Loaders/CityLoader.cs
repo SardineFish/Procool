@@ -6,6 +6,7 @@ namespace Procool.Map.Loader
 {
     public class CityLoader : ContentLoader<City>
     {
+        [SerializeField] private float physicsLoadingRadius = 200;
         [SerializeField] private new CityRenderer renderer;
         public City City { get; private set; }
 

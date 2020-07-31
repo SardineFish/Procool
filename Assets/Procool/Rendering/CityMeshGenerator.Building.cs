@@ -14,30 +14,32 @@ namespace Procool.Rendering
         private List<int> buildingMeshTriangles = new List<int>();
         // private List<Vector3> buildingNormals = new List<Vector3>();
 
-        void AddBuilding(Region region)
+        void AddBuilding(List<Vector2> regionVerts)
         {
             var height = Mathf.Lerp(5, 100, Mathf.Pow(UnityEngine.Random.value, 2));
             var offset = buildingMeshVerts.Count;
-            for (var i = 0; i < region.Vertices.Count; i++)
+            for (var i = 0; i < regionVerts.Count; i++)
             {
-                var pos = region.Vertices[i].Pos.ToVector3(-height);
+                var pos = regionVerts[i].ToVector3(-height);
                 buildingMeshVerts.Add(pos);
             }
-            for (var i = 2; i < region.Vertices.Count; i++)
+            for (var i = 2; i < regionVerts.Count; i++)
             {
                 buildingMeshTriangles.Add(offset);
                 buildingMeshTriangles.Add(offset + i);
                 buildingMeshTriangles.Add(offset + i - 1);
             }
 
-            offset += region.Vertices.Count;
-            foreach (var edge in region.Edges)
+            offset += regionVerts.Count;
+            for (var i = 0; i < regionVerts.Count; i++)
             {
-                var (a, b) = edge.Points;
-                buildingMeshVerts.Add(a.Pos);
-                buildingMeshVerts.Add(b.Pos);
-                buildingMeshVerts.Add(a.Pos.ToVector3(-height));
-                buildingMeshVerts.Add(b.Pos.ToVector3(-height));
+                var a = regionVerts[i];
+                var b = regionVerts[(i + 1) % regionVerts.Count];
+
+                buildingMeshVerts.Add(a);
+                buildingMeshVerts.Add(b);
+                buildingMeshVerts.Add(a.ToVector3(-height));
+                buildingMeshVerts.Add(b.ToVector3(-height));
                 buildingMeshTriangles.Add(offset + 0);
                 buildingMeshTriangles.Add(offset + 2);
                 buildingMeshTriangles.Add(offset + 1);
@@ -46,40 +48,20 @@ namespace Procool.Rendering
                 buildingMeshTriangles.Add(offset + 1);
                 offset += 4;
             }
-            // for (var i = 0; i < region.Vertices.Count; i++)
-            // {
-            //     var pos = region.Vertices[i].Pos.ToVector3(-height);
-            //     buildingMeshVerts.Add(pos);
-            // }
-            //
-            // for (var i = 0; i < region.Vertices.Count; i++)
-            // {
-            //     var pos = region.Vertices[i].Pos;
-            //     buildingMeshVerts.Add(pos);
-            // }
-            //
-            // for (var i = 0; i < region.Edges.Count; i++)
-            // {
-            //     buildingMeshTriangles.Add(offset + i + region.Vertices.Count);
-            //     buildingMeshTriangles.Add(offset + i);
-            //     buildingMeshTriangles.Add(offset + (i + 1) % region.Vertices.Count + region.Vertices.Count);
-            //     buildingMeshTriangles.Add(offset + i);
-            //     buildingMeshTriangles.Add(offset + (i + 1) % region.Vertices.Count);
-            //     buildingMeshTriangles.Add(offset + (i + 1) % region.Vertices.Count + region.Vertices.Count);
-            // }
         }
         void GenBuildingMesh(BuildingBlock buildingBlock)
         {
             foreach (var region in buildingBlock.SubSpace.Regions)
             {
+                AddBuilding(region.GetData<Building>().Vertices);
                 //AddBuilding(region);
-                region.ReOrderVertices();
-                var shrinkRegion = Region.Get(null);
-                if (Region.Utils.Shrink(region, shrinkRegion, edge=>edge.IsBoundary ? 0 : Mathf.Lerp(1, 2, GameRNG.GetScalarByVec2(edge.Points.Item1.Pos))))
-                {
-                    AddBuilding(shrinkRegion);
-                }
-                Region.Release(shrinkRegion, true);
+                // region.ReOrderVertices();
+                // var shrinkRegion = Region.Get(null);
+                // if (Region.Utils.Shrink(region, shrinkRegion, edge=> Mathf.Lerp(1, 2, GameRNG.GetScalarByVec2(edge.Points.Item1.Pos))))
+                // {
+                //     AddBuilding(shrinkRegion);
+                // }
+                // Region.Release(shrinkRegion, true);
             }
             
         }

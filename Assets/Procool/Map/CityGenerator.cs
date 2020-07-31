@@ -281,6 +281,7 @@ namespace Procool.Map
         }
 
         
+        
         void MergeCrossing(float threshold, float mergePass)
         {
             for (var pass = 0; pass < mergePass; pass++)
@@ -332,6 +333,39 @@ namespace Procool.Map
             }
         }
 
+        void GenBuildings(BuildingBlock buildingBlock)
+        {
+            var regionsToRemove = ListPool<Region>.Get();
+            regionsToRemove.Clear();
+
+            for (var i = 0; i < buildingBlock.SubSpace.Regions.Count; i++)
+            {
+                var region = buildingBlock.SubSpace.Regions[i];
+                if (!region.Edges.Any(edge => edge.IsBoundary))
+                {
+                    regionsToRemove.Add(region);
+                }
+                else
+                    region.ReOrderVertices();
+            }
+
+            foreach (var region in regionsToRemove)
+            {
+                buildingBlock.SubSpace.DeleteRegion(region);
+                Region.Release(region);
+            }
+
+            ListPool<Region>.Release(regionsToRemove);
+            
+            
+            foreach (var region in buildingBlock.SubSpace.Regions)
+            {
+                var building = Building.Get(region);
+                region.SetData(building);
+                building.Setup(RoadParams.alleyWidth);
+            }
+        }
+
         void GenAlley(BuildingBlock buildingBlock)
         {
             var obb = buildingBlock.Region.ComputeOMBB();
@@ -366,26 +400,6 @@ namespace Procool.Map
 
                 splitY += prng.GetInRange(RoadParams.alleyDistanceRange);
             }
-
-            var regionsToRemove = ListPool<Region>.Get();
-            regionsToRemove.Clear();
-
-            for (var i = 0; i < buildingBlock.SubSpace.Regions.Count; i++)
-            {
-                var region = buildingBlock.SubSpace.Regions[i];
-                if (!region.Edges.Any(edge => edge.IsBoundary))
-                {
-                    regionsToRemove.Add(region);
-                }
-                else
-                    region.ReOrderVertices();
-            }
-            foreach (var region in regionsToRemove)
-            {
-                buildingBlock.SubSpace.DeleteRegion(region);
-                Region.Release(region);
-            }
-            ListPool<Region>.Release(regionsToRemove);
         }
 
         void GenBuildingBlock(Region region)
@@ -396,6 +410,7 @@ namespace Procool.Map
             region.SetData(buildingBlock);
             buildingBlock.SetupSubspace(RoadParams.sideWalkWidth);
             GenAlley(buildingBlock);
+            GenBuildings(buildingBlock);
 
             foreach (var subRegion in buildingBlock.SubSpace.Regions)
             {

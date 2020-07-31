@@ -94,7 +94,6 @@ namespace Procool.Test
             // GetComponent<RoadRenderer>().Render(generator.City);
             GetComponent<CityRenderer>().DrawCity(generator.City);
 
-            yield break;
 
             while (true)
             {
