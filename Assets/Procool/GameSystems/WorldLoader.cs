@@ -10,12 +10,12 @@ namespace Procool.GameSystems
     {
         public int BlockSizeLevel = 5;
         public int BlockPreloadRadius = 3;
+        [SerializeField] private Transform blocksContainer;
         private HashSet<Block> LoadedBlocks = new HashSet<Block>();
         private HashSet<Block> PreloadBlocks = new HashSet<Block>();
         private HashSet<Block> UnloadBlocks = new HashSet<Block>();
         private readonly Dictionary<Block, BlockLoader> blockLoaders = new Dictionary<Block, BlockLoader>();
-        private Block CurrentCenterBlock;
-        
+        public Block CurrentPlayerBlock { get; private set; }
         
         private void Start()
         {
@@ -26,9 +26,9 @@ namespace Procool.GameSystems
         {
             var pos = CameraManager.Camera.transform.position;
             var block = BlockAt(pos);
-            if (block != CurrentCenterBlock)
+            if (block != CurrentPlayerBlock)
             {
-                CurrentCenterBlock = block;
+                CurrentPlayerBlock = block;
                 LoadBlocks();
             }
         }
@@ -39,7 +39,7 @@ namespace Procool.GameSystems
             newLoadedBlocks.Clear();
             PreloadBlocks.Clear();
             UnloadBlocks.Clear();
-            foreach (var pos in MathH.SpiralRing(CurrentCenterBlock.Position, BlockPreloadRadius))
+            foreach (var pos in MathH.SpiralRing(CurrentPlayerBlock.Position, BlockPreloadRadius))
             {
                 var block = new Block(pos, BlockSizeLevel);
                 newLoadedBlocks.Add(block);
@@ -60,6 +60,7 @@ namespace Procool.GameSystems
             foreach (var block in PreloadBlocks)
             {
                 var blockLoader = GameObjectPool.Get<BlockLoader>();
+                blockLoader.transform.parent = blocksContainer;
                 blockLoader.Load(block);
                 blockLoaders.Add(block, blockLoader);
             }
@@ -68,7 +69,7 @@ namespace Procool.GameSystems
             {
                 var blockLoader = blockLoaders[block];
                 blockLoader.Unload();
-                GameObjectPool.Release<BlockLoader>(blockLoader);
+                GameObjectPool.Release(blockLoader);
                 blockLoaders.Remove(block);
             }
         }

@@ -82,7 +82,7 @@ namespace Procool.Map
 
             var buildingBlock = BuildingBlock.Get(region);
             region.SetData(buildingBlock);
-            buildingBlock.SetupSubspace(RoadParams.sideWalkWidth);
+            buildingBlock.Setup(RoadParams.sideWalkWidth);
             GenAlley(buildingBlock);
             GenBuildings(buildingBlock);
 

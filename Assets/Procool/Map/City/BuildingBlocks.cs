@@ -1,5 +1,7 @@
 ﻿using Procool.Map.SpacePartition;
 using Procool.Utils;
+using UnityEngine;
+using Space = Procool.Map.SpacePartition.Space;
 
 namespace Procool.Map
 {
@@ -8,11 +10,14 @@ namespace Procool.Map
         public Region Region { get; private set; }
 
         public Space SubSpace { get; private set; }
+        
+        public Vector2 Center { get; private set; }
 
         public static BuildingBlock Get(Region region)
         {
             var data = GetInternal();
             data.Region = region;
+            data.Center = Vector2.zero;
             return data;
         }
 
@@ -22,7 +27,7 @@ namespace Procool.Map
             Release(buildingBlock);
         }
 
-        public void SetupSubspace(float shrinkWidth)
+        public void Setup(float shrinkWidth)
         {
             SubSpace = Space.Get();
             var subRegion = SpacePartition.Region.Get(SubSpace);
@@ -32,26 +37,10 @@ namespace Procool.Map
             }
             else
                 Region.Release(subRegion, true);
-            // subRegion.StartConstruct();
-            // foreach (var t in Region.Vertices)
-            // {
-            //     var vert = Vertex.Get(t.Pos);
-            //     subRegion.AddVertex(vert);
-            // }
-            //
-            // for (var i = 0; i < subRegion.Vertices.Count; i++)
-            // {
-            //     var a = subRegion.Vertices[i];
-            //     var b = subRegion.Vertices[(i + 1) % subRegion.Vertices.Count];
-            //     var edge = Edge.Get(a, b);
-            //     edge.EdgeType = Region.Edges[i].EdgeType;
-            //     a.AddEdge(edge);
-            //     b.AddEdge(edge);
-            //     subRegion.AddEdge(edge);
-            //     edge.AddRegion(subRegion);
-            // }
-            // subRegion.EndConstruct();
-            // SubSpace.Regions.Add(subRegion);
+            Center = Vector2.zero;
+            foreach (var vert in Region.Vertices)
+                Center += vert.Pos;
+            Center /= Region.Vertices.Count;
         }
 
     }

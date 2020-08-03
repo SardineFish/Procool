@@ -93,6 +93,7 @@ namespace Procool.Test
             
             // GetComponent<RoadRenderer>().Render(generator.City);
             GetComponent<CityRenderer>().DrawCity(generator.City);
+            Debug.Log($"Generated city with totally {generator.City.Vertices.Count} vertices, {generator.City.Edges.Count} edges, {generator.City.Regions.Count} regions.");
 
 
             while (true)

@@ -124,6 +124,16 @@ namespace Procool.Map.SpacePartition
 
                 return true;
             }
+
+            public static void DrawDebug(Region region, Color color)
+            {
+                foreach (var edge in region.edges)
+                {
+                    var (a, b) = edge.Points;
+                    Debug.DrawLine(a.Pos, b.Pos, color);
+                }
+            }
+            
         }
     }
 }

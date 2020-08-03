@@ -21,6 +21,9 @@ namespace Procool.Map
         }
 
         public void AddContent(BlockContent content)
-            => Contents.Add(content);
+        {
+            content.WorldBlock = this;
+            Contents.Add(content);
+        }
     }
 }

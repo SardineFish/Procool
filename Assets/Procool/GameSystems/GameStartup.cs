@@ -16,8 +16,7 @@ namespace Procool.GameSystems
         {
             // var worldBlock = WorldGenerator.Instance.GenerateBlock(new Vector2Int(0, 0));
             // WorldRenderer.Instance.LoadBlock(worldBlock);
-            
-            var player = Instantiate(PrefabManager.Instance.PlayerPrefab).GetComponent<Player>();
+            var player = GameSystem.SpawnPlayer();
             var weapon = WeaponSystem.Instance.GenerateWeapon(GameRNG.GetPRNG(new Vector2(0, 0)));
             player.transform.position = PlayerSpawnPosition.position;
             

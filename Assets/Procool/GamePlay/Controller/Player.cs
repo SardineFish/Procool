@@ -4,16 +4,23 @@ using UnityEngine;
 
 namespace Procool.GamePlay.Controller
 {
-    public class Player : ManagedMonobehaviour<Player>
+    public class Player : ManagedMonobehaviour<Player>, IBlockPositionEntity
     {
         public float HP = 100;
         public float MaxHP = 100;
         public float Armour = 0;
         public Inventory.Inventory Inventory { get; private set; }
+        
+        public BlockPosition BlockPosition { get; set; }
 
         private void Awake()
         {
             Inventory = new Inventory.Inventory(this);
+        }
+
+        private void Update()
+        {
+            BlockPosition = new BlockPosition(new Block(0, 0, 5), transform.position);
         }
 
         public void ApplyDamage(float damage)

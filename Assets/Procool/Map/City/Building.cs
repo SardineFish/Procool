@@ -16,6 +16,7 @@ namespace Procool.Map
             var building = GetInternal();
             building.Region = region;
             building.Vertices.Clear();
+            building.Center =Vector2.zero;
             return building;
         }
 
@@ -35,6 +36,11 @@ namespace Procool.Map
                 foreach(var vert in shrinkRegion.Vertices)
                     Vertices.Add(vert.Pos);
             }
+
+            Center = Vector2.zero;
+            foreach (var vert in shrinkRegion.Vertices)
+                Center += vert.Pos;
+            Center /= Region.Vertices.Count;
 
             Region.Release(shrinkRegion);
         }
