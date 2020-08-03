@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 2204612812105792016}
   - component: {fileID: 2246082721227380626}
   - component: {fileID: 4746808712773604527}
+  - component: {fileID: 4072902261771126959}
   m_Layer: 0
-  m_Name: CityRenderer
+  m_Name: CityLoader
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,6 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e136c0e7d4f4b0ba2acdb3775f6950f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cityLoadingDistance: 500
+  buildingBlockLoadingDistance: 200
   renderer: {fileID: 4746808712773604527}
 --- !u!114 &4746808712773604527
 MonoBehaviour:
@@ -64,6 +67,18 @@ MonoBehaviour:
   roadMaterial: {fileID: 2100000, guid: 82383ddd1ed0cce40bb401b53d033b37, type: 2}
   sidewalkMaterial: {fileID: 2100000, guid: 4407494e596dc484aa62e2d851d8016e, type: 2}
   buildingMagerial: {fileID: 2100000, guid: e8a1cbc2463b44646871f5765b05e4ed, type: 2}
+--- !u!114 &4072902261771126959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2204612812105792018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9171881cf0504c858335d403dce4a991, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6200859716061244313
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Procool.Map.SpacePartition;
 using Procool.Utils;
+using UnityEngine;
 
 namespace Procool.Map
 {
@@ -19,9 +20,9 @@ namespace Procool.Map
                 Edge = edge;
             }
         }
-        private List<Edge> edges;
-        private List<Vertex> vertices;
-        private List<float> costs;
+        // private IReadOnlyList<Edge> edges;
+        // private IReadOnlyList<Vertex> vertices;
+        // private List<float> costs;
         private Stack<Edge> result;
         private PriorityQueue<float, Path> reachableVertices;
         private Dictionary<Vertex, Path> knownPaths;
@@ -29,19 +30,17 @@ namespace Procool.Map
         public Func<Vertex, Edge, Edge, float> CostEvaluator = (vert, nextEdge, previousEdge) => 1f;
         
 
-        public PathFinder(IEnumerable<Vertex> vertices, IEnumerable<Edge> edges)
+        public PathFinder(int capacity)
         {
-            this.vertices = new List<Vertex>(vertices);
-            this.edges = new List<Edge>(edges);
-            costs = new List<float>(this.vertices.Count);
-            result = new Stack<Edge>(this.edges.Count);
-            reachableVertices = new PriorityQueue<float, Path>(this.vertices.Count);
-            knownPaths = new Dictionary<Vertex, Path>(this.vertices.Count);
+            // this.vertices = new List<Vertex>(vertices);
+            // this.edges = new List<Edge>(edges);
+            result = new Stack<Edge>(capacity);
+            reachableVertices = new PriorityQueue<float, Path>(capacity);
+            knownPaths = new Dictionary<Vertex, Path>(capacity);
         }
 
         public IEnumerable<Edge> Find(Vertex start, Vertex end)
         {
-            costs.Clear();
             result.Clear();
             reachableVertices.Clear();
             knownPaths.Clear();

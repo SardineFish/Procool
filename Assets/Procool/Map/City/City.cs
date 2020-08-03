@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Procool.Map.SpacePartition;
+using UnityEngine;
 
 namespace Procool.Map
 {
@@ -54,6 +55,18 @@ namespace Procool.Map
                 Edge.Release(edge);
             foreach(var vertex in vertices)
                 Vertex.Release(vertex);
+        }
+
+        // TODO: Optimise with k-d tree
+        public IEnumerable<BuildingBlock> FindBlocksInDistance(Vector2 center, float distance)
+        {
+            return BuildingBlocks.Where(block => Vector2.Distance(center, block.Center) < distance);
+        }
+
+        // TODO: Optimise with k-d tree
+        public IEnumerable<Building> FindBuildingsInDistance(Vector2 center, float distance)
+        {
+            return Buildings.Where(building => Vector2.Distance(center, building.Center) < distance);
         }
     }
 }

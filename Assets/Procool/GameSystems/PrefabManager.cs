@@ -7,6 +7,7 @@ namespace Procool.GameSystems
     {
         public GameObject DropedItemPrefab;
         public GameObject PlayerPrefab;
+        public GameObject EnemyPrefab;
         public GameObject DamageEntityPrefab;
         public GameObject CityLoaderPrefab;
 

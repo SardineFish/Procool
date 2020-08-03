@@ -15,6 +15,8 @@ namespace Procool.Map.Loader
         [SerializeField] private float cityLoadingDistance = 500;
         [SerializeField] private float buildingBlockLoadingDistance = 200;
         [SerializeField] private new CityRenderer renderer;
+
+        [SerializeField] private bool showLoadedBlocks = false;
         
         private readonly Dictionary<BuildingBlock, BuildingBlockLoader> loadedBlocks = new Dictionary<BuildingBlock,
             BuildingBlockLoader>();
@@ -83,6 +85,8 @@ namespace Procool.Map.Loader
 
         private void OnDrawGizmos()
         {
+            if(!showLoadedBlocks)
+                return;
             foreach (var buildingBlock in loadedBlocks)
             {
                 Region.Utils.DrawDebug(buildingBlock.Key.Region, Color.cyan);

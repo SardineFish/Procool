@@ -377,5 +377,17 @@ namespace Procool.Map.SpacePartition
                 }
             }
         }
+
+        // Vertices order should be ccw
+        public bool OverlapPoint(Vector2 point)
+        {
+            for (var i = 0; i < vertices.Count; i++)
+            {
+                if (MathUtility.Cross2(edges[i].GetVector(vertices[i]), point - vertices[i].Pos) > 0)
+                    return false;
+            }
+
+            return true;
+        }
     }
 }

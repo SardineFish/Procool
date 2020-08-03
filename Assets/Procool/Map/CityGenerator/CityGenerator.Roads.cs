@@ -54,7 +54,7 @@ namespace Procool.Map
         private void GenerateExpressWay()
         {
             UpdateEdgesAndVerts();
-            pathFinder = new PathFinder(Vertices, Edges);
+            pathFinder = new PathFinder(regionsVertices.Count + isolatedVertices.Count);
 
 
             float cosAcceptableAngle = Mathf.Cos(Mathf.Deg2Rad * ExpressWayParams.acceptableBendAngle);

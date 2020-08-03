@@ -37,7 +37,13 @@ namespace Procool.Misc
         
         public Vector2 WorldToObb(Vector2 pos)
             =>new Vector2(Vector2.Dot(pos - Center, AxisX), Vector2.Dot(pos - Center, AxisY));
-        
+
+        public bool IsOverlap(Vector2 point)
+        {
+            var pos = WorldToObb(point);
+            var delta = MathUtility.Abs(pos);
+            return delta.x <= HalfSize.x && delta.y <= HalfSize.y;
+        }
         
     }
 }

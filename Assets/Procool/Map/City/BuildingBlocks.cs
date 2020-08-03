@@ -1,4 +1,5 @@
 ﻿using Procool.Map.SpacePartition;
+using Procool.Misc;
 using Procool.Utils;
 using UnityEngine;
 using Space = Procool.Map.SpacePartition.Space;
@@ -12,6 +13,8 @@ namespace Procool.Map
         public Space SubSpace { get; private set; }
         
         public Vector2 Center { get; private set; }
+        
+        public OBB OBB { get; private set; }
 
         public static BuildingBlock Get(Region region)
         {
@@ -41,6 +44,7 @@ namespace Procool.Map
             foreach (var vert in Region.Vertices)
                 Center += vert.Pos;
             Center /= Region.Vertices.Count;
+            OBB = Region.ComputeOMBB();
         }
 
     }

@@ -96,7 +96,7 @@ public static class Utility
         foreach (var item in ts)
             callback(item);
     }
-    public static IEnumerable<T> RandomTake<T>(this IEnumerable<T> list,int count)
+    public static IEnumerable<T> RandomSequence<T>(this IEnumerable<T> list,int count)
     {
         var source = list.ToArray();
 
@@ -107,6 +107,9 @@ public static class Utility
             source[idx] = source[count - i - 1];
         }
     }
+
+    public static T RandomTake<T>(this IEnumerable<T> source, float randomValue)
+        => RandomTake(source, randomValue, _ => 1);
 
     public static T RandomTake<T>(this IEnumerable<T> source, float randomValue, Func<T, float> probabilityEvaluator)
     {
@@ -462,6 +465,9 @@ public static class Utility
         }
         return v;
     }
+
+    public static T Tail<T>(this IList<T> list)
+        => list[list.Count - 1];
 
     public static GenericPlatform GetGenericPlatform(RuntimePlatform platform)
     {

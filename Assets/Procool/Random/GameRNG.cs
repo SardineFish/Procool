@@ -48,6 +48,14 @@ namespace Procool.Random
             return math.frac((p3.x + p3.y) * p3.z);
         }
 
+        public static Vector2 GetVec2ByVec2(Vector2 pos)
+        {
+            float2 p = pos;
+            float3 p3 = math.frac(new float3(p.xyx) * new float3(.1031f, .1030f, .0973f));
+            p3 += math.dot(p3, p3.yzx + 33.33f);
+            return math.frac((p3.xx + p3.yz) * p3.zy);
+        }
+
         public static Vector4 GetVec4ByScalar(float p)
         {
             p += randOffset.x;
