@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using Procool.Utils;
 using UnityEngine;
@@ -71,6 +72,9 @@ namespace Procool.Map.SpacePartition
                 }
 
                 var newVerts = ListPool<Vector2>.Get();
+                newVerts.Clear();
+                var inheritEdge = ListPool<int>.Get();
+                inheritEdge.Clear();
 
                 for (var i = 0; i < verts.Count; i++)
                 {
@@ -88,14 +92,25 @@ namespace Procool.Map.SpacePartition
                         if (nextLength <= 0) continue;
                         // TODO: Avoid calculate intersection when j == i + 1
                         if (j == i + 1)
-                        {
                             newVerts.Add(verts[j]);
-                        }
                         else if (MathUtility.LineIntersect(verts[i], dir, verts[j], nextDir, out var point))
                             newVerts.Add(point);
+                        else
+                        {
+                            // Should not happen.
+                            continue;
+                        }
+
+                        inheritEdge.Add(i);
+                        if(j <= i)
+                            goto Complete;
+
+                        i = (j - 1 + verts.Count) % verts.Count;
+                        
                         break;
                     }
                 }
+                Complete:
 
                 if (newVerts.Count <= 0)
                     return false;
@@ -113,6 +128,7 @@ namespace Procool.Map.SpacePartition
                     }
                     var edge = Edge.Get(a, b);
                     edge.AddRegion(result);
+                    edge.SetData(region.edges[inheritEdge[(i + 1) % newVerts.Count]].GetData<object>());
                     result.edges.Add(edge);
                     a.AddEdge(edge);
                     b.AddEdge(edge);
@@ -121,6 +137,7 @@ namespace Procool.Map.SpacePartition
 
                 ListPool<Vector2>.Release(newVerts);
                 ListPool<Vector2>.Release(verts);
+                ListPool<int>.Release(inheritEdge);
 
                 return true;
             }

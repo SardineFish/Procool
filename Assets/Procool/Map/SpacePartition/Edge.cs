@@ -60,6 +60,7 @@ namespace Procool.Map.SpacePartition
             newEdgeA.EdgeType = newEdgeB.EdgeType = EdgeType;
             newVert.AddEdge(newEdgeA);
             newVert.AddEdge(newEdgeB);
+            newEdgeA.UserData = newEdgeB.UserData = this.UserData;
             if (Regions.Item1)
                 Regions.Item1._SplitEdgeInternal(this, newVert, (newEdgeA, newEdgeB));
             if (Regions.Item2)

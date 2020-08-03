@@ -29,9 +29,30 @@ namespace Procool.Test
                 Shrink();
 
             if (originalPolygon)
+            {
                 DrawDebugPolygon(originalPolygon, Color.magenta);
+                foreach (var edge in originalPolygon.Edges)
+                {
+                    if (edge.GetData<string>() == "test")
+                    {
+                        var (a, b) = edge.Points;
+                        Debug.DrawLine(a.Pos, b.Pos, Color.red);
+                    }
+                }
+            }
+
             if (newPolygon)
+            {
                 DrawDebugPolygon(newPolygon, Color.cyan);
+                foreach (var edge in newPolygon.Edges)
+                {
+                    if (edge.GetData<string>() == "test")
+                    {
+                        var (a, b) = edge.Points;
+                        Debug.DrawLine(a.Pos, b.Pos, Color.green);
+                    }
+                }
+            }
         }
 
         void Shrink()
@@ -72,6 +93,9 @@ namespace Procool.Test
             {
                 AddEdge(i, (i + 1) % ((int) count));
             }
+
+            var t = prng.GetInRange(0, count);
+            originalPolygon.Edges[t].SetData("test");
 
             originalPolygon.EndConstruct();
             
