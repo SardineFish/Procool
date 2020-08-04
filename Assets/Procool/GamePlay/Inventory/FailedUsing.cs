@@ -13,5 +13,10 @@ namespace Procool.GamePlay.Inventory
         {
             yield break;
         }
+
+        public bool Tick()
+        {
+            return false;
+        }
     }
 }

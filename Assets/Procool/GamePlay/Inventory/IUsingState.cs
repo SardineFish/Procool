@@ -6,5 +6,6 @@ namespace Procool.GamePlay.Inventory
     {
         void Terminate();
         IEnumerator Wait();
+        bool Tick();
     }
 }

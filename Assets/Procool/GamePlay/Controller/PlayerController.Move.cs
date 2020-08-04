@@ -21,7 +21,24 @@ namespace Procool.GamePlay.Controller
 
             public override void Enter(PlayerController player)
             {
-                
+                player.StartCoroutine(UseItemCoroutine(player));
+            }
+
+
+            IEnumerator UseItemCoroutine(PlayerController player)
+            {
+                while (true)
+                {
+                    if (player.Input.GamePlay.Fire.ReadValue<float>() > 0.5f)
+                    {
+                        var item = player.Player.Inventory.GetItem(0);
+                        var usingState = item.Activate();
+                        while (player.Input.GamePlay.Fire.ReadValue<float>() > 0.5f && usingState.Tick())
+                            yield return null;
+                    }
+
+                    yield return null;
+                }
             }
 
             IEnumerator UserItem(PlayerController player)
@@ -51,10 +68,10 @@ namespace Procool.GamePlay.Controller
                     }
                 }
 
-                if (player.Input.GamePlay.Fire.ReadValue<float>() > 0.5f && (UsingItem is null))
-                    player.StartCoroutine(UserItem(player));
-                else if (player.Input.GamePlay.Fire.ReadValue<float>() <= 0)
-                    UsingItem?.Terminate();
+                // if (player.Input.GamePlay.Fire.ReadValue<float>() > 0.5f && (UsingItem is null))
+                //     player.StartCoroutine(UserItem(player));
+                // else if (player.Input.GamePlay.Fire.ReadValue<float>() <= 0)
+                //     UsingItem?.Terminate();
 
                 
                 return true;

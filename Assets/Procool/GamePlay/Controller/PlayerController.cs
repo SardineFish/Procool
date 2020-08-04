@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Procool.Input;
@@ -48,6 +49,7 @@ namespace Procool.GamePlay.Controller
         {
             Input.Disable();
         }
+
 
         private void Update()
         {

@@ -106,6 +106,9 @@ namespace Procool.GamePlay.Weapon
                 Dispose();
         }
 
+        public bool Tick()
+            => runner.Tick();
+
         public Coroutine RunDetach()
         {
             return StartCoroutine(Wait());
