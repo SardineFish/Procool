@@ -19,7 +19,7 @@ namespace Procool.GamePlay.Weapon
         {
             return new Move.Data(this)
             {
-                Speed = prng.GetInRange(5, 20)
+                Speed = prng.GetInRange(10, 20)
             };
         }
 

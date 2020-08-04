@@ -43,9 +43,9 @@ namespace Procool.GamePlay.Weapon
                 }
             }
 
-            entity.SpriteRenderer.tileMode = SpriteTileMode.Continuous;
-            entity.SpriteRenderer.size =
-                new Vector2(data.Width, distance);
+            // entity.SpriteRenderer.tileMode = SpriteTileMode.Continuous;
+            // entity.SpriteRenderer.size =
+            //     new Vector2(data.Width, distance);
 
             entity.GetComponent<BoxCollider2D>().offset = new Vector2(0, distance / 2);
             entity.GetComponent<BoxCollider2D>().size = new Vector2(data.Width, distance);

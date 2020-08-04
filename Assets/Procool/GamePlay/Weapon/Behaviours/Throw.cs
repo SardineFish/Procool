@@ -19,8 +19,8 @@ namespace Procool.GamePlay.Weapon
         {
             return new Throw.Data(this)
             {
-                Distance = prng.GetInRange(3, 10),
-                StartSpeed = prng.GetInRange(5, 20),
+                Distance = prng.GetInRange(3, 8),
+                StartSpeed = prng.GetInRange(5, 16),
             };
         }
 

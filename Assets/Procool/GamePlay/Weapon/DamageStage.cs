@@ -20,7 +20,7 @@ namespace Procool.GamePlay.Weapon
     {
         public ColliderType ColliderType;
         public List<WeaponBehaviourData> Behaviours = new List<WeaponBehaviourData>();
-        public BulletVFX BulletVFX;
+        // public BulletVFX BulletVFX;
         public bool Detach = false;
 
         // public IEnumerator Run(Weapon weapon, Transform attachTo = null)

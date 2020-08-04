@@ -70,6 +70,8 @@ namespace Procool.GamePlay.Combat
             for (var i = 0; i < enemyCount; i++)
             {    
                 Enemies.Add(SpawnEnemy());
+                Enemies.Add(SpawnEnemy());
+                Enemies.Add(SpawnEnemy());
             }
             
         }

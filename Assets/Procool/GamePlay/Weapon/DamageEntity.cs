@@ -10,17 +10,24 @@ using UnityEngine;
 
 namespace Procool.GamePlay.Weapon
 {
-    [RequireComponent(typeof(SpriteRenderer), typeof(CircleCollider2D), typeof(BoxCollider2D))]
-    public class DamageEntity : MonoBehaviour, IUsingState
+    [RequireComponent(typeof(CircleCollider2D), typeof(BoxCollider2D))]
+    public class DamageEntity : ManagedMonobehaviour<DamageEntity>, IUsingState
     {
         public Player Owner { get; private set; }
         public List<ContactPoint2D> Contacts { get; } = new List<ContactPoint2D>(16);
         public HashSet<Player> ContactedPlayers = new HashSet<Player>();
         public HashSet<Player> DamageRecord { get; } = new HashSet<Player>();
         public Weapon Weapon { get; private set; }
-        public SpriteRenderer SpriteRenderer { get; private set; }
+        // public SpriteRenderer SpriteRenderer { get; private set; }
         public BoxCollider2D BoxCollider { get; private set; }
         public CircleCollider2D CircleCollider { get; private set; }
+
+        public BulletVFX BulletVfx { get; private set; } = new BulletVFX()
+        {
+            BulletSize = .2f,
+            PrimaryColor = Color.red,
+            SecondaryColor = Color.white,
+        };
 
         [SerializeField] private TrailRenderer trailRenderer;
         [SerializeField] private Flicker flicker;
@@ -32,7 +39,7 @@ namespace Procool.GamePlay.Weapon
 
         private void Awake()
         {
-            SpriteRenderer = GetComponent<SpriteRenderer>();
+            // SpriteRenderer = GetComponent<SpriteRenderer>();
             BoxCollider = GetComponent<BoxCollider2D>();
             CircleCollider = GetComponent<CircleCollider2D>();
             BoxCollider.enabled = false;
@@ -109,15 +116,15 @@ namespace Procool.GamePlay.Weapon
 
         public void SetVFX(ref BulletVFX vfx)
         {
-            return;
-            SpriteRenderer.sprite = vfx.Sprite;
-            SpriteRenderer.color = vfx.SpriteColor;
+            BulletVfx = vfx;
+            // SpriteRenderer.sprite = vfx.Sprite;
+            // SpriteRenderer.color = vfx.SpriteColor;
             flicker.enabled = vfx.Flicking;
             flicker.renderer.color = vfx.FlickingColor;
             trailRenderer.endColor = trailRenderer.startColor = vfx.SpriteColor;
             trailRenderer.startWidth = vfx.TrailStartWidth;
             trailRenderer.endWidth = vfx.TrailEndWidth;
-            trailRenderer.time = vfx.TrailLength;
+            // trailRenderer.time = vfx.TrailLength;
         }
 
         public bool GetMostContact(out ContactPoint2D result)

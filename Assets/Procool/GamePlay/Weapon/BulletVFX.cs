@@ -4,6 +4,9 @@ namespace Procool.GamePlay.Weapon
 {
     public struct BulletVFX
     {
+        public Color PrimaryColor;
+        public Color SecondaryColor;
+        public float BulletSize;
         public Sprite Sprite;
         public Color SpriteColor;
         public bool EnableTrail;

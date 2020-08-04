@@ -586,6 +586,38 @@ public static class Utility
         return (mesh, transform);
     }
 
+    /// <summary>
+    /// Generate quad with vertices from (-0.5, -0.5, 0) to (0.5, 0.5, 0)
+    /// </summary>
+    /// <returns></returns>
+    public static Mesh GenerateQuadXY()
+    {
+        var mesh = new Mesh();
+        mesh.vertices = new []
+        {
+            new Vector3(-.5f, -.5f, 0),
+            new Vector3( .5f, -.5f, 0),
+            new Vector3( .5f,  .5f, 0),
+            new Vector3(-.5f,  .5f, 0), 
+        };
+        mesh.triangles = new int[]
+        {
+            0, 2, 1,
+            0, 3, 2,
+        };
+        mesh.uv = new Vector2[]
+        {
+            new Vector2(0, 0),
+            new Vector2(1, 0),
+            new Vector2(1, 1),
+            new Vector2(0, 1),
+        };
+        mesh.RecalculateNormals();
+        mesh.RecalculateTangents();
+        mesh.RecalculateBounds();
+        return mesh;
+    }
+
     public static void DebugDrawTriangle(Vector2 a, Vector2 b, Vector2 c, Color color)
     {
         Debug.DrawLine(a, b, color);

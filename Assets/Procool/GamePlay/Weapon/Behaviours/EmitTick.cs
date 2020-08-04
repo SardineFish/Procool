@@ -20,7 +20,7 @@ namespace Procool.GamePlay.Weapon
         {
             return new EmitTick.Data(this)
             {
-                Interval = prng.GetInRange(.3f, .6f)
+                Interval = prng.GetInRange(.3f, .6f),
             };
         }
 
