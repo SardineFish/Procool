@@ -33,6 +33,7 @@ namespace Procool.GamePlay.Weapon
             public bool IsDefaultTerminator = false;
             public bool IsPrimary = false;
             public bool IsDetachEmitter = false;
+            public bool IsCollider = false;
             public List<PossibleBehaviour> CompatibleParallels = new List<PossibleBehaviour>();
             public List<PossibleBehaviour> NextStages = new List<PossibleBehaviour>();
             public WeaponConstructor Constructor;
@@ -94,6 +95,12 @@ namespace Procool.GamePlay.Weapon
             public BehaviourConstructor<T> Terminator()
             {
                 IsTerminator = true;
+                return this;
+            }
+
+            public BehaviourConstructor<T> Collider()
+            {
+                IsCollider = true;
                 return this;
             }
 
@@ -172,6 +179,19 @@ namespace Procool.GamePlay.Weapon
             }
             
             throw new Exception("Unreachable code.");
+        }
+
+        bool CheckCollisionBehaviour(DamageStage stage)
+        {
+            if (!stage || stage.Behaviours.Count <= 0)
+                return false;
+            var needCollider = stage.Behaviours.Any(behavior =>
+                behavior.Behaviour is Move || behavior.Behaviour is Throw || behavior.Behaviour is Laser);
+            var hasCollider = stage.Behaviours.Any(data => GetBehaviourConstructor(data.Behaviour).IsCollider);
+
+            if (needCollider && !hasCollider)
+                return false;
+            return true;
         }
 
         public DamageStage BuildStage(PRNG prng, IEnumerable<PossibleBehaviour> behaviours, bool firstStage, bool requirePrimary, bool detach, int depth,
@@ -288,9 +308,18 @@ namespace Procool.GamePlay.Weapon
             {
                 var t = prng.GetScalar();
                 var terminator = PossibleBehaviours
-                    .Where(data => data.ConstructData.IsTerminator)
+                    .Where(data => data.ConstructData.IsDefaultTerminator)
                     .RandomTake(t, data => data.Probability);
-                pendingBehaviours.Add(terminator.ConstructData);
+                
+                stage.Behaviours.Add(terminator.Behaviour.GenerateBehaviourData(prng));
+            }
+
+            if (!CheckCollisionBehaviour(stage))
+            {
+                var collisionBehaviour = PossibleBehaviours
+                    .Where(data => data.ConstructData.IsCollider && !data.ConstructData.IsPrimary)
+                    .RandomTake(prng.GetScalar(), data => data.Probability);
+                stage.Behaviours.Add(collisionBehaviour.Behaviour.GenerateBehaviourData(prng));
             }
 
 

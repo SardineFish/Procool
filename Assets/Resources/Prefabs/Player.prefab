@@ -123,7 +123,6 @@ GameObject:
   - component: {fileID: 3763500940701439096}
   - component: {fileID: 3763500940701439097}
   - component: {fileID: 3763500940701439098}
-  - component: {fileID: 3763500940701439102}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -234,54 +233,3 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &3763500940701439102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3763500940701439099}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 2ce1486ae6bc3d64b8758607026aed9e,
-    type: 3}
-  m_NotificationBehavior: 3
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 29d8b82f-6311-4d29-96b8-c4c0695bd5a3
-    m_ActionName: GamePlay/Move[/XInputControllerWindows/leftStick,/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 2cbf275a-1f43-4b42-ad07-2c75d198e356
-    m_ActionName: GamePlay/Zoom[/XInputControllerWindows/dpad/y,/Mouse/scroll/y]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 35deeacc-c8a0-4f6c-b3f0-7b36e1bcf187
-    m_ActionName: GamePlay/Direction[/XInputControllerWindows/rightStick]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: c7ba5b84-1e11-4f19-9495-17185e0853da
-    m_ActionName: GamePlay/Fire[/XInputControllerWindows/rightTrigger,/Mouse/leftButton]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 2520be00-0c68-4f89-80db-ac4f3ed9690a
-    m_ActionName: GamePlay/Pointer[/Mouse/position]
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: GamePad
-  m_DefaultActionMap: GamePlay
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}

@@ -41,6 +41,7 @@ namespace Procool.Map.Loader
                     case City city:
                     {
                         var loader = GameObjectPool.Get<CityLoader>(PrefabManager.Instance.CityLoaderPrefab);
+                        loader.transform.parent = transform;
                         contentLoaders.Add(loader);
                         loader.Load(city);
                         break;

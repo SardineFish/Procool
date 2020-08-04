@@ -21,6 +21,7 @@ namespace Procool.GamePlay.Weapon
             base.Awake();
             WeaponConstructor.Behaviour<Laser>()
                 .Primary()
+                .Collider()
                 .CompatibleWith<Bounce>()
                 .CompatibleWith<Damage>(10)
                 .CompatibleWith<Destructor>();
@@ -29,6 +30,7 @@ namespace Procool.GamePlay.Weapon
                 .Primary()
                 .CompatibleWith<Bounce>()
                 .CompatibleWith<Damage>()
+                .CompatibleWith<CollisionTrigger>()
                 .CompatibleWith<Destructor>()
                 .CompatibleWith<EmitContinuous>()
                 .CompatibleWith<EmitTick>()
@@ -39,6 +41,7 @@ namespace Procool.GamePlay.Weapon
                 .CompatibleWith<Bounce>()
                 .CompatibleWith<Damage>()
                 .CompatibleWith<Destructor>()
+                .CompatibleWith<CollisionTrigger>()
                 .CompatibleWith<EmitContinuous>()
                 .CompatibleWith<EmitTick>()
                 .NextStage<EmitOnce>()
@@ -46,6 +49,15 @@ namespace Procool.GamePlay.Weapon
                 .NextStage<Destructor>();
             
             WeaponConstructor.Behaviour<Bounce>()
+                .Collider()
+                .CompatibleWith<Damage>()
+                .CompatibleWith<Destructor>()
+                .CompatibleWith<EmitContinuous>()
+                .CompatibleWith<EmitTick>()
+                .CompatibleWith<Timeout>();
+
+            WeaponConstructor.Behaviour<CollisionTrigger>()
+                .Collider()
                 .CompatibleWith<Damage>()
                 .CompatibleWith<Destructor>()
                 .CompatibleWith<EmitContinuous>()
@@ -55,6 +67,7 @@ namespace Procool.GamePlay.Weapon
             WeaponConstructor.Behaviour<Damage>()
                 .CompatibleWith<Bounce>()
                 .CompatibleWith<Destructor>()
+                .CompatibleWith<CollisionTrigger>()
                 .CompatibleWith<EmitContinuous>()
                 .CompatibleWith<EmitTick>();
 
@@ -63,6 +76,7 @@ namespace Procool.GamePlay.Weapon
                 .DefaultTerminator()
                 .CompatibleWith<Bounce>()
                 .CompatibleWith<Damage>()
+                .CompatibleWith<CollisionTrigger>()
                 .CompatibleWith<EmitContinuous>()
                 .CompatibleWith<EmitTick>();
 
@@ -70,6 +84,7 @@ namespace Procool.GamePlay.Weapon
                 .CompatibleWith<Bounce>()
                 .CompatibleWith<Damage>()
                 .NextStage<EmitContinuous>()
+                .CompatibleWith<CollisionTrigger>()
                 .NextStage<EmitOnce>()
                 .NextStage<EmitTick>();
 
@@ -82,12 +97,18 @@ namespace Procool.GamePlay.Weapon
             WeaponConstructor.Behaviour<EmitTick>()
                 .DetachEmitter()
                 .CompatibleWith<Destructor>()
+                .CompatibleWith<CollisionTrigger>()
+                .CompatibleWith<Damage>()
+                .CompatibleWith<Bounce>()
                 .NextStage<Move>()
                 .NextStage<Throw>();
 
             WeaponConstructor.Behaviour<EmitContinuous>()
                 .Emitter()
                 .CompatibleWith<Destructor>()
+                .CompatibleWith<CollisionTrigger>()
+                .CompatibleWith<Damage>()
+                .CompatibleWith<Bounce>()
                 .NextStage<Laser>();
                 
 

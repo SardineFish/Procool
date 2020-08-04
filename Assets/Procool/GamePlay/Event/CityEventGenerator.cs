@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Procool.GamePlay.Combat;
 using Procool.GameSystems;
@@ -20,12 +21,28 @@ namespace Procool.GamePlay.Event
             cityLoader = GetComponent<CityLoader>();
         }
 
+        IEnumerator Test()
+        {
+            while (true)
+            {
+                if (Keyboard.current.f4Key.isPressed)
+                {
+                    GenerateEvent();
+                    while(Keyboard.current.f4Key.isPressed)
+                        yield return null;
+                }
+
+                yield return null;
+            }
+        }
+
+        private void OnEnable()
+        {
+            StartCoroutine(Test());
+        }
+
         private void Update()
         {
-            if (Keyboard.current.f4Key.wasPressedThisFrame)
-            {
-                GenerateEvent();
-            }
         }
 
         void GenerateEvent()

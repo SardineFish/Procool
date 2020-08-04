@@ -15,8 +15,9 @@ namespace Procool.Input
     public class InputDeviceDetector : Singleton<InputDeviceDetector>
     {
         public static InputSchemeType CurrentInputScheme { get; private set; } = InputSchemeType.GamePad;
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             GetComponent<PlayerInput>().onControlsChanged += (playerInput) =>
             {
                 switch (playerInput.currentControlScheme)
@@ -30,12 +31,8 @@ namespace Procool.Input
                 }
 
             };
-        }
-
-        private void OnEnable()
-        {
             GetComponent<PlayerInput>().ActivateInput();
+            
         }
-        
     }
 }

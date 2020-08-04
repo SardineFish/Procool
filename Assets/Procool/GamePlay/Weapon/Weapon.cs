@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using Procool.GamePlay.Inventory;
 using Procool.Utils;
+using UnityEngine;
 
 namespace Procool.GamePlay.Weapon
 {
@@ -9,8 +10,10 @@ namespace Procool.GamePlay.Weapon
         public DamageStage FirstStage;
         public int Quality;
         public float Damage = 1;
+        public float CoolDown = 0.2f;
 
         private DamageEntity damageEntity = null;
+        private float previousActiveTime = 0;
 
         // public override CoroutineRunner Activate()
         // {
@@ -21,6 +24,9 @@ namespace Procool.GamePlay.Weapon
 
         public override IUsingState Activate()
         {
+            if(Time.time < previousActiveTime + CoolDown)
+                return FailedUsing.Instance;
+            previousActiveTime = Time.time;
             return FirstStage.CreateDetached(this, Owner.transform);
         }
 

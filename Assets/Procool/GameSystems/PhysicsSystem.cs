@@ -7,7 +7,7 @@ namespace Procool.GameSystems
     {
         public enum PhysicsLayer : int
         {
-            Building = 14,
+            Building = 8,
         }
         protected override void Awake()
         {

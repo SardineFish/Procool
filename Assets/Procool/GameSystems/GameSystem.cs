@@ -1,14 +1,16 @@
 ﻿using Procool.GamePlay.Controller;
+using UnityEngine;
 
 namespace Procool.GameSystems
 {
     public class GameSystem : Singleton<GameSystem>
     {
-        public static Player Player { get; private set; }
+        [SerializeField] private Player player;
+        public static Player Player => Instance.player;
 
         public static Player SpawnPlayer()
         {
-            Player = Instantiate(PrefabManager.Instance.PlayerPrefab).GetComponent<Player>();
+            Instance.player = Instantiate(PrefabManager.Instance.PlayerPrefab).GetComponent<Player>();
             return Player;
         }
     }

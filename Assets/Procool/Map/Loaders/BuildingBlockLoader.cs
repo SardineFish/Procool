@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Procool.GameSystems;
 using Procool.Utils;
 using UnityEngine;
 
@@ -24,6 +25,7 @@ namespace Procool.Map.Loader
                 collider.transform.parent = transform;
                 collider.transform.position = building.Center;
                 collider.SetPath(0, vertices);
+                collider.gameObject.layer = (int) PhysicsSystem.PhysicsLayer.Building;
                 
                 buildingColliders.Add(collider);
             }

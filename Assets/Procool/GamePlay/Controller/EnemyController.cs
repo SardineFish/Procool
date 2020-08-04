@@ -1,18 +1,27 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using Procool.GamePlay.Combat;
 using Procool.GameSystems;
 using Procool.Map;
+using Procool.Random;
 using Procool.Utils;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Procool.GamePlay.Controller
 {
-    [RequireComponent(typeof(Rigidbody2D))]
-    public class Enemy : CoroutineFSM, IBlockPositionEntity
+    [RequireComponent(typeof(Rigidbody2D), typeof(Player))]
+    public class EnemyController : CoroutineFSM, IBlockPositionEntity
     {
-        public float moveSpeed = 3;
+        public Player Player { get; private set; }
+        
+        public float moveSpeed = 5;
+        public Vector2 turnAngularVelocity = new Vector2(300, 900);
         public float visualDistance = 100;
+        public float tacticalMotionProbability = .5f;
+        public Vector2 tacticalMotionAxisScale = new Vector2(1, .5f);
+        public Vector2 tacticalChangeInterval = new Vector2(.5f, 1f);
         public BlockPosition BlockPosition { get; set; }
         public Weapon.Weapon Weapon;
         private Player target;
@@ -20,15 +29,21 @@ namespace Procool.GamePlay.Controller
         private CityPathFinder pathFinder = null;
         private BuildingBlock currentBlock = null;
         private new Rigidbody2D rigidbody;
+        private PRNG prng;
 
         private void Awake()
         {
             rigidbody = GetComponent<Rigidbody2D>();
+            Player = GetComponent<Player>();
         }
 
         private void Update()
         {
             BlockPosition = new BlockPosition(new Block(0, 0, 5), transform.position);
+            if (Keyboard.current.f5Key.wasPressedThisFrame)
+            {
+                ChangeState(Chase());   
+            }
         }
 
         public void Active(City city, BuildingBlock startBlock, Vector2 startPostion)
@@ -41,6 +56,7 @@ namespace Procool.GamePlay.Controller
             target = GameSystem.Player;
             currentBlock = startBlock;
             transform.position = startPostion;
+            prng = GameRNG.GetPRNG(UnityEngine.Random.insideUnitCircle);
             ChangeState(Wander());
         }
 
@@ -53,13 +69,32 @@ namespace Procool.GamePlay.Controller
         bool CheckInSight(Vector2 pos)
         {
             var dir = pos - transform.position.ToVector2();
+            var distance = dir.magnitude;
+            
+            if (distance > visualDistance)
+                return false;
+            
             var hit = Physics2D.Raycast(
                 transform.position, 
-                dir, 
-                visualDistance,
+                dir.normalized, 
+                distance,
                 1 << (int) PhysicsSystem.PhysicsLayer.Building);
 
             return !hit.collider;
+        }
+
+        void FaceForward(Vector2 direction)
+        {
+            var dAng = Vector2.SignedAngle(transform.up, direction);
+            var angularV = dAng / Time.fixedDeltaTime;
+            var maxAngularV = Mathf.Lerp(turnAngularVelocity.x, turnAngularVelocity.y, Mathf.Abs(dAng) / 180);
+
+            if (Mathf.Abs(angularV) > maxAngularV)
+            {
+                angularV = MathUtility.SignInt(dAng) * maxAngularV;
+            }
+
+            transform.Rotate(Vector3.forward, angularV * Time.fixedDeltaTime);
         }
         
 
@@ -80,16 +115,17 @@ namespace Procool.GamePlay.Controller
             }
         }
 
-        void Fire(Vector2 direction)
+        IEnumerator Fire(Vector2 direction)
         {
-            
+            FaceForward(direction);
+            yield return Weapon.Activate().Wait();
         }
         
         IEnumerator Wander()
         {
             while (true)
             {
-                var idleTime = UnityEngine.Random.Range(.5f, 1.5f);
+                var idleTime = prng.GetInRange(.5f, 1.5f);
                 foreach (var t in Utility.Timer(idleTime))
                 {
                     if (CheckPlayerInSight())
@@ -100,9 +136,9 @@ namespace Procool.GamePlay.Controller
                     yield return null;
                 }
 
-                var wanderTime = UnityEngine.Random.Range(1f, 2f);
-                var dir = UnityEngine.Random.insideUnitCircle;
-                foreach (var VARIABLE in Utility.Timer(wanderTime))
+                var wanderTime = prng.GetInRange(1f, 2f);
+                var dir = prng.GetVec2InsideUnitCircle();
+                foreach (var t in Utility.Timer(wanderTime))
                 {
                     if (CheckPlayerInSight())
                     {
@@ -121,8 +157,26 @@ namespace Procool.GamePlay.Controller
         {
             while (CheckPlayerInSight())
             {
-                Fire(target.transform.position - transform.position);
-                yield return null;
+                var time = prng.GetInRange(tacticalChangeInterval);
+                if (prng.GetScalar() < tacticalMotionProbability)
+                {
+                    var dir = Vector2.Scale(tacticalMotionAxisScale, prng.GetVec2InsideUnitCircle());
+                    
+                    foreach (var t in Utility.Timer(time))
+                    {
+                        Walk(transform.worldToLocalMatrix.MultiplyVector(dir));
+                        yield return Fire(target.transform.position - transform.position);
+                        yield return null;
+                    }
+                }
+                else
+                {
+                    foreach (var t in Utility.Timer(time))
+                    {
+                        yield return Fire(target.transform.position - transform.position);
+                        yield return null;
+                    }
+                }
             }
             ChangeState(Chase());
         }
@@ -162,11 +216,21 @@ namespace Procool.GamePlay.Controller
                     }
                     
                     Walk(nextPos - transform.position.ToVector2());
+                    
+                    DrawPath(path, Color.yellow);
                     yield return null;
                 }
             }
             
             ChangeState(Wander());
+        }
+
+        void DrawPath(IReadOnlyList<Vector2> path, Color color)
+        {
+            for (var i = 1; i < path.Count; i++)
+            {
+                Debug.DrawLine(path[i-1], path[i], color);
+            }
         }
     }
 }

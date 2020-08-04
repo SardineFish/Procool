@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Procool.GamePlay.Controller;
+using Procool.GamePlay.Weapon;
 using Procool.GameSystems;
 using Procool.Map;
 using Procool.Map.SpacePartition;
@@ -14,7 +15,7 @@ namespace Procool.GamePlay.Combat
     public class StreetFight : Combat
     {
         public readonly List<BuildingBlock> InvolvedBlocks = new List<BuildingBlock>();
-        public readonly List<Enemy> Enemies = new List<Enemy>();
+        public readonly List<EnemyController> Enemies = new List<EnemyController>();
         public Vector2 Location;
         public float Size;
         public float StartDistance = 10f;
@@ -41,14 +42,17 @@ namespace Procool.GamePlay.Combat
             throw new System.NotImplementedException();
         }
 
-        Enemy SpawnEnemy()
+        EnemyController SpawnEnemy()
         {
             var block = InvolvedBlocks.RandomTake(prng.GetScalar());
             var edge = block.Region.Edges.RandomTake(prng.GetScalar());
             var t = prng.GetScalar();
             var (a, b) = edge.Points;
             var pos = Vector2.Lerp(a.Pos, b.Pos, t);
-            var enemy = GameObjectPool.Get<Enemy>(PrefabManager.Instance.EnemyPrefab);
+            var enemy = GameObjectPool.Get<EnemyController>(PrefabManager.Instance.EnemyPrefab);
+            var weapon = WeaponSystem.Instance.GenerateWeapon(prng);
+            enemy.Player.Inventory.Add(weapon);
+            enemy.Weapon = weapon;
             enemy.Active(City, block, pos);
             return enemy;
         }

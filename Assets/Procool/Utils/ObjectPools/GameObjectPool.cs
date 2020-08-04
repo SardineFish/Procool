@@ -145,6 +145,7 @@ namespace Procool.Utils
         public void Release(GameObject obj)
         {
             obj.transform.parent = transform;
+            obj.layer = 0;
             obj.SetActive(false);
             objectPool.Push(obj);
         }
