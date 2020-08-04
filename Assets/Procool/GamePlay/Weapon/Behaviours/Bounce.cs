@@ -13,12 +13,17 @@ namespace Procool.GamePlay.Weapon
         {
             while (true)
             {
-                if (entity.GetMostContact(out var contact))
+                if (entity.GetMostContact(out var hit))
                 {
-                    var normal = contact.normal;
-                    var direction = entity.transform.up;
-                    var reflect = Vector2.Reflect(direction.ToVector2(), normal);
-                    entity.transform.rotation *= Quaternion.FromToRotation(direction, reflect.ToVector3());
+                    Debug.DrawLine(hit.point, hit.point + hit.normal, Color.red);
+                    if (Vector2.Dot(entity.transform.up, hit.normal) < 0)
+                    {
+
+                        var normal = hit.normal;
+                        var direction = entity.transform.up;
+                        var reflect = Vector2.Reflect(direction.ToVector2(), normal);
+                        entity.transform.rotation *= Quaternion.FromToRotation(direction, reflect.ToVector3());
+                    }
                 }
                 yield return null;
             }

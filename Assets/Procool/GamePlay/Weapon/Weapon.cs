@@ -27,7 +27,9 @@ namespace Procool.GamePlay.Weapon
             if(Time.time < previousActiveTime + CoolDown)
                 return FailedUsing.Instance;
             previousActiveTime = Time.time;
-            return FirstStage.CreateDetached(this, Owner.transform);
+            var entity = FirstStage.CreateDetached(this, Owner.transform);
+            entity.transform.parent = Owner.transform;
+            return entity;
         }
 
         public override void Abort()

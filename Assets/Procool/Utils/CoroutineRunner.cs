@@ -27,6 +27,9 @@ namespace Procool.Utils
                     continue;
 
                 keepRunning |= runners[i].Tick();
+                
+                if (Aborted)
+                    return false;
             }
 
             if (!keepRunning)
@@ -51,7 +54,11 @@ namespace Procool.Utils
         public void Abort()
         {
             if (!Completed)
+            {
                 Aborted = true;
+                foreach(var runner in runners)
+                    runner.Abort();
+            }
         }
     }
     public class CoroutineRunner

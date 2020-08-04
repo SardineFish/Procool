@@ -32,7 +32,7 @@ namespace Procool.GamePlay.Weapon
                 .CompatibleWith<Damage>()
                 .CompatibleWith<CollisionTrigger>()
                 .CompatibleWith<Destructor>()
-                .CompatibleWith<EmitContinuous>()
+                // .CompatibleWith<EmitContinuous>()
                 .CompatibleWith<EmitTick>()
                 .CompatibleWith<Timeout>();
 
@@ -42,7 +42,7 @@ namespace Procool.GamePlay.Weapon
                 .CompatibleWith<Damage>()
                 .CompatibleWith<Destructor>()
                 .CompatibleWith<CollisionTrigger>()
-                .CompatibleWith<EmitContinuous>()
+                // .CompatibleWith<EmitContinuous>()
                 .CompatibleWith<EmitTick>()
                 .NextStage<EmitOnce>()
                 .NextStage<Timeout>()
@@ -52,7 +52,7 @@ namespace Procool.GamePlay.Weapon
                 .Collider()
                 .CompatibleWith<Damage>()
                 .CompatibleWith<Destructor>()
-                .CompatibleWith<EmitContinuous>()
+                // .CompatibleWith<EmitContinuous>()
                 .CompatibleWith<EmitTick>()
                 .CompatibleWith<Timeout>();
 
@@ -60,7 +60,7 @@ namespace Procool.GamePlay.Weapon
                 .Collider()
                 .CompatibleWith<Damage>()
                 .CompatibleWith<Destructor>()
-                .CompatibleWith<EmitContinuous>()
+                // .CompatibleWith<EmitContinuous>()
                 .CompatibleWith<EmitTick>()
                 .CompatibleWith<Timeout>();
 
@@ -68,7 +68,7 @@ namespace Procool.GamePlay.Weapon
                 .CompatibleWith<Bounce>()
                 .CompatibleWith<Destructor>()
                 .CompatibleWith<CollisionTrigger>()
-                .CompatibleWith<EmitContinuous>()
+                // .CompatibleWith<EmitContinuous>()
                 .CompatibleWith<EmitTick>();
 
 
@@ -77,13 +77,13 @@ namespace Procool.GamePlay.Weapon
                 .CompatibleWith<Bounce>()
                 .CompatibleWith<Damage>()
                 .CompatibleWith<CollisionTrigger>()
-                .CompatibleWith<EmitContinuous>()
+                // .CompatibleWith<EmitContinuous>()
                 .CompatibleWith<EmitTick>();
 
             WeaponConstructor.Behaviour<Timeout>()
                 .CompatibleWith<Bounce>()
                 .CompatibleWith<Damage>()
-                .NextStage<EmitContinuous>()
+                // .NextStage<EmitContinuous>()
                 .CompatibleWith<CollisionTrigger>()
                 .NextStage<EmitOnce>()
                 .NextStage<EmitTick>();
@@ -91,25 +91,25 @@ namespace Procool.GamePlay.Weapon
             WeaponConstructor.Behaviour<EmitOnce>()
                 .DetachEmitter()
                 .Terminator()
-                .NextStage<Move>()
-                .NextStage<Throw>();
+                .NextStage<Move>(1)
+                .NextStage<Throw>(1);
 
-            WeaponConstructor.Behaviour<EmitTick>()
+            WeaponConstructor.Behaviour<EmitTick>(8)
                 .DetachEmitter()
                 .CompatibleWith<Destructor>()
                 .CompatibleWith<CollisionTrigger>()
                 .CompatibleWith<Damage>()
                 .CompatibleWith<Bounce>()
-                .NextStage<Move>()
-                .NextStage<Throw>();
+                .NextStage<Move>(3)
+                .NextStage<Throw>(1);
 
-            WeaponConstructor.Behaviour<EmitContinuous>()
-                .Emitter()
-                .CompatibleWith<Destructor>()
-                .CompatibleWith<CollisionTrigger>()
-                .CompatibleWith<Damage>()
-                .CompatibleWith<Bounce>()
-                .NextStage<Laser>();
+            // WeaponConstructor.Behaviour<EmitContinuous>()
+            //     .Emitter()
+            //     .CompatibleWith<Destructor>()
+            //     .CompatibleWith<CollisionTrigger>()
+            //     .CompatibleWith<Damage>()
+            //     .CompatibleWith<Bounce>()
+            //     .NextStage<Laser>();
                 
 
             GameObjectPool.PreAlloc<DamageEntity>(16);

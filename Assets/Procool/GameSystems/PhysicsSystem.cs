@@ -11,7 +11,9 @@ namespace Procool.GameSystems
         }
         protected override void Awake()
         {
+            base.Awake();
             GameObjectPool.PreAlloc<PolygonCollider2D>(16);
+            
         }
         
         

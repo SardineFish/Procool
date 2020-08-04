@@ -10,7 +10,7 @@ namespace Procool.GamePlay.Weapon
             {
                 if (entity.GetMostContact(out var contact))
                 {
-                    data.NextStage.Run(weapon, entity);
+                    data.NextStage?.Run(weapon, entity);
                     entity.Terminate();
                     yield break;
                 }

@@ -28,6 +28,9 @@ namespace Procool.GamePlay.Weapon
             while (true)
             {
                 entity.transform.Translate(new Vector3(0, data.Speed * Time.deltaTime, 0), Space.Self);
+                // var move = entity.transform.localToWorldMatrix.MultiplyVector(new Vector3(0,
+                //     data.Speed * Time.deltaTime, 0));
+                // entity.Move(move);
                 yield return null;
             }
         }

@@ -8,19 +8,9 @@ namespace Procool.GamePlay.Weapon
 
         protected override IEnumerator Run(DamageEntity entity, EmptyBehaviourData data, DamageStage stage, Weapon weapon)
         {
-            switch (stage.ColliderType)
-            {
-                case ColliderType.Box:
-                    entity.BoxCollider.enabled = true;
-                    break;
-                case ColliderType.Circle:
-                    entity.CircleCollider.enabled = true;
-                    break;
-            }
-            
             while (true)
             {
-                foreach (var player in entity.ContactedPlayers)
+                foreach (var player in entity.HitPlayer())
                 {
                     if (!entity.DamageRecord.Contains(player))
                     {

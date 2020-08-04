@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Cinemachine;
+using Procool.GamePlay.Inventory;
 using Procool.GameSystems;
 using Procool.Input;
 using Procool.Utils;
@@ -11,7 +12,8 @@ namespace Procool.GamePlay.Controller
     {
         class PlayerMove : PlayerAction
         {
-            private Coroutine coroutuine;
+            private IUsingState UsingItem = null;
+            
             public override bool CanEnter(PlayerController player)
             {
                 return CameraManager.Instance.State == CameraManager.CameraState.Player;
@@ -19,27 +21,15 @@ namespace Procool.GamePlay.Controller
 
             public override void Enter(PlayerController player)
             {
-                coroutuine = player.StartCoroutine(UpdateCoroutine(player));
+                
             }
 
-            IEnumerator UpdateCoroutine(PlayerController player)
+            IEnumerator UserItem(PlayerController player)
             {
-                while (true)
-                {
-                    if (player.Input.GamePlay.Fire.ReadValue<float>() > .5f)
-                    {
-                        var item = player.Player.Inventory.GetItem(0);
-                        if (item != null)
-                        {
-                            yield return item.Activate().Wait();
-                        }
-
-                        while ((player.Input.GamePlay.Fire.ReadValue<float>() > .5f))
-                            yield return null;
-                    }
-                    
-                    yield return null;
-                }
+                var item = player.Player.Inventory.GetItem(0);
+                UsingItem = item.Activate();
+                yield return UsingItem.Wait();
+                UsingItem = null;
             }
 
             public override bool Update(PlayerController player)
@@ -60,6 +50,12 @@ namespace Procool.GamePlay.Controller
                             
                     }
                 }
+
+                if (player.Input.GamePlay.Fire.ReadValue<float>() > 0.5f && (UsingItem is null))
+                    player.StartCoroutine(UserItem(player));
+                else if (player.Input.GamePlay.Fire.ReadValue<float>() <= 0)
+                    UsingItem?.Terminate();
+
                 
                 return true;
             }

@@ -10,7 +10,6 @@ using UnityEngine;
 
 namespace Procool.GamePlay.Weapon
 {
-    [RequireComponent(typeof(CircleCollider2D), typeof(BoxCollider2D))]
     public class DamageEntity : ManagedMonobehaviour<DamageEntity>, IUsingState
     {
         public Player Owner { get; private set; }
@@ -19,8 +18,9 @@ namespace Procool.GamePlay.Weapon
         public HashSet<Player> DamageRecord { get; } = new HashSet<Player>();
         public Weapon Weapon { get; private set; }
         // public SpriteRenderer SpriteRenderer { get; private set; }
-        public BoxCollider2D BoxCollider { get; private set; }
-        public CircleCollider2D CircleCollider { get; private set; }
+        // public CircleCollider2D CircleCollider { get; private set; }
+        // private new CircleCollider2D collider;
+        // private new Rigidbody2D rigidbody;
 
         public BulletVFX BulletVfx { get; private set; } = new BulletVFX()
         {
@@ -30,7 +30,7 @@ namespace Procool.GamePlay.Weapon
         };
 
         [SerializeField] private TrailRenderer trailRenderer;
-        [SerializeField] private Flicker flicker;
+        [SerializeField] private float physicsInterval = 0.1f;
 
         private ParallelCoroutineRunner runner;
 
@@ -39,55 +39,71 @@ namespace Procool.GamePlay.Weapon
 
         private void Awake()
         {
-            // SpriteRenderer = GetComponent<SpriteRenderer>();
-            BoxCollider = GetComponent<BoxCollider2D>();
-            CircleCollider = GetComponent<CircleCollider2D>();
-            BoxCollider.enabled = false;
-            CircleCollider.enabled = false;
+            // collider = GetComponent<CircleCollider2D>();
+            // rigidbody = GetComponent<Rigidbody2D>();
         }
 
-        private void OnCollisionEnter2D(Collision2D other)
-        {
-            HandleCollision(other);
-        }
-
-        private void OnCollisionStay2D(Collision2D other)
-        {
-
-            HandleCollision(other);
-        }
-
-        void HandleCollision(Collision2D other)
-        {
-            other.GetContacts(Contacts);
-            var player = other.rigidbody.GetComponent<Player>();
-            if (player)
-                ContactedPlayers.Add(player);
-        }
-
-        private void FixedUpdate()
-        {
-            Contacts.Clear();
-            ContactedPlayers.Clear();
-        }
-
-        // public IEnumerator Run()
+        // void HandleCollision(Collision2D other)
         // {
-        //     var runner = CoroutineRunner.All(Stage.Behaviours.Select(behaviour =>
-        //         behaviour.Behaviour.Run(this, behaviour, Stage, Weapon)));
-        //     var coroutine = StartCoroutine(runner);
-        //     yield return coroutine;
-        //     
-        //     Terminate();
+        //     other.GetContacts(Contacts);
+        //     var player = other.rigidbody.GetComponent<Player>();
+        //     if (player)
+        //         ContactedPlayers.Add(player);
         // }
+        //
+        // private void OnCollisionEnter2D(Collision2D other)
+        // {
+        //     HandleCollision(other);
+        // }
+        //
+        // private void OnCollisionStay2D(Collision2D other)
+        // {
+        //     HandleCollision(other);
+        // }
+
+
+        private float previousCollisionCheckTime = 0;
+        private Vector2 previousCollisionCheckPos = Vector2.zero;
+        private readonly List<RaycastHit2D> raycastHitsList = new List<RaycastHit2D>();
+        private readonly RaycastHit2D[] raycastHitsArray = new RaycastHit2D[8];
+        List<RaycastHit2D> QueryCollision()
+        {
+            if (Time.time < previousCollisionCheckTime + physicsInterval)
+                return raycastHitsList;
+        
+            var distance = Vector2.Distance(transform.position, previousCollisionCheckPos);
+        
+            var count = Physics2D.CircleCastNonAlloc(previousCollisionCheckPos, BulletVfx.BulletSize, transform.position.ToVector2() - previousCollisionCheckPos, raycastHitsArray, distance);
+            previousCollisionCheckPos = transform.position;
+            previousCollisionCheckTime = Time.time;
+            
+            raycastHitsList.Clear();
+            for (var i = 0; i < count; i++)
+                raycastHitsList.Add(raycastHitsArray[i]);
+        
+            return raycastHitsList;
+        }
+
+        public IEnumerable<Player> HitPlayer()
+        {
+            var hits = QueryCollision();
+            foreach (var hit in hits)
+            {
+                var player = hit.rigidbody?.GetComponent<Player>();
+                if (player && ContactedPlayers.Add(player))
+                {
+                    yield return player;
+                }
+            }
+        }
 
         public IEnumerator Wait()
         {
             while (runner.Tick())
                 yield return null;
 
-            if (runner.Completed)
-                Terminate();
+            if (runner.Completed || runner.Aborted)
+                Dispose();
         }
 
         public Coroutine RunDetach()
@@ -104,12 +120,14 @@ namespace Procool.GamePlay.Weapon
         {
             Owner = player;
             DamageRecord.Clear();
-            Contacts.Clear();
             ContactedPlayers.Clear();
             Weapon = weapon;
             transform.position = inheritTransform.position;
             transform.rotation = inheritTransform.rotation;
+            previousCollisionCheckPos = transform.position;
+            previousCollisionCheckTime = 0;
 
+            
 
             runner = new ParallelCoroutineRunner();
         }
@@ -119,39 +137,43 @@ namespace Procool.GamePlay.Weapon
             BulletVfx = vfx;
             // SpriteRenderer.sprite = vfx.Sprite;
             // SpriteRenderer.color = vfx.SpriteColor;
-            flicker.enabled = vfx.Flicking;
-            flicker.renderer.color = vfx.FlickingColor;
+            // flicker.enabled = vfx.Flicking;
+            // flicker.renderer.color = vfx.FlickingColor;
             trailRenderer.endColor = trailRenderer.startColor = vfx.SpriteColor;
             trailRenderer.startWidth = vfx.TrailStartWidth;
             trailRenderer.endWidth = vfx.TrailEndWidth;
             // trailRenderer.time = vfx.TrailLength;
         }
 
-        public bool GetMostContact(out ContactPoint2D result)
+        public bool GetMostContact(out RaycastHit2D result)
         {
-            foreach (var contact in Contacts)
+            var hits = QueryCollision();
+            foreach (var hit in hits)
             {
-                if(contact.rigidbody.gameObject == Owner.gameObject)
+                if(hit.rigidbody?.gameObject == Owner.gameObject)
                     continue;
-
-                result = contact;
+        
+                result = hit;
                 return true;
             }
-
+        
             result = default;
             return false;
         }
+
+        void Dispose()
+        {
+            Owner = null;
+            Weapon = null;
+            ContactedPlayers.Clear();
+            GameObjectPool.Release<DamageEntity>(this);
+        }
+        
 
         public void Terminate()
         {
             runner.Abort();
             
-            Owner = null;
-            Weapon = null;
-            BoxCollider.enabled = false;
-            CircleCollider.enabled = false;
-            
-            GameObjectPool.Release<DamageEntity>(this);
         }
         
     }
