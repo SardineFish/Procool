@@ -195,6 +195,197 @@ namespace Procool.Input
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Vehicle"",
+            ""id"": ""1c278d1a-e3f1-419d-84ca-98e106fd62ec"",
+            ""actions"": [
+                {
+                    ""name"": ""Accelerator"",
+                    ""type"": ""Value"",
+                    ""id"": ""6662dc91-40e6-4b2d-8d88-82b6af2c7c58"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Break"",
+                    ""type"": ""Value"",
+                    ""id"": ""732c5039-9926-43b3-be4f-65210aa3fb75"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Steering"",
+                    ""type"": ""Value"",
+                    ""id"": ""f5130dab-55ab-4f5e-996e-a20de933e79f"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""HandBreak"",
+                    ""type"": ""Button"",
+                    ""id"": ""c94b43ce-c928-4739-8c91-43a5b4b3f994"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""ShiftGear"",
+                    ""type"": ""Value"",
+                    ""id"": ""c0b95027-ee37-4ede-a886-4121ffac3310"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""56e114d4-90ed-443b-bf72-551c7918fb18"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""GamePad"",
+                    ""action"": ""Accelerator"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e489f359-ea05-490d-8342-02db573ff756"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Accelerator"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5bd21144-198d-4e0a-b90d-212dc003d2b9"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""GamePad"",
+                    ""action"": ""Break"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""81874703-6876-47f5-823c-f0ae3e222065"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Break"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fb0e19ac-bef3-46c5-9efa-692138069aac"",
+                    ""path"": ""<Gamepad>/leftStick/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""GamePad"",
+                    ""action"": ""Steering"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""3e6442c9-e2f1-48b9-9928-f36eafeb2149"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Steering"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""9f6330d4-66fc-494c-bd9b-3b40d0951b92"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Steering"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""740e4181-83aa-4965-99ec-101d68973302"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Steering"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e323df68-3b67-4d68-a0cc-a308c22411af"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""HandBreak"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c80d872b-a856-474a-b507-8162abaf760a"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""GamePad"",
+                    ""action"": ""HandBreak"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""c0160f70-eb51-4c77-a4f7-cd1610e796e1"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShiftGear"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""8d77b3fc-d2e7-4915-93b9-55395be1ac55"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""GamePad"",
+                    ""action"": ""ShiftGear"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""f3fd5557-05ae-4e36-8370-117008b2135d"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""GamePad"",
+                    ""action"": ""ShiftGear"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -234,6 +425,13 @@ namespace Procool.Input
             m_GamePlay_Direction = m_GamePlay.FindAction("Direction", throwIfNotFound: true);
             m_GamePlay_Fire = m_GamePlay.FindAction("Fire", throwIfNotFound: true);
             m_GamePlay_Pointer = m_GamePlay.FindAction("Pointer", throwIfNotFound: true);
+            // Vehicle
+            m_Vehicle = asset.FindActionMap("Vehicle", throwIfNotFound: true);
+            m_Vehicle_Accelerator = m_Vehicle.FindAction("Accelerator", throwIfNotFound: true);
+            m_Vehicle_Break = m_Vehicle.FindAction("Break", throwIfNotFound: true);
+            m_Vehicle_Steering = m_Vehicle.FindAction("Steering", throwIfNotFound: true);
+            m_Vehicle_HandBreak = m_Vehicle.FindAction("HandBreak", throwIfNotFound: true);
+            m_Vehicle_ShiftGear = m_Vehicle.FindAction("ShiftGear", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -344,6 +542,71 @@ namespace Procool.Input
             }
         }
         public GamePlayActions @GamePlay => new GamePlayActions(this);
+
+        // Vehicle
+        private readonly InputActionMap m_Vehicle;
+        private IVehicleActions m_VehicleActionsCallbackInterface;
+        private readonly InputAction m_Vehicle_Accelerator;
+        private readonly InputAction m_Vehicle_Break;
+        private readonly InputAction m_Vehicle_Steering;
+        private readonly InputAction m_Vehicle_HandBreak;
+        private readonly InputAction m_Vehicle_ShiftGear;
+        public struct VehicleActions
+        {
+            private @GameInput m_Wrapper;
+            public VehicleActions(@GameInput wrapper) { m_Wrapper = wrapper; }
+            public InputAction @Accelerator => m_Wrapper.m_Vehicle_Accelerator;
+            public InputAction @Break => m_Wrapper.m_Vehicle_Break;
+            public InputAction @Steering => m_Wrapper.m_Vehicle_Steering;
+            public InputAction @HandBreak => m_Wrapper.m_Vehicle_HandBreak;
+            public InputAction @ShiftGear => m_Wrapper.m_Vehicle_ShiftGear;
+            public InputActionMap Get() { return m_Wrapper.m_Vehicle; }
+            public void Enable() { Get().Enable(); }
+            public void Disable() { Get().Disable(); }
+            public bool enabled => Get().enabled;
+            public static implicit operator InputActionMap(VehicleActions set) { return set.Get(); }
+            public void SetCallbacks(IVehicleActions instance)
+            {
+                if (m_Wrapper.m_VehicleActionsCallbackInterface != null)
+                {
+                    @Accelerator.started -= m_Wrapper.m_VehicleActionsCallbackInterface.OnAccelerator;
+                    @Accelerator.performed -= m_Wrapper.m_VehicleActionsCallbackInterface.OnAccelerator;
+                    @Accelerator.canceled -= m_Wrapper.m_VehicleActionsCallbackInterface.OnAccelerator;
+                    @Break.started -= m_Wrapper.m_VehicleActionsCallbackInterface.OnBreak;
+                    @Break.performed -= m_Wrapper.m_VehicleActionsCallbackInterface.OnBreak;
+                    @Break.canceled -= m_Wrapper.m_VehicleActionsCallbackInterface.OnBreak;
+                    @Steering.started -= m_Wrapper.m_VehicleActionsCallbackInterface.OnSteering;
+                    @Steering.performed -= m_Wrapper.m_VehicleActionsCallbackInterface.OnSteering;
+                    @Steering.canceled -= m_Wrapper.m_VehicleActionsCallbackInterface.OnSteering;
+                    @HandBreak.started -= m_Wrapper.m_VehicleActionsCallbackInterface.OnHandBreak;
+                    @HandBreak.performed -= m_Wrapper.m_VehicleActionsCallbackInterface.OnHandBreak;
+                    @HandBreak.canceled -= m_Wrapper.m_VehicleActionsCallbackInterface.OnHandBreak;
+                    @ShiftGear.started -= m_Wrapper.m_VehicleActionsCallbackInterface.OnShiftGear;
+                    @ShiftGear.performed -= m_Wrapper.m_VehicleActionsCallbackInterface.OnShiftGear;
+                    @ShiftGear.canceled -= m_Wrapper.m_VehicleActionsCallbackInterface.OnShiftGear;
+                }
+                m_Wrapper.m_VehicleActionsCallbackInterface = instance;
+                if (instance != null)
+                {
+                    @Accelerator.started += instance.OnAccelerator;
+                    @Accelerator.performed += instance.OnAccelerator;
+                    @Accelerator.canceled += instance.OnAccelerator;
+                    @Break.started += instance.OnBreak;
+                    @Break.performed += instance.OnBreak;
+                    @Break.canceled += instance.OnBreak;
+                    @Steering.started += instance.OnSteering;
+                    @Steering.performed += instance.OnSteering;
+                    @Steering.canceled += instance.OnSteering;
+                    @HandBreak.started += instance.OnHandBreak;
+                    @HandBreak.performed += instance.OnHandBreak;
+                    @HandBreak.canceled += instance.OnHandBreak;
+                    @ShiftGear.started += instance.OnShiftGear;
+                    @ShiftGear.performed += instance.OnShiftGear;
+                    @ShiftGear.canceled += instance.OnShiftGear;
+                }
+            }
+        }
+        public VehicleActions @Vehicle => new VehicleActions(this);
         private int m_GamePadSchemeIndex = -1;
         public InputControlScheme GamePadScheme
         {
@@ -369,6 +632,14 @@ namespace Procool.Input
             void OnDirection(InputAction.CallbackContext context);
             void OnFire(InputAction.CallbackContext context);
             void OnPointer(InputAction.CallbackContext context);
+        }
+        public interface IVehicleActions
+        {
+            void OnAccelerator(InputAction.CallbackContext context);
+            void OnBreak(InputAction.CallbackContext context);
+            void OnSteering(InputAction.CallbackContext context);
+            void OnHandBreak(InputAction.CallbackContext context);
+            void OnShiftGear(InputAction.CallbackContext context);
         }
     }
 }

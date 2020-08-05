@@ -209,4 +209,9 @@ public static class MathUtility
         
         return true;
     }
+
+    public static Vector2 Rad2Vec2(float rad)
+    {
+        return new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+    }
 }

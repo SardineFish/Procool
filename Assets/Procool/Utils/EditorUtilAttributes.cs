@@ -30,11 +30,11 @@ namespace Procool.Utils
     }
 
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    public class ReadOnlyAttribute : CustomEditorAttribute
+    public class DisplayInInspectorAttribute : CustomEditorAttribute
     {
         public string Label { get; private set; }
 
-        public ReadOnlyAttribute(string label = "") : base()
+        public DisplayInInspectorAttribute(string label = "") : base()
         {
             Label = label;
         }
