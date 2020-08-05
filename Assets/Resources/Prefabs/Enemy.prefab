@@ -71,9 +71,9 @@ MonoBehaviour:
   tacticalChangeInterval: {x: 0.5, y: 1}
   obstacleAvoidDistance: {x: 0.1, y: 1}
   obstacleAvoidScale: 2
-  obstaclePredictDistance: 10
-  obstaclePredictAngle: 30
-  obstacleMergeAngle: 15
+  dynamicAvoidanceDistance: {x: 1, y: 10}
+  dynamicAvoidanceScale: 1
+  dynamicObstacleMergeAngle: 5
 --- !u!50 &1857114129399434778
 Rigidbody2D:
   serializedVersion: 4

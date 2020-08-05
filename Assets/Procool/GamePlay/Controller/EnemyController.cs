@@ -10,6 +10,7 @@ using Procool.Random;
 using Procool.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace Procool.GamePlay.Controller
 {
@@ -27,10 +28,9 @@ namespace Procool.GamePlay.Controller
         public Vector2 tacticalChangeInterval = new Vector2(.5f, 1f);
         public Vector2 obstacleAvoidDistance = new Vector2(0.2f, .5f);
         public float obstacleAvoidScale = 2f;
-        public Vector2 obstaclePredictDistance = new Vector2(1, 10);
-        public float predictObstacleAvoidanceScale = 1;
-        public float obstaclePredictAngle = 30;
-        public float obstacleMergeAngle = 15;
+        public Vector2 dynamicAvoidanceDistance = new Vector2(1, 10);
+        public float dynamicAvoidanceScale = 1;
+        public float dynamicObstacleMergeAngle = 5;
         public BlockPosition BlockPosition { get; set; }
         public Weapon.Weapon Weapon;
         private Player target;
@@ -130,12 +130,16 @@ namespace Procool.GamePlay.Controller
         void Move(Vector2 direction)
         {
             direction = Vector2.ClampMagnitude(direction, 1);
-            var avoidDirection = AvoidNearObstacle();
+            var avoidDirection = AvoidObstacle();
+            
+            #warning Debug Code
             Debug.DrawLine(transform.position, transform.position.ToVector2() + direction * moveSpeed, Color.cyan);
+            
             direction = Vector2.ClampMagnitude(direction + avoidDirection, 1);
+            
             Debug.DrawLine(transform.position, transform.position.ToVector2() + direction * moveSpeed, Color.green);
 
-            var avoidPredictObstacle = AvoidPredictObstacle(direction);
+            var avoidPredictObstacle = DynamicAvoidance(direction);
             Debug.DrawLine(transform.position, transform.position.ToVector2() + avoidPredictObstacle, Color.blue);
             direction = Vector2.ClampMagnitude(direction + avoidPredictObstacle, 1);
 
@@ -162,7 +166,7 @@ namespace Procool.GamePlay.Controller
         }
 
         RaycastHit2D[] hits = new RaycastHit2D[8];
-        Vector2 AvoidNearObstacle()
+        Vector2 AvoidObstacle()
         {
             var avoidanceVector = Vector2.zero;
             var count = Physics2D.CircleCastNonAlloc(transform.position, obstacleAvoidDistance.y, Vector2.zero, hits, 0);
@@ -179,6 +183,7 @@ namespace Procool.GamePlay.Controller
                 Debug.DrawLine(hit.point, hit.point + seperation, Color.red);
             }
             
+            #warning Debug Code
             Debug.DrawLine(transform.position, transform.position.ToVector2() + avoidanceVector, Color.yellow);
 
             return avoidanceVector * obstacleAvoidScale;
@@ -193,13 +198,14 @@ namespace Procool.GamePlay.Controller
         
 
         Collider2D[] overlapColliders = new Collider2D[8];
-        Vector2 AvoidPredictObstacle(Vector2 moveDirection)
+        // Avoid dynamic obstacles by detect in sector range, eg. vehicles. 
+        Vector2 DynamicAvoidance(Vector2 moveDirection)
         {
             var right = Vector3.Cross(moveDirection, Vector3.forward).ToVector2();
             
             var count = Physics2D.OverlapCircleNonAlloc(
                 transform.position, 
-                obstaclePredictDistance.y, 
+                dynamicAvoidanceDistance.y, 
                 overlapColliders,
                 (int) PhysicsSystem.PhysicsLayerBit.Vehicle);
 
@@ -242,7 +248,7 @@ namespace Procool.GamePlay.Controller
                     continue;
                 }
 
-                if (range.x - mergedRanges.Tail().y < obstacleMergeAngle)
+                if (range.x - mergedRanges.Tail().y < dynamicObstacleMergeAngle)
                 {
                     mergedRanges[mergedRanges.Count - 1] = new Vector3(mergedRanges.Tail().x, range.y, Mathf.Min(mergedRanges.Tail().z, range.z));
                 }
@@ -267,6 +273,8 @@ namespace Procool.GamePlay.Controller
                 }
 
                 var ang = Vector2.SignedAngle(Vector2.right, moveDirection);
+                
+                #warning Debug Code
                 Utility.DebugDrawSector(
                     transform.position, 
                     range.z, 
@@ -275,12 +283,12 @@ namespace Procool.GamePlay.Controller
                     Color.red);
             }
 
-            return result.normalized * MathUtility.RangeMapClamped(
-                obstaclePredictDistance.x,
-                obstaclePredictDistance.y,
+            return result.normalized * (MathUtility.RangeMapClamped(
+                dynamicAvoidanceDistance.x,
+                dynamicAvoidanceDistance.y,
                 1,
                 0,
-                minDistance) * predictObstacleAvoidanceScale;
+                minDistance) * dynamicAvoidanceScale);
         }
         
         IEnumerator Wander()
