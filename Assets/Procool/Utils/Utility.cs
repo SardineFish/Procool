@@ -639,6 +639,24 @@ public static class Utility
         }
         Debug.DrawLine(previous, first, color);
     }
+
+    public static void DebugDrawSector(Vector2 center, float radius, float fromRad, float toRad, Color color, int subdivide = 12)
+    {
+        var previousPoint = center;
+        for (var i = 0; i <= subdivide; i++)
+        {
+            var t = (float) i / subdivide;
+            var ang = Mathf.Lerp(fromRad, toRad, t);
+            var p = new Vector2(
+                Mathf.Cos(ang) * radius,
+                Mathf.Sin(ang) * radius);
+            p += center;
+            
+            Debug.DrawLine(previousPoint, p, color);
+            previousPoint = p;
+        }
+        Debug.DrawLine(previousPoint, center, color);
+    }
 }
 
 

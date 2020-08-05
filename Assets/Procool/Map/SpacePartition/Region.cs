@@ -383,7 +383,7 @@ namespace Procool.Map.SpacePartition
         {
             for (var i = 0; i < vertices.Count; i++)
             {
-                if (MathUtility.Cross2(edges[i].GetVector(vertices[i]), point - vertices[i].Pos) > 0)
+                if (MathUtility.Cross2(edges[i].GetVector(vertices[i]), point - vertices[i].Pos) < 0)
                     return false;
             }
 

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Procool.GamePlay.Combat;
 using Procool.GameSystems;
 using Procool.Map;
+using Procool.Map.SpacePartition;
 using Procool.Random;
 using Procool.Utils;
 using UnityEngine;
@@ -18,10 +20,17 @@ namespace Procool.GamePlay.Controller
         
         public float moveSpeed = 5;
         public Vector2 turnAngularVelocity = new Vector2(300, 900);
-        public float visualDistance = 100;
+        public float visualDistance = 20;
+        public float attackDistance = 10;
         public float tacticalMotionProbability = .5f;
         public Vector2 tacticalMotionAxisScale = new Vector2(1, .5f);
         public Vector2 tacticalChangeInterval = new Vector2(.5f, 1f);
+        public Vector2 obstacleAvoidDistance = new Vector2(0.2f, .5f);
+        public float obstacleAvoidScale = 2f;
+        public Vector2 obstaclePredictDistance = new Vector2(1, 10);
+        public float predictObstacleAvoidanceScale = 1;
+        public float obstaclePredictAngle = 30;
+        public float obstacleMergeAngle = 15;
         public BlockPosition BlockPosition { get; set; }
         public Weapon.Weapon Weapon;
         private Player target;
@@ -44,6 +53,7 @@ namespace Procool.GamePlay.Controller
             {
                 ChangeState(Chase());   
             }
+            Region.Utils.DrawDebug(currentBlock.Region, Color.magenta);
         }
 
         public void Active(City city, BuildingBlock startBlock, Vector2 startPostion)
@@ -63,23 +73,42 @@ namespace Procool.GamePlay.Controller
 
         bool CheckPlayerInSight()
         {
-            return CheckInSight(target.transform.position);
+            return CheckInSight(target.transform.position, visualDistance);
         }
 
-        bool CheckInSight(Vector2 pos)
+        bool CheckPlayerInFireRange()
+        {
+            return Vector2.Distance(target.transform.position, transform.position) < attackDistance;
+        }
+
+        bool CheckInSight(Vector2 pos, float maxDistance)
         {
             var dir = pos - transform.position.ToVector2();
             var distance = dir.magnitude;
             
-            if (distance > visualDistance)
+            if (distance > maxDistance)
                 return false;
             
             var hit = Physics2D.Raycast(
                 transform.position, 
                 dir.normalized, 
                 distance,
-                1 << (int) PhysicsSystem.PhysicsLayer.Building);
+                (int)PhysicsSystem.PhysicsLayerBit.Building);
 
+            return !hit.collider;
+        }
+
+        bool CanApproachDirectly(Vector2 pos)
+        {
+            var dir = pos - transform.position.ToVector2();
+
+            var distance = dir.magnitude;
+
+            var hit = Physics2D.Raycast(
+                transform.position,
+                dir.normalized,
+                distance,
+                (int) PhysicsSystem.PhysicsLayerBit.Building);
             return !hit.collider;
         }
 
@@ -98,10 +127,21 @@ namespace Procool.GamePlay.Controller
         }
         
 
-        void Walk(Vector2 direction)
+        void Move(Vector2 direction)
         {
-            var velocity = direction.normalized * moveSpeed;
+            direction = Vector2.ClampMagnitude(direction, 1);
+            var avoidDirection = AvoidNearObstacle();
+            Debug.DrawLine(transform.position, transform.position.ToVector2() + direction * moveSpeed, Color.cyan);
+            direction = Vector2.ClampMagnitude(direction + avoidDirection, 1);
+            Debug.DrawLine(transform.position, transform.position.ToVector2() + direction * moveSpeed, Color.green);
+
+            var avoidPredictObstacle = AvoidPredictObstacle(direction);
+            Debug.DrawLine(transform.position, transform.position.ToVector2() + avoidPredictObstacle, Color.blue);
+            direction = Vector2.ClampMagnitude(direction + avoidPredictObstacle, 1);
+
+            var velocity = direction * moveSpeed;
             rigidbody.MovePosition(transform.position.ToVector2() + velocity * Time.deltaTime);
+            
             if (!currentBlock.Region.OverlapPoint(transform.position))
             {
                 foreach (var region in currentBlock.Region.Neighboors)
@@ -115,10 +155,132 @@ namespace Procool.GamePlay.Controller
             }
         }
 
-        IEnumerator Fire(Vector2 direction)
+        void WalkToward(Vector2 direction)
         {
+            Move(direction);
             FaceForward(direction);
-            yield return Weapon.Activate().Wait();
+        }
+
+        RaycastHit2D[] hits = new RaycastHit2D[8];
+        Vector2 AvoidNearObstacle()
+        {
+            var avoidanceVector = Vector2.zero;
+            var count = Physics2D.CircleCastNonAlloc(transform.position, obstacleAvoidDistance.y, Vector2.zero, hits, 0);
+            for (var i = 0; i < count; i++)
+            {
+                var hit = hits[i];
+                if(hit.rigidbody?.gameObject == gameObject)
+                    continue;
+                var distance = Vector2.Distance(transform.position, hit.point);
+                distance = Mathf.Clamp(distance, obstacleAvoidDistance.x, obstacleAvoidDistance.y);
+                distance /= (obstacleAvoidDistance.y - obstacleAvoidDistance.x);
+                var seperation = hit.normal * -Mathf.Tan((distance - 1) * Mathf.PI / 2);
+                avoidanceVector += seperation;
+                Debug.DrawLine(hit.point, hit.point + seperation, Color.red);
+            }
+            
+            Debug.DrawLine(transform.position, transform.position.ToVector2() + avoidanceVector, Color.yellow);
+
+            return avoidanceVector * obstacleAvoidScale;
+        }
+
+        bool CheckObstacle(Vector2 direction, float maxDistance)
+        {
+            var hit = Physics2D.Raycast(transform.position, direction, maxDistance,
+                (int) PhysicsSystem.PhysicsLayerBit.Vehicle);
+            return hit.collider;
+        }
+        
+
+        Collider2D[] overlapColliders = new Collider2D[8];
+        Vector2 AvoidPredictObstacle(Vector2 moveDirection)
+        {
+            var right = Vector3.Cross(moveDirection, Vector3.forward).ToVector2();
+            
+            var count = Physics2D.OverlapCircleNonAlloc(
+                transform.position, 
+                obstaclePredictDistance.y, 
+                overlapColliders,
+                (int) PhysicsSystem.PhysicsLayerBit.Vehicle);
+
+            var obstacleRanges = ListPool<Vector3>.Get(); // (low, high, minDistance)
+            obstacleRanges.Clear();
+            
+            for (var i = 0; i < count; i++)
+            {
+                var collider = overlapColliders[i];
+                float approximateSize = 0;
+                switch (collider)
+                {
+                    case CircleCollider2D circleCollider:
+                        approximateSize = circleCollider.radius;
+                        break;
+                    case BoxCollider2D boxCollider:
+                        var size = boxCollider.transform.localToWorldMatrix.MultiplyVector(boxCollider.size);
+                        approximateSize = Mathf.Max(boxCollider.size.x, boxCollider.size.y) / 2;
+                        break;
+                }
+
+                var dir = (collider.transform.position - transform.position).ToVector2().normalized;
+                var distance = Vector2.Distance(collider.transform.position, transform.position);
+                var ang = Vector2.SignedAngle(moveDirection, dir);
+                // if(ang > 90 || ang < -90)
+                //     continue;
+
+                var halfAngle = Mathf.Asin(Mathf.Clamp01(approximateSize / distance)) * Mathf.Rad2Deg;
+                obstacleRanges.Add(new Vector3(ang - halfAngle, ang + halfAngle, distance - approximateSize));
+            }
+
+            var mergedRanges = ListPool<Vector3>.Get();
+            mergedRanges.Clear();
+
+            foreach (var range in obstacleRanges.OrderBy(range => range.x))
+            {
+                if (mergedRanges.Count == 0)
+                {
+                    mergedRanges.Add(range);
+                    continue;
+                }
+
+                if (range.x - mergedRanges.Tail().y < obstacleMergeAngle)
+                {
+                    mergedRanges[mergedRanges.Count - 1] = new Vector3(mergedRanges.Tail().x, range.y, Mathf.Min(mergedRanges.Tail().z, range.z));
+                }
+                else
+                    mergedRanges.Add(range);
+            }
+
+            Vector2 result = Vector2.zero;
+            var minDistance = 0f;
+            foreach (var range in mergedRanges)
+            {
+                if (range.x < 0 && 0 < range.y)
+                {
+                    if (Mathf.Abs(range.x) < Mathf.Abs(range.y))
+                    {
+                        result = Vector3.Cross(moveDirection, Vector3.forward);
+                    }
+                    else
+                        result = Vector3.Cross(Vector3.forward, moveDirection);
+
+                    minDistance = range.z;
+                }
+
+                var ang = Vector2.SignedAngle(Vector2.right, moveDirection);
+                Utility.DebugDrawSector(
+                    transform.position, 
+                    range.z, 
+                    Mathf.Deg2Rad * (range.x + ang),
+                    Mathf.Deg2Rad * (range.y + ang), 
+                    Color.red);
+            }
+
+            return result.normalized * MathUtility.RangeMapClamped(
+                obstaclePredictDistance.x,
+                obstaclePredictDistance.y,
+                1,
+                0,
+                minDistance) * predictObstacleAvoidanceScale;
         }
         
         IEnumerator Wander()
@@ -145,8 +307,8 @@ namespace Procool.GamePlay.Controller
                         ChangeState(Attack());
                         yield break;
                     }
-                    
-                    Walk(dir);
+
+                    WalkToward(dir);
                     
                     yield return null;
                 }
@@ -155,36 +317,57 @@ namespace Procool.GamePlay.Controller
 
         IEnumerator Attack()
         {
-            while (CheckPlayerInSight())
+            while (CheckPlayerInSight() && CheckPlayerInFireRange())
             {
                 var time = prng.GetInRange(tacticalChangeInterval);
-                if (prng.GetScalar() < tacticalMotionProbability)
-                {
-                    var dir = Vector2.Scale(tacticalMotionAxisScale, prng.GetVec2InsideUnitCircle());
-                    
-                    foreach (var t in Utility.Timer(time))
-                    {
-                        Walk(transform.worldToLocalMatrix.MultiplyVector(dir));
-                        yield return Fire(target.transform.position - transform.position);
-                        yield return null;
-                    }
-                }
-                else
+                var moveDir = Vector2.zero;
+                if(prng.GetScalar() <tacticalMotionProbability)
+                    moveDir = Vector2.Scale(tacticalMotionAxisScale, prng.GetVec2InsideUnitCircle());
+                
+                using (var useState = Weapon.Activate())
                 {
                     foreach (var t in Utility.Timer(time))
                     {
-                        yield return Fire(target.transform.position - transform.position);
+                        FaceForward(target.transform.position - transform.position);
+                        Move(transform.worldToLocalMatrix.MultiplyVector(moveDir));
+                        useState.Tick();
+                        
                         yield return null;
                     }
                 }
             }
-            ChangeState(Chase());
+            ChangeState(Approach());
         }
 
         IEnumerator TakeCover()
         {
             ChangeState(Attack());
             yield break;
+        }
+
+        IEnumerator Approach()
+        {
+            if (!CanApproachDirectly(target.transform.position))
+            {
+                ChangeState(Chase());
+                yield break;
+            }
+
+            while (true)
+            {
+                if (CheckPlayerInFireRange())
+                {
+                    ChangeState(Attack());
+                    yield break;
+                }
+                else if (!CanApproachDirectly(target.transform.position))
+                {
+                    ChangeState(Chase());
+                    yield break;
+                }
+                WalkToward(target.transform.position - transform.position);
+                yield return null;
+            }
         }
 
         IEnumerator Chase()
@@ -195,7 +378,7 @@ namespace Procool.GamePlay.Controller
             {
                 for (var j = i + 1; j < path.Count; j++)
                 {
-                    if (!CheckInSight(path[j]))
+                    if (!CanApproachDirectly(path[j]))
                     {
                         break;
                     }
@@ -206,7 +389,7 @@ namespace Procool.GamePlay.Controller
                 var nextPos = path[i];
                 while (Vector2.Distance(nextPos, transform.position) > 0.3f)
                 {
-                    if (i + 1 < path.Count && CheckInSight(path[i + 1]))
+                    if (i + 1 < path.Count && CanApproachDirectly(path[i + 1]))
                         break;
 
                     if (CheckPlayerInSight())
@@ -215,7 +398,7 @@ namespace Procool.GamePlay.Controller
                         yield break;
                     }
                     
-                    Walk(nextPos - transform.position.ToVector2());
+                    WalkToward(nextPos - transform.position.ToVector2());
                     
                     DrawPath(path, Color.yellow);
                     yield return null;

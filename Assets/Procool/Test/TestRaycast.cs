@@ -11,9 +11,14 @@ namespace Procool.Test
         {
             if (!target)
                 return;
-            var hit = Physics2D.CircleCast(transform.position, 0.2f, target.transform.position - transform.position);
+            var hit = Physics2D.CircleCast(transform.position, 1f, target.transform.position - transform.position);
             Debug.DrawLine(transform.position, hit.point, Color.white);
             Debug.DrawLine(hit.point, hit.point + hit.normal, Color.red);
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.DrawWireSphere(transform.position, 1);
         }
     }
 }

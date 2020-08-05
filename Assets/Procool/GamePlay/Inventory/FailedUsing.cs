@@ -18,5 +18,9 @@ namespace Procool.GamePlay.Inventory
         {
             return false;
         }
+
+        public void Dispose()
+        {
+        }
     }
 }

@@ -65,9 +65,15 @@ MonoBehaviour:
   moveSpeed: 3
   turnAngularVelocity: {x: 300, y: 900}
   visualDistance: 15
+  attackDistance: 10
   tacticalMotionProbability: 0.7
   tacticalMotionAxisScale: {x: 1, y: 0.2}
   tacticalChangeInterval: {x: 0.5, y: 1}
+  obstacleAvoidDistance: {x: 0.1, y: 1}
+  obstacleAvoidScale: 2
+  obstaclePredictDistance: 10
+  obstaclePredictAngle: 30
+  obstacleMergeAngle: 15
 --- !u!50 &1857114129399434778
 Rigidbody2D:
   serializedVersion: 4
@@ -76,7 +82,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1857114129399434757}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -113,8 +119,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1857114129626235583}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1857114129399434756}
@@ -194,7 +200,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1857114130931666062}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -216,4 +222,4 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.35
+  m_Radius: 0.16

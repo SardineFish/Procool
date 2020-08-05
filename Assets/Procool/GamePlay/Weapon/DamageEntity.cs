@@ -164,7 +164,7 @@ namespace Procool.GamePlay.Weapon
             return false;
         }
 
-        void Dispose()
+        public void Dispose()
         {
             Owner = null;
             Weapon = null;
