@@ -10,7 +10,6 @@ namespace Procool.GameSystems
         public GameObject EnemyPrefab;
         public GameObject DamageEntityPrefab;
         public GameObject CityLoaderPrefab;
-        public GameObject WorldSpaceUIPrefab;
         public GameObject InputHintUIPrefab;
 
         protected override void Awake()
@@ -18,6 +17,7 @@ namespace Procool.GameSystems
             base.Awake();
             GameObjectPool.PreAlloc(DropedItemPrefab, 16);
             GameObjectPool.PreAlloc(DamageEntityPrefab, 16);
+            GameObjectPool.PreAlloc(InputHintUIPrefab, 4);
         }
     }
 }

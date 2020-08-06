@@ -1497,8 +1497,8 @@ MonoBehaviour:
     type: 3}
   CityLoaderPrefab: {fileID: 2204612812105792018, guid: 9d0714e122b364242a913816da4270b1,
     type: 3}
-  WorldSpaceUIPrefab: {fileID: 0}
-  InputHintUIPrefab: {fileID: 0}
+  InputHintUIPrefab: {fileID: 5621942638122545758, guid: 35caedd84ed9e064a8c183a6fe1b1f5f,
+    type: 3}
 --- !u!1001 &728557977
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3868,7 +3868,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 5621942638122545758, guid: 35caedd84ed9e064a8c183a6fe1b1f5f, type: 3}
-  worldSpaceOffset: {x: 0, y: 0}
+  worldSpaceOffset: {x: -2.69, y: 0.77}
 --- !u!114 &2059528048
 MonoBehaviour:
   m_ObjectHideFlags: 0

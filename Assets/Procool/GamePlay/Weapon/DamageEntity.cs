@@ -72,14 +72,18 @@ namespace Procool.GamePlay.Weapon
                 return raycastHitsList;
         
             var distance = Vector2.Distance(transform.position, previousCollisionCheckPos);
-        
+
             var count = Physics2D.CircleCastNonAlloc(previousCollisionCheckPos, BulletVfx.BulletSize, transform.position.ToVector2() - previousCollisionCheckPos, raycastHitsArray, distance);
             previousCollisionCheckPos = transform.position;
             previousCollisionCheckTime = Time.time;
             
             raycastHitsList.Clear();
             for (var i = 0; i < count; i++)
-                raycastHitsList.Add(raycastHitsArray[i]);
+            {
+                if(!raycastHitsArray[i].collider || raycastHitsArray[i].collider.isTrigger)
+                    continue;
+                raycastHitsList.Add(raycastHitsArray[i]);   
+            }
         
             return raycastHitsList;
         }

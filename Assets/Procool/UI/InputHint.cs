@@ -14,7 +14,11 @@ namespace Procool.UI
         
         private void Awake()
         {
-            DisplayHint(null, "", 0);
+            KeyText.text = "";
+            HintText.text = "";
+            var color = holdProgress.color;
+            color.a = 0;
+            holdProgress.color = color;
         }
 
         public void DisplayHint(InputAction action, string hint, float progress)

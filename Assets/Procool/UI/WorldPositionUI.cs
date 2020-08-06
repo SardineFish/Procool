@@ -40,8 +40,8 @@ namespace Procool.UI
         {
             if(!_instanceTransform)
                 return;
-
-            var screenPos = CameraManager.Camera.WorldToScreenPoint(transform.position + worldSpaceOffset.ToVector3());
+            
+            var screenPos = CameraManager.Camera.WorldToScreenPoint(transform.localToWorldMatrix.MultiplyPoint(worldSpaceOffset.ToVector3()));
             _instanceTransform.position = screenPos;
         }
     }
