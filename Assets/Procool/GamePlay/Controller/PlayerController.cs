@@ -20,6 +20,9 @@ namespace Procool.GamePlay.Controller
         public AnimationCurve zoomSpeedCurve = new AnimationCurve(new Keyframe(0, 10), new Keyframe(700, 50));
 
         public float keyHoldTime = .4f;
+
+
+        public Renderer Renderer;
         
 
         private GameInput Input;
@@ -99,6 +102,8 @@ namespace Procool.GamePlay.Controller
 
         void ChangeAction(PlayerAction action)
         {
+            if(_currentAction == action)
+                return;
             _currentAction?.Exit();
             action.Enter();
             _currentAction = action;
@@ -108,6 +113,11 @@ namespace Procool.GamePlay.Controller
         {
             _playerDrive.Vehicle = vehicle;
             ChangeAction(_playerDrive);
+        }
+
+        public void GetOffVehicle(Vehicle vehicle)
+        {
+            ChangeAction(_playerMove);
         }
     }
 

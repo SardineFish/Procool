@@ -21,13 +21,21 @@ namespace Procool.GamePlay.Controller
             _interactiveObject = GetComponent<InteractiveObject>();
             _vehicleController = GetComponent<VehicleController>();
             _interactiveObject.OnInteract.AddListener(OnInteract);
-            
         }
 
         void OnInteract(Player player)
         {
             player.GetComponent<PlayerController>()?.GetOnVehicle(this);
         }
-        
+
+        public void StartDrive()
+        {
+            _interactiveObject.Interactive = false;
+        }
+
+        public void StopDrive()
+        {
+            _interactiveObject.Interactive = true;
+        }
     }
 }

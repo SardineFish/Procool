@@ -25,6 +25,8 @@ namespace Procool.GamePlay.Controller
             public override void Enter()
             {
                 _actionCoroutine = Controller.StartCoroutine(ActionCoroutine());
+                Controller.Renderer.enabled = true;
+                CameraManager.Instance.UsePlayerCamera();
             }
 
             public override void Exit()

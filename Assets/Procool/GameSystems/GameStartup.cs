@@ -22,7 +22,7 @@ namespace Procool.GameSystems
             
             player.Inventory.Add(weapon);
             
-            CameraManager.Instance.Follow(player);
+            CameraManager.Instance.Follow(player.transform);
         }
     }
 }

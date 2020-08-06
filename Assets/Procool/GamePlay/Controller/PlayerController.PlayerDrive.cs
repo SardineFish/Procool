@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using Procool.GameSystems;
+using Procool.Input;
+using Procool.Utils;
+using UnityEngine;
 
 namespace Procool.GamePlay.Controller
 {
@@ -19,6 +22,23 @@ namespace Procool.GamePlay.Controller
                     Vehicle.VehicleController.ShiftGear(shift);
 
                 };
+                controller.Input.Vehicle.Interact.performed += ctx =>
+                {
+                    if (!Vehicle)
+                        return;
+                    controller.GetOffVehicle(Vehicle);
+                };
+            }
+
+            public override void Enter()
+            {
+                Controller.Renderer.enabled = false;
+                Player.transform.SetParent(Vehicle.transform);
+                Player.transform.localPosition = Vector2.zero;
+                CameraManager.Instance.UseVehicleCamera();
+                CameraManager.Instance.SetViewFollow(true);
+                CameraManager.Instance.Follow(Vehicle.transform);
+                Vehicle.StartDrive();
             }
 
             public override void Update()
@@ -28,10 +48,32 @@ namespace Procool.GamePlay.Controller
                 var sterring = Controller.Input.Vehicle.Steering.ReadValue<float>();
 
                 Vehicle.VehicleController.Drive(throttle, breaking, sterring);
+
+
+                if (CameraManager.Instance.State != CameraManager.CameraState.Player)
+                    return;
+                var zoom = Controller.Input.GamePlay.Zoom.ReadValue<float>();
+                if (CameraManager.Instance.State == CameraManager.CameraState.Player && Mathf.Abs(zoom) >= 0.01f)
+                {
+                    switch (InputManager.CurrentInputScheme)
+                    {
+                        case InputSchemeType.Keyboard:
+                            CameraManager.Instance.Zoom(-zoom * Controller.keyboardZoomMultiplier);
+                            break;
+                        case InputSchemeType.GamePad:
+                            CameraManager.Instance.Zoom(-zoom * Controller.gamePadZoomMultiplier * Time.deltaTime);
+                            break;
+
+                    }
+                }
+                
+                    
             }
 
             public override void Exit()
             {
+                Player.transform.SetParent(null);
+                Vehicle.StopDrive();
                 Vehicle = null;
             }
         }

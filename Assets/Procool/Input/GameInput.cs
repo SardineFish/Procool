@@ -276,7 +276,7 @@ namespace Procool.Input
                     ""id"": ""0b3a145c-9a02-4627-a4be-db00b6596d5e"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": ""Hold""
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [

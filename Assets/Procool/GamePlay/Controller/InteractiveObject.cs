@@ -20,6 +20,22 @@ namespace Procool.GamePlay.Controller
         private WorldPositionUI _worldPositionUI;
         private InputHint _inputHintUI;
 
+        private bool _interactive = true;
+        public bool Interactive
+        {
+            get => _interactive;
+            set
+            {
+                if (_interactive && !value)
+                {
+                    _worldPositionUI.Hide();
+                    _inputHintUI = null;
+                }
+
+                _interactive = value;
+            }
+        }
+
         private void Awake()
         {
             _worldPositionUI = GetComponent<WorldPositionUI>();
@@ -27,7 +43,8 @@ namespace Procool.GamePlay.Controller
 
         public void Interact(Player player)
         {
-            OnInteract?.Invoke(player);
+            if (Interactive)
+                OnInteract?.Invoke(player);
         }
 
         public bool StillInRange(Player player)
@@ -37,7 +54,8 @@ namespace Procool.GamePlay.Controller
 
         public void InteractKeyHold(float t)
         {
-            UpdateHint(t);
+            if (Interactive)
+                UpdateHint(t);
         }
 
         public float Distance(Player player)
@@ -45,7 +63,10 @@ namespace Procool.GamePlay.Controller
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.attachedRigidbody.GetComponent<Player>() is Player player && player)
+            if(!Interactive)
+                return;
+            
+            if (other.attachedRigidbody?.GetComponent<Player>() is Player player && player)
             {
                 player.AvailableInteractiveObjects.Add(this);
                 _inputHintUI = _worldPositionUI.Show<InputHint>();
@@ -55,7 +76,7 @@ namespace Procool.GamePlay.Controller
 
         private void OnTriggerExit2D(Collider2D other)
         {
-            if (other.attachedRigidbody.GetComponent<Player>() is Player player && player)
+            if (other.attachedRigidbody?.GetComponent<Player>() is Player player && player)
             {
                 player.AvailableInteractiveObjects.Remove(this);
                 _worldPositionUI.Hide();
