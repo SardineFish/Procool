@@ -37,7 +37,7 @@ namespace Procool.GamePlay.Controller
                 Player.transform.localPosition = Vector2.zero;
                 CameraManager.Instance.UseVehicleCamera();
                 CameraManager.Instance.SetViewFollow(true);
-                CameraManager.Instance.Follow(Vehicle.transform);
+                CameraManager.Instance.Follow(Vehicle.CameraTarget);
                 Vehicle.StartDrive();
             }
 
@@ -45,9 +45,10 @@ namespace Procool.GamePlay.Controller
             {
                 var throttle = Controller.Input.Vehicle.Accelerator.ReadValue<float>();
                 var breaking = Controller.Input.Vehicle.Break.ReadValue<float>();
-                var sterring = Controller.Input.Vehicle.Steering.ReadValue<float>();
+                var steering = Controller.Input.Vehicle.Steering.ReadValue<float>();
+                var handBreak = Controller.Input.Vehicle.HandBreak.ReadValue<float>();
 
-                Vehicle.VehicleController.Drive(throttle, breaking, sterring);
+                Vehicle.VehicleController.Drive(throttle, breaking, steering, handBreak);
 
 
                 if (CameraManager.Instance.State != CameraManager.CameraState.Player)
@@ -73,6 +74,7 @@ namespace Procool.GamePlay.Controller
             public override void Exit()
             {
                 Player.transform.SetParent(null);
+                Player.transform.position = Vehicle.GetOffLocation?.position ?? Vehicle.transform.position;
                 Vehicle.StopDrive();
                 Vehicle = null;
             }

@@ -38,7 +38,7 @@ namespace Procool.Test
             var steering = Input.Vehicle.Steering.ReadValue<float>();
             var handbreak = Input.Vehicle.HandBreak.ReadValue<float>();
             var shiftGear = Mathf.RoundToInt(Input.Vehicle.ShiftGear.ReadValue<float>());
-            controller.Drive(throttle, breaking, steering);
+            controller.Drive(throttle, breaking, steering,0);
         }
     }
 }

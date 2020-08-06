@@ -40,6 +40,7 @@ namespace Procool.GamePlay.Controller
         [Range(0, 1)] public float wheelStaticFrictionCoefficient = 0.6f;
         public float wheelLateralFrictionCoefficient = .8f;
         public float rearLateralFrictionScale = 0.6f;
+        public float handbreakRearLateralFriction = 0.6f;
 
         public AnimationCurve wheelSlipFrictionCurve = new AnimationCurve();
 
@@ -77,7 +78,7 @@ namespace Procool.GamePlay.Controller
         public Vector2 Forward => transform.up;
         public Vector2 Right => transform.right;
         public float Weight => mass * Gravity;
-        public Vector2 Velocity => rigidbody.velocity;
+        public Vector2 Velocity => transform.localToWorldMatrix.MultiplyVector(LocalVelocity);
 
         [DisplayInInspector] public Vector2 LocalVelocity { get; private set; }
         [DisplayInInspector()] public float AngularVelocity { get; private set; }
@@ -331,7 +332,7 @@ namespace Procool.GamePlay.Controller
             var slipDir = MathUtility.SignInt(Vector2.Dot(velocity, x));
             var slipFriction = slipAngleFrictionCurve.Evaluate(slipAngle);
             if (wheel == Wheel.BackLeft || wheel == Wheel.BackRight)
-                slipFriction *= rearLateralFrictionScale;
+                slipFriction *= Mathf.Lerp(rearLateralFrictionScale, handbreakRearLateralFriction, BackBreaking);
             return slipFriction * wheelLateralFrictionCoefficient * weightOnWheel[(int) wheel] * -slipDir;
         }
 
@@ -495,7 +496,8 @@ namespace Procool.GamePlay.Controller
             // rigidbody.velocity = (finalVelocity.y * Forward + finalVelocity.x * Right).ToVector3XZ();
             // rigidbody.angularVelocity = new Vector3(0, -angularVelocity, 0);
             rigidbody.mass = mass;
-            transform.Translate(velocity * Time.deltaTime);
+            // transform.Translate(velocity * Time.deltaTime);
+            rigidbody.MovePosition(transform.position + transform.localToWorldMatrix.MultiplyVector(velocity) * Time.deltaTime);
             
             var worldV = transform.localToWorldMatrix.MultiplyVector(finalVelocity);
             
@@ -506,11 +508,12 @@ namespace Procool.GamePlay.Controller
 
         }
 
-        public void Drive(float throttle, float breaking, float turnning)
+        public void Drive(float throttle, float breaking, float turnning, float handbreak)
         {
             FrontBreaking = breaking;
             Throttle = throttle;
             Turning = turnning;
+            BackBreaking = handbreak;
         }
 
         public void ShiftGear(int shift)

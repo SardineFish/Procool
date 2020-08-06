@@ -34,7 +34,6 @@ namespace Procool.GamePlay.Controller
                 Controller.StopCoroutine(_actionCoroutine);
             }
 
-
             IEnumerator ActionCoroutine()
             {
                 while (true)
@@ -52,7 +51,7 @@ namespace Procool.GamePlay.Controller
                             .OrderBy(obj => obj.Distance(Player))
                             .FirstOrDefault();
                         if(!interactObject)
-                            continue;
+                            goto End;
                         
                         foreach (var t in Utility.TimerNormalized(base.Controller.keyHoldTime))
                         {
