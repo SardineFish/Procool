@@ -17,7 +17,7 @@ namespace Procool.Editor
 
             static Styles()
             {
-                Indent.margin.left = (int)EditorGUIUtility.singleLineHeight;
+                Indent.padding.left = (int)EditorGUIUtility.singleLineHeight;
             }
         }
 

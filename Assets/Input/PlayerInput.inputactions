@@ -219,9 +219,9 @@
                 },
                 {
                     "name": "ShiftGear",
-                    "type": "Value",
+                    "type": "Button",
                     "id": "c0b95027-ee37-4ede-a886-4121ffac3310",
-                    "expectedControlType": "Axis",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 }

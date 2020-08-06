@@ -32,12 +32,14 @@ namespace Procool.Utils
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public class DisplayInInspectorAttribute : CustomEditorAttribute
     {
-        public string Label { get; private set; }
 
         public DisplayInInspectorAttribute(string label = "") : base()
         {
             Label = label;
         }
+
+        public string Label { get; }
+        public bool InlineArray { get; set; } = false;
     }
 
     public interface INotifyOnReload
