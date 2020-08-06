@@ -469,6 +469,9 @@ public static class Utility
     public static T Tail<T>(this IList<T> list)
         => list[list.Count - 1];
 
+    public static bool Empty<T>(this ICollection<T> collection)
+        => collection.Count <= 0;
+
     public static GenericPlatform GetGenericPlatform(RuntimePlatform platform)
     {
         if (platform == RuntimePlatform.WindowsEditor ||

@@ -55,7 +55,10 @@ namespace Procool.Utils
             => Get(prefab, name).GetComponent<T>();
 
         public static void Release<T>(GameObject prefab, T component) where T : Component
-            => Release(prefab, component.gameObject);
+        {
+            if(component && component.gameObject)
+                Release(prefab, component.gameObject);
+        }
 
         public static void Release(GameObject prefab, GameObject obj)
         {
@@ -64,7 +67,8 @@ namespace Procool.Utils
 
         public static void Release<T>(T component) where T : Component
         {
-            GetOrCreateComponentPool<T>().Release(component.gameObject);
+            if (component && component.gameObject)
+                GetOrCreateComponentPool<T>().Release(component.gameObject);
         }
 
         public static void Release<T>(GameObject obj) where T : Component
@@ -128,7 +132,8 @@ namespace Procool.Utils
             {
                 var obj = objectPool.Pop();
                 obj.SetActive(true);
-                obj.transform.parent = null;
+                // obj.transform.parent = null;
+                obj.transform.SetParent(null);
                 return obj;
             }
 
@@ -144,7 +149,10 @@ namespace Procool.Utils
 
         public void Release(GameObject obj)
         {
-            obj.transform.parent = transform;
+            if (!obj)
+                return;
+            // obj.transform.parent = transform;
+            obj.transform.SetParent(transform);
             obj.layer = 0;
             obj.SetActive(false);
             objectPool.Push(obj);

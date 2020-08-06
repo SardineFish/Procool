@@ -12,9 +12,10 @@ namespace Procool.Input
         Keyboard,
     }
     [RequireComponent(typeof(PlayerInput))]
-    public class InputDeviceDetector : Singleton<InputDeviceDetector>
+    public class InputManager : Singleton<InputManager>
     {
-        public static InputSchemeType CurrentInputScheme { get; private set; } = InputSchemeType.GamePad;
+        public static GameInput Input { get; private set; }
+        public static InputSchemeType CurrentInputScheme { get; private set; } = InputSchemeType.Keyboard;
         protected override void Awake()
         {
             base.Awake();
@@ -29,10 +30,21 @@ namespace Procool.Input
                         CurrentInputScheme = InputSchemeType.Keyboard;
                         break;
                 }
-
             };
             GetComponent<PlayerInput>().ActivateInput();
             
+            Input = new GameInput();
+            Input.Enable();
+
+            switch (GetComponent<PlayerInput>().currentControlScheme)
+            {
+                case "GamePad":
+                    CurrentInputScheme = InputSchemeType.GamePad;
+                    break;
+                case "Keyboard":
+                    CurrentInputScheme = InputSchemeType.Keyboard;
+                    break;
+            }
         }
     }
 }

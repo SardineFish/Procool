@@ -7,12 +7,17 @@ namespace Procool.UI
     public class GameUIManager : Singleton<GameUIManager>
     {
         public InputHint InputHint;
-        public WorldPositionUI PlayerUI;
 
         private void Update()
         {
-            if (GameSystem.Player)
-                PlayerUI.positionTarget = GameSystem.Player.transform;
+        }
+
+        public void AddUI(GameObject gameObject)
+        {
+            if (gameObject.transform is RectTransform trans)
+            {
+                trans.SetParent(transform);
+            }
         }
     }
 }

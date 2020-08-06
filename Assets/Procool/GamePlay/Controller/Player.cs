@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Procool.Utils;
 using UnityEngine;
 
@@ -12,6 +13,8 @@ namespace Procool.GamePlay.Controller
         public Inventory.Inventory Inventory { get; private set; }
         
         public BlockPosition BlockPosition { get; set; }
+
+        public readonly HashSet<InteractiveObject> AvailableInteractiveObjects = new HashSet<InteractiveObject>();
 
         private void Awake()
         {

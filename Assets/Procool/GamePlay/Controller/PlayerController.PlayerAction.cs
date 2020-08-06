@@ -4,25 +4,32 @@
     {
         private abstract class PlayerAction
         {
-            public virtual bool CanEnter(PlayerController player) => true;
+            protected PlayerAction(Player player, PlayerController controller)
+            {
+                Player = player;
+                Controller = controller;
+            }
 
-            public virtual void Enter(PlayerController player)
+            public Player Player { get; }
+            public PlayerController Controller { get; }
+
+            public virtual void Enter()
             {
             }
 
-            public virtual bool Update(PlayerController player) => false;
+            public virtual void Update()
+            {
+                
+            }
 
-            public virtual void FixedUpdate(PlayerController player)
+            public virtual void FixedUpdate()
             {
             }
 
-            public virtual void Exit(PlayerController player)
+            public virtual void Exit()
             {
             }
 
-            public virtual void Bypass(PlayerController player)
-            {
-            }
         }
     }
 }

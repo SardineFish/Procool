@@ -41,7 +41,7 @@ namespace Procool.GamePlay.Controller
             
             if (Mathf.Abs(zoom) > 0.01f)
             {
-                switch (InputDeviceDetector.CurrentInputScheme)
+                switch (InputManager.CurrentInputScheme)
                 {
                     case InputSchemeType.Keyboard:
                         CameraManager.Instance.Zoom(-zoom * keyboardZoomRate);

@@ -18,6 +18,8 @@ namespace Procool.GamePlay.Controller
         public float gamePadZoomMultiplier = 1;
         public float keyboardZoomMultiplier = 10;
         public AnimationCurve zoomSpeedCurve = new AnimationCurve(new Keyframe(0, 10), new Keyframe(700, 50));
+
+        public float keyHoldTime = .4f;
         
 
         private GameInput Input;
@@ -25,8 +27,9 @@ namespace Procool.GamePlay.Controller
         private new Rigidbody2D rigidbody;
         private Vector2 velocity;
 
-        private List<PlayerAction> _playerActions = new List<PlayerAction>();
         private PlayerAction _currentAction;
+        private PlayerMove _playerMove;
+        private PlayerDrive _playerDrive;
 
         public Player Player { get; private set; }
 
@@ -34,10 +37,11 @@ namespace Procool.GamePlay.Controller
         {
             Input = new GameInput();
             rigidbody = GetComponent<Rigidbody2D>();
-
-            
-            _playerActions.Add(new PlayerMove());
             Player = GetComponent<Player>();
+
+            _playerMove = new PlayerMove(Player, this);
+            _playerDrive = new PlayerDrive(Player, this);
+            ChangeAction(_playerMove);
         }
 
         private void OnEnable()
@@ -50,48 +54,60 @@ namespace Procool.GamePlay.Controller
             Input.Disable();
         }
 
-
         private void Update()
         {
-            bool actionKeepRunning = false;
-            foreach (var action in _playerActions)
-            {
-                if (actionKeepRunning)
-                {
-                    action.Bypass(this);
-                    continue;
-                }
-
-                if (_currentAction is null || _currentAction != action)
-                {
-                    if (action.CanEnter(this))
-                    {
-                        _currentAction?.Exit(this);
-                        _currentAction = action;
-                        _currentAction.Enter(this);
-                    }
-                    else
-                        action.Bypass(this);
-                }
-
-                if (_currentAction == action)
-                {
-                    var keep = _currentAction.Update(this);
-                    if (keep)
-                        actionKeepRunning = true;
-                    else
-                    {
-                        _currentAction.Exit(this);
-                        _currentAction = null;
-                    }
-                }
-                
-            }
+            _currentAction?.Update();
+            // bool actionKeepRunning = false;
+            // foreach (var action in _playerActions)
+            // {
+            //     if (actionKeepRunning)
+            //     {
+            //         action.Bypass();
+            //         continue;
+            //     }
+            //
+            //     if (_currentAction is null || _currentAction != action)
+            //     {
+            //         if (action.CanEnter())
+            //         {
+            //             _currentAction?.Exit();
+            //             _currentAction = action;
+            //             _currentAction.Enter();
+            //         }
+            //         else
+            //             action.Bypass();
+            //     }
+            //
+            //     if (_currentAction == action)
+            //     {
+            //         var keep = _currentAction.Update();
+            //         if (keep)
+            //             actionKeepRunning = true;
+            //         else
+            //         {
+            //             _currentAction.Exit();
+            //             _currentAction = null;
+            //         }
+            //     }
+            //     
         }
 
         private void FixedUpdate()
         {
-            _currentAction?.FixedUpdate(this);
+            _currentAction?.FixedUpdate();
+        }
+
+        void ChangeAction(PlayerAction action)
+        {
+            _currentAction?.Exit();
+            action.Enter();
+            _currentAction = action;
+        }
+
+        public void GetOnVehicle(Vehicle vehicle)
+        {
+            _playerDrive.Vehicle = vehicle;
+            ChangeAction(_playerDrive);
         }
     }
 

@@ -26,6 +26,7 @@ namespace Procool.UI
 
         protected override void Awake()
         {
+            base.Awake();
             Reload();
         }
 
@@ -82,7 +83,7 @@ namespace Procool.UI
         {
             if (action is null)
                 return "";
-            switch (InputDeviceDetector.CurrentInputScheme)
+            switch (InputManager.CurrentInputScheme)
             {
                 case InputSchemeType.GamePad:
                     return GamepadKeyText[action.id] ?? "¿";

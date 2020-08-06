@@ -59,6 +59,14 @@ namespace Procool.Input
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""dd1e0fdb-c3b5-4eca-8170-4d3e05fa2f0a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold""
                 }
             ],
             ""bindings"": [
@@ -193,6 +201,28 @@ namespace Procool.Input
                     ""action"": ""Pointer"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""40df099d-75c1-4f4f-abf1-1241c61bffa7"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""GamePad"",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""620b0da6-8d08-43c2-b009-72d35387a596"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -239,6 +269,14 @@ namespace Procool.Input
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""0b3a145c-9a02-4627-a4be-db00b6596d5e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold""
                 }
             ],
             ""bindings"": [
@@ -384,6 +422,28 @@ namespace Procool.Input
                     ""action"": ""ShiftGear"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f8c179ba-3104-4ee0-843e-f04943e829ab"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""GamePad"",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7246ecb0-b9d1-4474-9a7d-6b81fc1f605a"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -425,6 +485,7 @@ namespace Procool.Input
             m_GamePlay_Direction = m_GamePlay.FindAction("Direction", throwIfNotFound: true);
             m_GamePlay_Fire = m_GamePlay.FindAction("Fire", throwIfNotFound: true);
             m_GamePlay_Pointer = m_GamePlay.FindAction("Pointer", throwIfNotFound: true);
+            m_GamePlay_Interact = m_GamePlay.FindAction("Interact", throwIfNotFound: true);
             // Vehicle
             m_Vehicle = asset.FindActionMap("Vehicle", throwIfNotFound: true);
             m_Vehicle_Accelerator = m_Vehicle.FindAction("Accelerator", throwIfNotFound: true);
@@ -432,6 +493,7 @@ namespace Procool.Input
             m_Vehicle_Steering = m_Vehicle.FindAction("Steering", throwIfNotFound: true);
             m_Vehicle_HandBreak = m_Vehicle.FindAction("HandBreak", throwIfNotFound: true);
             m_Vehicle_ShiftGear = m_Vehicle.FindAction("ShiftGear", throwIfNotFound: true);
+            m_Vehicle_Interact = m_Vehicle.FindAction("Interact", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -486,6 +548,7 @@ namespace Procool.Input
         private readonly InputAction m_GamePlay_Direction;
         private readonly InputAction m_GamePlay_Fire;
         private readonly InputAction m_GamePlay_Pointer;
+        private readonly InputAction m_GamePlay_Interact;
         public struct GamePlayActions
         {
             private @GameInput m_Wrapper;
@@ -495,6 +558,7 @@ namespace Procool.Input
             public InputAction @Direction => m_Wrapper.m_GamePlay_Direction;
             public InputAction @Fire => m_Wrapper.m_GamePlay_Fire;
             public InputAction @Pointer => m_Wrapper.m_GamePlay_Pointer;
+            public InputAction @Interact => m_Wrapper.m_GamePlay_Interact;
             public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -519,6 +583,9 @@ namespace Procool.Input
                     @Pointer.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnPointer;
                     @Pointer.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnPointer;
                     @Pointer.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnPointer;
+                    @Interact.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnInteract;
+                    @Interact.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnInteract;
+                    @Interact.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnInteract;
                 }
                 m_Wrapper.m_GamePlayActionsCallbackInterface = instance;
                 if (instance != null)
@@ -538,6 +605,9 @@ namespace Procool.Input
                     @Pointer.started += instance.OnPointer;
                     @Pointer.performed += instance.OnPointer;
                     @Pointer.canceled += instance.OnPointer;
+                    @Interact.started += instance.OnInteract;
+                    @Interact.performed += instance.OnInteract;
+                    @Interact.canceled += instance.OnInteract;
                 }
             }
         }
@@ -551,6 +621,7 @@ namespace Procool.Input
         private readonly InputAction m_Vehicle_Steering;
         private readonly InputAction m_Vehicle_HandBreak;
         private readonly InputAction m_Vehicle_ShiftGear;
+        private readonly InputAction m_Vehicle_Interact;
         public struct VehicleActions
         {
             private @GameInput m_Wrapper;
@@ -560,6 +631,7 @@ namespace Procool.Input
             public InputAction @Steering => m_Wrapper.m_Vehicle_Steering;
             public InputAction @HandBreak => m_Wrapper.m_Vehicle_HandBreak;
             public InputAction @ShiftGear => m_Wrapper.m_Vehicle_ShiftGear;
+            public InputAction @Interact => m_Wrapper.m_Vehicle_Interact;
             public InputActionMap Get() { return m_Wrapper.m_Vehicle; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -584,6 +656,9 @@ namespace Procool.Input
                     @ShiftGear.started -= m_Wrapper.m_VehicleActionsCallbackInterface.OnShiftGear;
                     @ShiftGear.performed -= m_Wrapper.m_VehicleActionsCallbackInterface.OnShiftGear;
                     @ShiftGear.canceled -= m_Wrapper.m_VehicleActionsCallbackInterface.OnShiftGear;
+                    @Interact.started -= m_Wrapper.m_VehicleActionsCallbackInterface.OnInteract;
+                    @Interact.performed -= m_Wrapper.m_VehicleActionsCallbackInterface.OnInteract;
+                    @Interact.canceled -= m_Wrapper.m_VehicleActionsCallbackInterface.OnInteract;
                 }
                 m_Wrapper.m_VehicleActionsCallbackInterface = instance;
                 if (instance != null)
@@ -603,6 +678,9 @@ namespace Procool.Input
                     @ShiftGear.started += instance.OnShiftGear;
                     @ShiftGear.performed += instance.OnShiftGear;
                     @ShiftGear.canceled += instance.OnShiftGear;
+                    @Interact.started += instance.OnInteract;
+                    @Interact.performed += instance.OnInteract;
+                    @Interact.canceled += instance.OnInteract;
                 }
             }
         }
@@ -632,6 +710,7 @@ namespace Procool.Input
             void OnDirection(InputAction.CallbackContext context);
             void OnFire(InputAction.CallbackContext context);
             void OnPointer(InputAction.CallbackContext context);
+            void OnInteract(InputAction.CallbackContext context);
         }
         public interface IVehicleActions
         {
@@ -640,6 +719,7 @@ namespace Procool.Input
             void OnSteering(InputAction.CallbackContext context);
             void OnHandBreak(InputAction.CallbackContext context);
             void OnShiftGear(InputAction.CallbackContext context);
+            void OnInteract(InputAction.CallbackContext context);
         }
     }
 }
