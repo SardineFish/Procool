@@ -214,4 +214,21 @@ public static class MathUtility
     {
         return new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
     }
+
+    public static float DistanceToSegment(Vector3 a, Vector3 b, Vector3 point)
+    {
+        var v = (b - a).normalized;
+        var length = Vector3.Distance(a, b);
+        if (
+            Vector3.Dot(point - a, v) is var l && 0 <= l && l <= length
+            && Vector3.Dot(point - b, -v) is var m && 0 <= m && m <= length)
+        {
+            return Mathf.Abs(Vector3.Cross(point - a, v).magnitude);
+        }
+        else
+        {
+            return Mathf.Min(Vector3.Distance(a, point), Vector3.Distance(b, point));
+        }
+    }
+    
 }

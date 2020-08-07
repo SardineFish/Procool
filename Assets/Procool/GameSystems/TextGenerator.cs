@@ -1,4 +1,6 @@
-﻿using Procool.Random;
+﻿using Procool.Map;
+using Procool.Random;
+using UnityEngine;
 
 namespace Procool.GameSystems
 {
@@ -13,6 +15,25 @@ namespace Procool.GameSystems
         {
             var p = prng is null ? GameRNG.GetScalar() : prng.GetScalar();
             return greeting.RandomTake(p);
+        }
+
+        public static string GenerateRoadName(City city, Road road)
+        {
+            var idx = city.Roads.IndexOf(road);
+            return idx.ToOrdinal() + " Street";
+        }
+
+        public static string GenerateCityName(City city)
+        {
+            return "XXX City";
+        }
+
+        public static string GenerateAddress(City city, BuildingBlock buildingBlock, Vector2 position)
+        {
+            var edge = buildingBlock.Region.Edges
+                .MinOf(e => MathUtility.DistanceToSegment(e.Points.Item1.Pos, e.Points.Item2.Pos, position));
+
+            return $"{GenerateRoadName(city, edge.GetData<Road>())}, {GenerateCityName(city)}";
         }
     }
 }

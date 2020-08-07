@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Threading.Tasks;
+using Procool.GamePlay.Controller;
 using UnityEngine;
 
 namespace Procool.GamePlay.Interaction
@@ -11,7 +12,7 @@ namespace Procool.GamePlay.Interaction
         {
             public Sprite Icon;
             public string Title;
-            public Func<Task> OnActive;
+            public Func<Player, Task> OnActive;
             public bool Enable = true;
         }
         

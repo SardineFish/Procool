@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.UI;
 
 public static class Utility
 {
@@ -125,6 +126,14 @@ public static class Utility
         }
 
         throw new Exception("Random value of range.");
+    }
+
+    public static int IndexOf<T>(this IReadOnlyList<T> list, T element)
+    {
+        for(var i=0;i<list.Count;i++)
+            if (list[i].Equals(element))
+                return i;
+        return -1;
     }
 
     public static IEnumerable<GameObject> GetChildren(this GameObject gameObject)
@@ -524,6 +533,32 @@ public static class Utility
         }
     }
 
+    // Copy from https://stackoverflow.com/questions/20156/is-there-an-easy-way-to-create-ordinals-in-c
+    public static string ToOrdinal(this int num)
+    {
+        if (num <= 0) return num.ToString();
+
+        switch (num % 100)
+        {
+            case 11:
+            case 12:
+            case 13:
+                return num + "th";
+        }
+
+        switch (num % 10)
+        {
+            case 1:
+                return num + "st";
+            case 2:
+                return num + "nd";
+            case 3:
+                return num + "rd";
+            default:
+                return num + "th";
+        }
+    }
+
     public static bool IsInHierarchy(this GameObject gameObject)
     {
         return gameObject && gameObject.scene != null && gameObject.scene.name != null;
@@ -613,6 +648,18 @@ public static class Utility
         };
         var transform = ProjectionToWorldMatrix(camera);
         return (mesh, transform);
+    }
+
+    public static Task WaitForClick(this Button button)
+    {
+        return WaitForClick<object>(button, null);
+    }
+
+    public static async Task<T> WaitForClick<T>(this Button button, T param)
+    {
+        var promise = new TaskCompletionSource<T>();
+        button.onClick.AddListener(() => promise.SetResult(param));
+        return await promise.Task;
     }
 
     /// <summary>

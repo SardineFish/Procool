@@ -30,6 +30,8 @@ namespace Procool.UI
 
         public async Task<int> WaitSelected(SelectionPopup.Item item, int idx)
         {
+            Icon.sprite = item.Sprite;
+            Title.text = item.Title;
             selectionIndex = idx;
             promise = new TaskCompletionSource<int>();
             return await promise.Task;

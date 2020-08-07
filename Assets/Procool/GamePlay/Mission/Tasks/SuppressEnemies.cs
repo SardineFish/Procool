@@ -31,5 +31,10 @@ namespace Procool.GamePlay.Mission
         {
             combat = streetFight;
         }
+
+        public override string ToString()
+        {
+            return "Suppress the enemies.";
+        }
     }
 }

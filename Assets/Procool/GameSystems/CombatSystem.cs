@@ -31,6 +31,7 @@ namespace Procool.GameSystems
             enemy.Weapon = weapon;
             enemy.Active(city, block, location);
             enemy.Player.HP = enemy.Player.MaxHP;
+            enemy.transform.position = location;
             return enemy;
         }
 

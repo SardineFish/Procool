@@ -5,6 +5,7 @@ using Procool.GameSystems;
 using Procool.Map;
 using Procool.Random;
 using UnityEngine;
+using TextGenerator = Procool.GameSystems.TextGenerator;
 
 namespace Procool.GamePlay.Mission
 {
@@ -12,6 +13,8 @@ namespace Procool.GamePlay.Mission
     {
         private EnemyController target;
         private StreetFight combat;
+
+        private string description = "Assassinate the target.";
         
         public Assassination(City city, Vector2 location, PRNG prng) : base(city, location, prng)
         {
@@ -20,7 +23,12 @@ namespace Procool.GamePlay.Mission
         EnemyController SpawnTarget()
         {
             var block = combat.InvolvedBlocks.RandomTake(prng.GetScalar());
-            return CombatSystem.Instance.SpawnEnemy(City, block, prng);
+            var enemy = CombatSystem.Instance.SpawnEnemy(City, block, prng);
+
+            description =
+                $"Assassinate the target at {TextGenerator.GenerateAddress(City, block, enemy.transform.position)}";
+
+            return enemy;
         }
 
         public override IEnumerator Start()
@@ -36,6 +44,11 @@ namespace Procool.GamePlay.Mission
                 yield return null;
 
             TaskState = MissionState.Completed;
+        }
+
+        public override string ToString()
+        {
+            return description;
         }
     }
 }

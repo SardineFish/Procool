@@ -16,6 +16,7 @@ namespace Procool.GamePlay.Mission
     {
         public MissionState State { get; private set; } = MissionState.Pending;
         public readonly List<Task> Tasks = new List<Task>();
+        public readonly List<MissionReward> Rewards = new List<MissionReward>();
         public event Action<Task> OnTaskCompleted;
         public event Action<Task> OnTaskActive; 
         public Task ActiveTask { get; private set; }

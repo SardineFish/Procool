@@ -26,5 +26,10 @@ namespace Procool.GamePlay.Mission
         {
             return null;
         }
+
+        public override string ToString()
+        {
+            return "Complete this task.";
+        }
     }
 }

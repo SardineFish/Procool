@@ -15,7 +15,6 @@ namespace Procool.UI
         {
             public Sprite Sprite;
             public string Title;
-            public Action OnSelected;
         }
 
         public GameObject SelectionItemPrefab;
