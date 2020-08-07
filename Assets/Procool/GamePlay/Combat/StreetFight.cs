@@ -66,11 +66,9 @@ namespace Procool.GamePlay.Combat
                 yield return null;
             
             // Spawn enemies
-            var enemyCount = 1;// prng.GetInRange()
+            var enemyCount = prng.GetInRange(10, 30);
             for (var i = 0; i < enemyCount; i++)
             {    
-                Enemies.Add(SpawnEnemy());
-                Enemies.Add(SpawnEnemy());
                 Enemies.Add(SpawnEnemy());
             }
             

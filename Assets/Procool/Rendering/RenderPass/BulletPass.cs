@@ -58,16 +58,30 @@ namespace Procool.Rendering
 
             unsafe void UpdateData()
             {
-                var bullets = DamageEntity.AssetsManager.Assets
-                    .Where(entity => entity.gameObject && entity.gameObject.activeInHierarchy)
-                    .Select(entity => new InstanceData()
-                    {
-                        Positions = entity.transform.position,
-                        Size = entity.BulletVfx.BulletSize,
-                        PrimaryColor = entity.BulletVfx.PrimaryColor,
-                        SecondaryColor = entity.BulletVfx.SecondaryColor,
-                    })
-                    .ToList();
+                // var bullets = DamageEntity.AssetsManager.Assets
+                //     .Where(entity => entity.gameObject && entity.gameObject.activeInHierarchy)
+                //     .Select(entity => new InstanceData()
+                //     {
+                //         Positions = entity.transform.position,
+                //         Size = entity.BulletVfx.BulletSize,
+                //         PrimaryColor = entity.BulletVfx.PrimaryColor,
+                //         SecondaryColor = entity.BulletVfx.SecondaryColor,
+                //     })
+                //     .ToList();
+                var bullets = Utils.ListPool<InstanceData>.Get();
+                bullets.Clear();
+                bullets.Capacity = Mathf.Max(bullets.Capacity, 8192);
+                foreach (var entity in DamageEntity.AssetsManager.RawAssetsList)
+                {
+                    if(entity && entity.gameObject.activeInHierarchy)
+                        bullets.Add(new InstanceData()
+                        {
+                            Positions = entity.transform.position,
+                            Size = entity.BulletVfx.BulletSize,
+                            PrimaryColor = entity.BulletVfx.PrimaryColor,
+                            SecondaryColor = entity.BulletVfx.SecondaryColor,
+                        });
+                }
 
                 dataBuffer?.Release();
                 argsBuffer?.Release();
@@ -81,6 +95,7 @@ namespace Procool.Rendering
                 
                 argsBuffer = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
                 argsBuffer.SetData(args);
+                Utils.ListPool<InstanceData>.Release(bullets);
             }
             
 

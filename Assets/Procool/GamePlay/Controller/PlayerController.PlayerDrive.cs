@@ -40,7 +40,7 @@ namespace Procool.GamePlay.Controller
                 CameraManager.Instance.Follow(Vehicle.CameraTarget);
                 // Controller.rigidbody.bodyType = RigidbodyType2D.Kinematic;
                 Controller.rigidbody.simulated = false;
-                Vehicle.StartDrive();
+                Vehicle.StartDrive(Player);
             }
 
             public override void Update()

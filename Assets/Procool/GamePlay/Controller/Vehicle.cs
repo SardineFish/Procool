@@ -16,6 +16,8 @@ namespace Procool.GamePlay.Controller
         public Transform CameraTarget;
         private InteractiveObject _interactiveObject;
         private VehicleController _vehicleController;
+        
+        public Player Driver { get; private set; }
 
         public VehicleController VehicleController => _vehicleController;
 
@@ -58,8 +60,9 @@ namespace Procool.GamePlay.Controller
             player.GetComponent<PlayerController>()?.GetOnVehicle(this);
         }
 
-        public void StartDrive()
+        public void StartDrive(Player player)
         {
+            Driver = player;
             cameraForwardDirection = transform.up;
             _interactiveObject.Interactive = false;
         }
