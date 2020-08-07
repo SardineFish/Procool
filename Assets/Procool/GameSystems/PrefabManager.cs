@@ -11,6 +11,7 @@ namespace Procool.GameSystems
         public GameObject DamageEntityPrefab;
         public GameObject CityLoaderPrefab;
         public GameObject InputHintUIPrefab;
+        public GameObject NPCPrefab;
 
         protected override void Awake()
         {

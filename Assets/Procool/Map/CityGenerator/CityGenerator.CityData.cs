@@ -26,7 +26,8 @@ namespace Procool.Map
             foreach (var region in regionsToRemove)
             {
                 buildingBlock.SubSpace.DeleteRegion(region);
-                Region.Release(region);
+                buildingBlock.OpenSpaces.Add(region);
+                // Region.Release(region);
             }
 
             ListPool<Region>.Release(regionsToRemove);

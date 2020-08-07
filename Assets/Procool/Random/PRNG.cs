@@ -11,6 +11,7 @@ namespace Procool.Random
             random = new System.Random(seed);
         }
 
+
         /// <summary>
         /// Random float in [0, 1)
         /// </summary>
@@ -18,6 +19,15 @@ namespace Procool.Random
         public float GetScalar()
         {
             return (float)random.NextDouble();
+        }
+
+        /// <summary>
+        /// Random int in [0, int.MaxValue)
+        /// </summary>
+        /// <returns></returns>
+        public int GetInt()
+        {
+            return random.Next();
         }
 
         public Vector2 GetVec2InsideUnitCircle()
@@ -73,6 +83,17 @@ namespace Procool.Random
         public Vector2 GetVec2()
         {
             return new Vector2(GetScalar(), GetScalar());
+        }
+
+        public Vector2 GetVec2InBox(Vector2 halfSize)
+        {
+            return new Vector2(GetInRange(-halfSize.x, halfSize.x), GetInRange(-halfSize.y, halfSize.y));
+        }
+
+
+        public PRNG GetPRNG()
+        {
+            return new PRNG(GetInt());
         }
         
     }

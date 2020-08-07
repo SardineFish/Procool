@@ -10,6 +10,7 @@ namespace Procool.GamePlay.Controller
         public float HP = 100;
         public float MaxHP = 100;
         public float Armour = 0;
+        public bool Dead => HP <= 0;
         public Inventory.Inventory Inventory { get; private set; }
         
         public BlockPosition BlockPosition { get; set; }

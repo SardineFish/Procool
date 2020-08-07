@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.Ast;
 using Procool.GameSystems;
 using Procool.Map.SpacePartition;
+using Procool.Random;
 using Procool.Rendering;
 using Procool.Utils;
 using UnityEngine;
@@ -26,9 +27,12 @@ namespace Procool.Map.Loader
         public City City { get; private set; }
         public Block Block => City.WorldBlock.Block;
 
+        public PRNG prng { get; private set; }
+
         protected override void Load(City city)
         {
             City = city;
+            prng = GameRNG.GetPRNG(city.WorldBlock.Block.Position);
             renderer.DrawCity(city);
         }
 

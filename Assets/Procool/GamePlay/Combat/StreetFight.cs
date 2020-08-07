@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Procool.GamePlay.Controller;
 using Procool.GamePlay.Weapon;
 using Procool.GameSystems;
@@ -21,40 +22,48 @@ namespace Procool.GamePlay.Combat
         public float StartDistance = 10f;
         public City City { get; private set; }
         public PRNG prng;
+        
+        public bool Started { get; private set; }
+        public bool Cleared { get; private set; }
 
-        public void PreLoadCombat(City city, Vector2 location, float size)
+        public void PreLoadCombat(City city, Vector2 location, float size, PRNG prng)
         {
+            prng = prng is null ? GameRNG.GetPRNG(location) : prng;
             InvolvedBlocks.Clear();
             InvolvedBlocks.AddRange(city.FindBlocksInDistance(location, size));
             City = city;
             Location = location;
             Size = size;
-            prng = GameRNG.GetPRNG(location);
         }
         
         public override void StartCombat()
         {
+            if(Started)
+                return;
+            Cleared = false;
+            Started = true;
             StartCoroutine(ProcessCombat());
         }
 
-        public override void StopCombat()
+        public override void ClearCombat()
         {
-            throw new System.NotImplementedException();
+            foreach (var enemy in Enemies)
+            {
+                GameObjectPool.Release(PrefabManager.Instance.EnemyPrefab, enemy);
+            }
+
+            Cleared = false;
+            Started = false;
+            InvolvedBlocks.Clear();
+            Enemies.Clear();
+            
         }
 
         EnemyController SpawnEnemy()
         {
             var block = InvolvedBlocks.RandomTake(prng.GetScalar());
-            var edge = block.SubSpace.Regions.RandomTake(prng.GetScalar()).Edges.RandomTake(prng.GetScalar());
-            var t = prng.GetScalar();
-            var (a, b) = edge.Points;
-            var pos = Vector2.Lerp(a.Pos, b.Pos, t);
-            var enemy = GameObjectPool.Get<EnemyController>(PrefabManager.Instance.EnemyPrefab);
-            var weapon = WeaponSystem.Instance.GenerateWeapon(prng);
-            enemy.Player.Inventory.Add(weapon);
-            enemy.Weapon = weapon;
-            enemy.Active(City, block, pos);
-            return enemy;
+
+            return CombatSystem.Instance.SpawnEnemy(City, block, prng);
         }
 
         IEnumerator ProcessCombat()
@@ -70,6 +79,16 @@ namespace Procool.GamePlay.Combat
             for (var i = 0; i < enemyCount; i++)
             {    
                 Enemies.Add(SpawnEnemy());
+            }
+
+            while (true)
+            {
+                if (Enemies.All(enemy=>enemy.Player.Dead))
+                {
+                    Cleared = true;
+                    yield break;
+                }
+                yield return new WaitForSeconds(1);
             }
             
         }

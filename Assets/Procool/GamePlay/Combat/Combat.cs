@@ -7,6 +7,6 @@ namespace Procool.GamePlay.Combat
 
         public abstract void StartCombat();
 
-        public abstract void StopCombat();
+        public abstract void ClearCombat();
     }
 }

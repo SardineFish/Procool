@@ -33,6 +33,17 @@ namespace Procool.Random
         {
             
         }
+
+        public static PRNG GetPRNG()
+        {
+            return new PRNG((int) FloatToIntBits(GetScalar()));
+        }
+
+        public static float GetScalar()
+        {
+            return UnityEngine.Random.value;
+        }
+        
         
         #endregion
         

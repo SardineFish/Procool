@@ -1,4 +1,5 @@
-﻿using Procool.Map.SpacePartition;
+﻿using System.Collections.Generic;
+using Procool.Map.SpacePartition;
 using Procool.Misc;
 using Procool.Utils;
 using UnityEngine;
@@ -13,6 +14,8 @@ namespace Procool.Map
         public Space SubSpace { get; private set; }
         
         public Vector2 Center { get; private set; }
+
+        public readonly List<Region> OpenSpaces = new List<Region>();
         
         public OBB OBB { get; private set; }
 
@@ -21,12 +24,15 @@ namespace Procool.Map
             var data = GetInternal();
             data.Region = region;
             data.Center = Vector2.zero;
+            data.OpenSpaces.Clear();
             return data;
         }
 
         public static void Release(BuildingBlock buildingBlock)
         {
             Space.Release(buildingBlock.SubSpace);
+            foreach(var region in buildingBlock.OpenSpaces)
+                SpacePartition.Region.Release(region, true);
             Release(buildingBlock);
         }
 
