@@ -105,7 +105,7 @@ namespace Procool.GamePlay.Controller
             if(_currentAction == action)
                 return;
             _currentAction?.Exit();
-            action.Enter();
+            action?.Enter();
             _currentAction = action;
         }
 
@@ -116,6 +116,16 @@ namespace Procool.GamePlay.Controller
         }
 
         public void GetOffVehicle(Vehicle vehicle)
+        {
+            ChangeAction(_playerMove);
+        }
+
+        public void LockPlayer()
+        {
+            ChangeAction(null);
+        }
+
+        public void UnlockPlayer()
         {
             ChangeAction(_playerMove);
         }

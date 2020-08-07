@@ -336,6 +336,19 @@ public static class Utility
         }
     }
 
+    public static async Task ShowUIAsync(CanvasGroup canvasGroup, float time)
+    {
+        time = (1 - canvasGroup.alpha) * time;
+        canvasGroup.alpha = 0;
+        canvasGroup.gameObject.SetActive(true);
+        var alpha = canvasGroup.alpha;
+        foreach (var t in TimerNormalized(time))
+        {
+            canvasGroup.alpha = alpha + t * (1 - alpha);
+            await Task.Yield();
+        }
+    }
+
     public static IEnumerator HideUI(CanvasGroup canvasGroup, float time, bool deactivate = true)
     {
         foreach (var t in TimerNormalized(time))
@@ -343,6 +356,19 @@ public static class Utility
             canvasGroup.alpha = 1 - t;
             yield return null;
         }
+        canvasGroup.alpha = 0;
+        if (deactivate)
+            canvasGroup.gameObject.SetActive(false);
+    }
+
+    public static async Task HideUIAsync(CanvasGroup canvasGroup, float time, bool deactivate = true)
+    {
+        foreach (var t in TimerNormalized(time))
+        {
+            canvasGroup.alpha = 1 - t;
+            await Task.Yield();
+        }
+
         canvasGroup.alpha = 0;
         if (deactivate)
             canvasGroup.gameObject.SetActive(false);

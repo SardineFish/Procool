@@ -446,6 +446,96 @@ namespace Procool.Input
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""UI"",
+            ""id"": ""6d77caa3-bb31-488a-bb74-b0bc51f969a6"",
+            ""actions"": [
+                {
+                    ""name"": ""Accept"",
+                    ""type"": ""Button"",
+                    ""id"": ""ad693c43-1c6c-411b-832a-c2d8720bea4b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""SkipText"",
+                    ""type"": ""Button"",
+                    ""id"": ""6a8abedb-e20d-4eb0-bab1-5e75b41e1018"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""4adb8609-d7d4-4632-901b-6b416e3c0862"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Accept"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5659bdf5-c1dd-4b4c-ba1f-05eeb35e8a9a"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Accept"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""09a9dad2-a985-4883-a365-6670e36cd09f"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SkipText"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""77220b7f-230b-45cd-835f-1187fcce2164"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""SkipText"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1decc1e9-4719-4e0c-8c67-a227570bd331"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""SkipText"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""859d3f45-ac70-4751-97c5-745688fcf00a"",
+                    ""path"": ""<Pointer>/press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""SkipText"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -494,6 +584,10 @@ namespace Procool.Input
             m_Vehicle_HandBreak = m_Vehicle.FindAction("HandBreak", throwIfNotFound: true);
             m_Vehicle_ShiftGear = m_Vehicle.FindAction("ShiftGear", throwIfNotFound: true);
             m_Vehicle_Interact = m_Vehicle.FindAction("Interact", throwIfNotFound: true);
+            // UI
+            m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
+            m_UI_Accept = m_UI.FindAction("Accept", throwIfNotFound: true);
+            m_UI_SkipText = m_UI.FindAction("SkipText", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -685,6 +779,47 @@ namespace Procool.Input
             }
         }
         public VehicleActions @Vehicle => new VehicleActions(this);
+
+        // UI
+        private readonly InputActionMap m_UI;
+        private IUIActions m_UIActionsCallbackInterface;
+        private readonly InputAction m_UI_Accept;
+        private readonly InputAction m_UI_SkipText;
+        public struct UIActions
+        {
+            private @GameInput m_Wrapper;
+            public UIActions(@GameInput wrapper) { m_Wrapper = wrapper; }
+            public InputAction @Accept => m_Wrapper.m_UI_Accept;
+            public InputAction @SkipText => m_Wrapper.m_UI_SkipText;
+            public InputActionMap Get() { return m_Wrapper.m_UI; }
+            public void Enable() { Get().Enable(); }
+            public void Disable() { Get().Disable(); }
+            public bool enabled => Get().enabled;
+            public static implicit operator InputActionMap(UIActions set) { return set.Get(); }
+            public void SetCallbacks(IUIActions instance)
+            {
+                if (m_Wrapper.m_UIActionsCallbackInterface != null)
+                {
+                    @Accept.started -= m_Wrapper.m_UIActionsCallbackInterface.OnAccept;
+                    @Accept.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnAccept;
+                    @Accept.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnAccept;
+                    @SkipText.started -= m_Wrapper.m_UIActionsCallbackInterface.OnSkipText;
+                    @SkipText.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnSkipText;
+                    @SkipText.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnSkipText;
+                }
+                m_Wrapper.m_UIActionsCallbackInterface = instance;
+                if (instance != null)
+                {
+                    @Accept.started += instance.OnAccept;
+                    @Accept.performed += instance.OnAccept;
+                    @Accept.canceled += instance.OnAccept;
+                    @SkipText.started += instance.OnSkipText;
+                    @SkipText.performed += instance.OnSkipText;
+                    @SkipText.canceled += instance.OnSkipText;
+                }
+            }
+        }
+        public UIActions @UI => new UIActions(this);
         private int m_GamePadSchemeIndex = -1;
         public InputControlScheme GamePadScheme
         {
@@ -720,6 +855,11 @@ namespace Procool.Input
             void OnHandBreak(InputAction.CallbackContext context);
             void OnShiftGear(InputAction.CallbackContext context);
             void OnInteract(InputAction.CallbackContext context);
+        }
+        public interface IUIActions
+        {
+            void OnAccept(InputAction.CallbackContext context);
+            void OnSkipText(InputAction.CallbackContext context);
         }
     }
 }

@@ -15,6 +15,7 @@ namespace Procool.Input
     public class InputManager : Singleton<InputManager>
     {
         public static GameInput Input { get; private set; }
+        public static GameInputState InputState { get; private set; }
         public static InputSchemeType CurrentInputScheme { get; private set; } = InputSchemeType.Keyboard;
         protected override void Awake()
         {
@@ -45,6 +46,16 @@ namespace Procool.Input
                     CurrentInputScheme = InputSchemeType.Keyboard;
                     break;
             }
+            
+            InputState = new GameInputState();
+            Input.UI.SetCallbacks(InputState.UIInput);
+        }
+
+        private void Update()
+        {
+            InputState.Reset();
+            
+            InputSystem.Update();
         }
     }
 }

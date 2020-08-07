@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Procool.GamePlay.Combat;
+using Procool.GamePlay.Interaction;
 using Procool.GamePlay.Mission;
 using Procool.GameSystems;
 using Procool.Map.Loader;
