@@ -16,7 +16,7 @@ namespace Procool.GamePlay.Controller
 
     // Reference: https://asawicki.info/Mirror/Car%20Physics%20for%20Games/Car%20Physics%20for%20Games.html
     [RequireComponent(typeof(Rigidbody2D))]
-    public class VehicleController : MonoBehaviour, ICustomEditorEX
+    public partial class VehicleController : MonoBehaviour, ICustomEditorEX
     {
         private const float Gravity = 9.8f;
         private const float AirDensity = 1.29f;
@@ -41,6 +41,7 @@ namespace Procool.GamePlay.Controller
         public float wheelLateralFrictionCoefficient = .8f;
         public float rearLateralFrictionScale = 0.6f;
         public float handbreakRearLateralFriction = 0.6f;
+        public Vector2 driftingLateralVelocityThreshold = new Vector2(.5f, 1.2f);
 
         public AnimationCurve wheelSlipFrictionCurve = new AnimationCurve();
 
@@ -94,19 +95,25 @@ namespace Procool.GamePlay.Controller
         private float MaxCornerRadius => LocalVelocity.y * LocalVelocity.y * mass / MaxLateralForce;
 
         [DisplayInInspector] private float MaxCornerAngle => Mathf.Atan(wheelBase / MaxCornerRadius) * Mathf.Rad2Deg;
+        
+        [DisplayInInspector] private bool IsDrifting { get; set; }
+        
+        [DisplayInInspector] private Vector2 NextPosition { get; set; }
+        
+        [DisplayInInspector] private Vector2 DeltaPosition { get; set; }
 
 
         private Lazy<Rigidbody2D> _rigidbody;
         private Rigidbody2D rigidbody => _rigidbody.Value;
         private float gravity => Gravity;
-        [DisplayInInspector()] private float[] weightOnWheel = new float[4] {0, 0, 0, 0};
-        [DisplayInInspector()] private float[] wheelAngularVelocity = new float[4] {0, 0, 0, 0};
-        [DisplayInInspector()] private float[] _tractionFromWheel = new float[4] {0, 0, 0, 0};
-        [DisplayInInspector()] private float[] _breakingFromWheel = new float[4] {0, 0, 0, 0};
-        [DisplayInInspector()] private float[] _totalForceFromWheel = new float[4] {0, 0, 0, 0};
-        [DisplayInInspector()] private float[] _wheelAngularAcceleration = new float[4] {0, 0, 0, 0};
-        [DisplayInInspector()] private float[] _wheelBreakAcceleration = new float[4] {0, 0, 0, 0};
-        [DisplayInInspector()] private float[] _wheelSideForce = new float[4] {0, 0, 0, 0};
+        [DisplayInInspector(InlineArray = true)] private float[] weightOnWheel = new float[4] {0, 0, 0, 0};
+        [DisplayInInspector(InlineArray = true)] private float[] wheelAngularVelocity = new float[4] {0, 0, 0, 0};
+        [DisplayInInspector(InlineArray = true)] private float[] _tractionFromWheel = new float[4] {0, 0, 0, 0};
+        [DisplayInInspector(InlineArray = true)] private float[] _breakingFromWheel = new float[4] {0, 0, 0, 0};
+        [DisplayInInspector(InlineArray = true)] private float[] _totalForceFromWheel = new float[4] {0, 0, 0, 0};
+        [DisplayInInspector(InlineArray = true)] private float[] _wheelAngularAcceleration = new float[4] {0, 0, 0, 0};
+        [DisplayInInspector(InlineArray = true)] private float[] _wheelBreakAcceleration = new float[4] {0, 0, 0, 0};
+        [DisplayInInspector(InlineArray = true)] private float[] _wheelSideForce = new float[4] {0, 0, 0, 0};
 
         [DisplayInInspector()] private float airResistance => AirResistance(Velocity).magnitude;
 
@@ -363,6 +370,7 @@ namespace Procool.GamePlay.Controller
                 angularVelocity = 0;
             }
 
+            finalVelocity.x = 0;
             return (velocity, angularVelocity, finalVelocity);
         }
 
@@ -402,7 +410,12 @@ namespace Procool.GamePlay.Controller
 
         (Vector2 velocity, float angularVelocity, Vector2 finalVelocity) Cornering(Vector2 velocity, float angularVelocity)
         {
-            if (Mathf.Abs(velocity.x) > 0.1f)
+            if (Mathf.Abs(LocalVelocity.x) > driftingLateralVelocityThreshold.y)
+                IsDrifting = true;
+            else if(Mathf.Abs(LocalVelocity.x) < driftingLateralVelocityThreshold.x)
+                IsDrifting = false;
+            
+            if (IsDrifting)
             {
                 return HighSpeedCornering(velocity, angularVelocity);
             }
@@ -419,10 +432,27 @@ namespace Procool.GamePlay.Controller
 
         }
 
+        void ConsumeRigidbodyVelocity()
+        {
+
+            DeltaPosition = transform.position.ToVector2() - NextPosition;
+            var deltaV = DeltaPosition / Time.fixedDeltaTime;
+            // LocalVelocity += transform.worldToLocalMatrix.MultiplyVector(deltaV).ToVector2();
+            var actualLocalVelocity = LocalVelocity + transform.worldToLocalMatrix.MultiplyVector(deltaV).ToVector2();
+            if (MathUtility.SignInt(actualLocalVelocity.y) == -MathUtility.SignInt(LocalVelocity.y))
+                LocalVelocity = new Vector2(actualLocalVelocity.x, 0);
+            else
+                LocalVelocity = actualLocalVelocity;
+            if (Mathf.Abs(rigidbody.angularVelocity * Mathf.Deg2Rad) > Mathf.Abs(AngularVelocity))
+                AngularVelocity = rigidbody.angularVelocity * Mathf.Deg2Rad;
+
+        }
+
         private void Start()
         {
             for (var i = 0; i < 4; i++)
                 weightOnWheel[i] = WeightOnWheel((Wheel) i, Vector2.zero);
+            NextPosition = transform.position;
         }
 
         private void FixedUpdate()
@@ -430,6 +460,9 @@ namespace Procool.GamePlay.Controller
             // var forceForward = TractionForce() + AirResistance(Velocity);
             // Throttle = 1;
             EngineRPM = Mathf.Max(800, ActualRPM);
+            // LocalVelocity = transform.worldToLocalMatrix.MultiplyVector(rigidbody.velocity);
+
+            ConsumeRigidbodyVelocity();
 
             for (var i = 0; i < 4; i++)
             {
@@ -486,8 +519,9 @@ namespace Procool.GamePlay.Controller
             var angularVelocity = AngularVelocity;
             var finalVelocity = velocity;
             (velocity, angularVelocity, finalVelocity) = Cornering(velocity, angularVelocity);
-            
 
+            if (Mathf.Abs(angularVelocity) < Mathf.Abs(rigidbody.angularVelocity * Mathf.Deg2Rad))
+                rigidbody.angularVelocity = 0;
 
 
             LocalVelocity = velocity;
@@ -497,7 +531,11 @@ namespace Procool.GamePlay.Controller
             // rigidbody.angularVelocity = new Vector3(0, -angularVelocity, 0);
             rigidbody.mass = mass;
             // transform.Translate(velocity * Time.deltaTime);
-            rigidbody.MovePosition(transform.position + transform.localToWorldMatrix.MultiplyVector(velocity) * Time.deltaTime);
+            NextPosition = transform.position +
+                           transform.localToWorldMatrix.MultiplyVector(velocity) * Time.fixedDeltaTime;
+            rigidbody.MovePosition(NextPosition);
+            // rigidbody.velocity = transform.localToWorldMatrix.MultiplyVector(velocity);
+            // rigidbody.angularVelocity = 
             
             var worldV = transform.localToWorldMatrix.MultiplyVector(finalVelocity);
             

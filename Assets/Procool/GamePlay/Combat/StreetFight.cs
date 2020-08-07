@@ -45,7 +45,7 @@ namespace Procool.GamePlay.Combat
         EnemyController SpawnEnemy()
         {
             var block = InvolvedBlocks.RandomTake(prng.GetScalar());
-            var edge = block.Region.Edges.RandomTake(prng.GetScalar());
+            var edge = block.SubSpace.Regions.RandomTake(prng.GetScalar()).Edges.RandomTake(prng.GetScalar());
             var t = prng.GetScalar();
             var (a, b) = edge.Points;
             var pos = Vector2.Lerp(a.Pos, b.Pos, t);

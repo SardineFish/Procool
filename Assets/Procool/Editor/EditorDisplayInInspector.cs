@@ -94,6 +94,7 @@ namespace Procool.Editor
                     ++i;
                 }
                 str += "]";
+                EditorGUILayout.LabelField(str);
             });
         }
 

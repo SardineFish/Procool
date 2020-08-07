@@ -38,6 +38,8 @@ namespace Procool.GamePlay.Controller
                 CameraManager.Instance.UseVehicleCamera();
                 CameraManager.Instance.SetViewFollow(true);
                 CameraManager.Instance.Follow(Vehicle.CameraTarget);
+                // Controller.rigidbody.bodyType = RigidbodyType2D.Kinematic;
+                Controller.rigidbody.simulated = false;
                 Vehicle.StartDrive();
             }
 
@@ -75,6 +77,8 @@ namespace Procool.GamePlay.Controller
             {
                 Player.transform.SetParent(null);
                 Player.transform.position = Vehicle.GetOffLocation?.position ?? Vehicle.transform.position;
+                // Controller.rigidbody.bodyType = RigidbodyType2D.Dynamic;
+                Controller.rigidbody.simulated = true;
                 Vehicle.StopDrive();
                 Vehicle = null;
             }
