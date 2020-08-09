@@ -408,7 +408,7 @@ GameObject:
   - component: {fileID: 8823603665711562024}
   - component: {fileID: 8823603665711562031}
   m_Layer: 0
-  m_Name: Item
+  m_Name: TodoItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -458,7 +458,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf9429974a3543009f98462bab04637d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  transitionTime: 0
+  transitionTime: 0.2
   wrapper: {fileID: 8823603665702769613}
   border: {fileID: 8823603665269734910}
   icon: {fileID: 8823603665387349927}

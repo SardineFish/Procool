@@ -42,7 +42,7 @@ namespace Procool.UI
 
         public void UpdateTask(Mission mission, GamePlay.Mission.Task task)
         {
-            if (items.ContainsKey(task))
+            if (task != null && items.ContainsKey(task))
             {
                 var item = items[task];
 

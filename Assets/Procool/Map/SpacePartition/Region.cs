@@ -25,7 +25,9 @@ namespace Procool.Map.SpacePartition
         public IReadOnlyList<Edge> Edges => edges.AsReadOnly();
         public IReadOnlyList<Vertex> Vertices => vertices.AsReadOnly();
 
-        public IEnumerable<Region> Neighboors => edges.Select(edge => edge.GetAnother(this));
+        public IEnumerable<Region> Neighboors => edges
+            .Select(edge => edge.GetAnother(this))
+            .Where(region => region);
 
         public static Region Get(Space parentSpace)
         {

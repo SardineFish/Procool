@@ -68,15 +68,15 @@ namespace Procool.GamePlay.Mission
             ActiveMission = mission;
             UpdateTaskUI(mission);
 
-            var task = System.Threading.Tasks.Task.Run(() => mission.Start(Player), _cancellationTokenSource.Token);
+            //var task = System.Threading.Tasks.Task.Run(() => mission.Start(Player), _cancellationTokenSource.Token);
 
             try
             {
-                await task;
+                await mission.Start(Player);
                 
                 CompleteMission(mission);
             }
-            catch
+            catch (OperationCanceledException)
             {
                 Debug.Log("Mission cancelled.");
             }
@@ -105,7 +105,16 @@ namespace Procool.GamePlay.Mission
                 if (missionUIUpdateQueue.Count > 0)
                 {
                     var state = missionUIUpdateQueue.Dequeue();
-                    if (state.Task != currentState.Task)
+                    if (state.Mission != null && state.Mission == currentState.Mission &&
+                        (state.Mission.State == GamePlay.Mission.MissionState.Completed ||
+                         state.Mission.State == GamePlay.Mission.MissionState.Failed))
+                    {
+                        TodoListUI.Instance.UpdateTask(state.Mission, state.Mission.Tasks.Tail());
+
+                        await System.Threading.Tasks.Task.Delay(TimeSpan.FromSeconds(1f));
+                        await TodoListUI.Instance.RemoveTask(currentState.Task);
+                    }
+                    else if (state.Task != currentState.Task)
                     {
                         if (currentState.Task != null)
                             await TodoListUI.Instance.RemoveTask(currentState.Task);
@@ -114,6 +123,8 @@ namespace Procool.GamePlay.Mission
                     }
                     else
                         TodoListUI.Instance.UpdateTask(state.Mission, state.Task);
+
+                    currentState = state;
                 }
 
                 await System.Threading.Tasks.Task.Delay(TimeSpan.FromSeconds(1f));

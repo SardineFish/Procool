@@ -16,7 +16,6 @@ namespace Procool.GamePlay.Combat
     public class StreetFight : Combat
     {
         public readonly List<BuildingBlock> InvolvedBlocks = new List<BuildingBlock>();
-        public Vector2 Location;
         public float Size;
         public float StartDistance = 10f;
         public City City { get; private set; }
@@ -27,7 +26,7 @@ namespace Procool.GamePlay.Combat
 
         public StreetFight(City city, Vector2 location, float size, PRNG prng)
         {
-            prng = prng is null ? GameRNG.GetPRNG(location) : prng.GetPRNG();
+            this.prng = prng is null ? GameRNG.GetPRNG(location) : prng.GetPRNG();
             InvolvedBlocks.Clear();
             InvolvedBlocks.AddRange(city.FindBlocksInDistance(location, size));
             City = city;
@@ -65,6 +64,8 @@ namespace Procool.GamePlay.Combat
             // Wait player approaching
             while (Vector2.Distance(player.BlockPosition.Position, Location) >= (Size + StartDistance))
                 yield return null;
+
+            CreateInstance();
             
             // Spawn enemies
             var enemyCount = prng.GetInRange(10, 30);

@@ -10,15 +10,17 @@ namespace Procool.GamePlay.Combat
     public abstract class Combat
     {
         public CombatInstance Instance { get; private set; }
+        public Vector2 Location { get; protected set; }
         public abstract void StartCombat();
 
         public abstract void ClearCombat();
 
         public CombatInstance CreateInstance()
         {
-            var instance = GameObjectPool.Get<CombatInstance>();
-            instance.Init(this);
-            return instance;
+            Instance = GameObjectPool.Get<CombatInstance>();
+            Instance.Init(this);
+            Instance.transform.position = Location;
+            return Instance;
         }
 
         public void DestroyInstance()

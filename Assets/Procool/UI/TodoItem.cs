@@ -27,7 +27,7 @@ namespace Procool.UI
             var pos = wrapper.anchoredPosition;
             foreach (var t in Utility.TimerNormalized(transitionTime))
             {
-                pos.x = Mathf.Lerp(-300, 0, t);
+                pos.x = Mathf.Lerp(-300, 0, Mathf.Pow(t, .5f));
                 wrapper.anchoredPosition = pos;
                 _canvasGroup.alpha = t;
                 await Task.Yield();
@@ -39,9 +39,9 @@ namespace Procool.UI
             var pos = wrapper.anchoredPosition;
             foreach (var t in Utility.TimerNormalized(transitionTime))
             {
-                pos.x = Mathf.Lerp(0, 300, t);
+                pos.x = Mathf.Lerp(0, 300, Mathf.Pow(t, 2));
                 wrapper.anchoredPosition = pos;
-                _canvasGroup.alpha = t;
+                _canvasGroup.alpha = 1 - t;
                 await Task.Yield();
             }
         }

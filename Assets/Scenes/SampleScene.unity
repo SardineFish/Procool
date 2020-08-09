@@ -4717,6 +4717,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1271936303}
+  - component: {fileID: 1271936304}
   m_Layer: 0
   m_Name: PlayerStat
   m_TagString: Untagged
@@ -4745,6 +4746,20 @@ RectTransform:
   m_AnchoredPosition: {x: 64, y: -64}
   m_SizeDelta: {x: 500, y: 58.54413}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &1271936304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1271936302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 755299bd9d0f47aabddbafb1b78b5ee2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hpBar: {fileID: 1019781353}
+  armorBar: {fileID: 297058841}
 --- !u!1 &1274518923
 GameObject:
   m_ObjectHideFlags: 0

@@ -49,6 +49,7 @@ MonoBehaviour:
   cityLoadingDistance: 500
   buildingBlockLoadingDistance: 200
   renderer: {fileID: 4746808712773604527}
+  showLoadedBlocks: 0
 --- !u!114 &4746808712773604527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79,6 +80,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9171881cf0504c858335d403dce4a991, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NPCCount: {x: 10, y: 20}
+  NPCMissionCount: {x: 2, y: 4}
 --- !u!1 &6200859716061244313
 GameObject:
   m_ObjectHideFlags: 0
