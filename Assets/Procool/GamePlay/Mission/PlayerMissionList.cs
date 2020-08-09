@@ -1,24 +1,123 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using Procool.GamePlay.Controller;
+using Procool.UI;
 using UnityEngine;
 
 namespace Procool.GamePlay.Mission
 {
+    [RequireComponent(typeof(Player))]
     public class PlayerMissionList : MonoBehaviour
     {
-        public List<Mission> ActiveMissions { get; } = new List<Mission>();
-        public Mission TrackingMission = null;
+        struct MissionState
+        {
+            public Mission Mission;
+            public Task Task;
+
+            public MissionState(Mission mission, Task task)
+            {
+                Mission = mission;
+                Task = task;
+            }
+        }
+        
+        public Player Player { get; private set; }
+        public List<Mission> AvailableMissions { get; } = new List<Mission>();
+        public Mission ActiveMission = null;
+        private readonly  Queue<MissionState> missionUIUpdateQueue = new Queue<MissionState>();
+        private MissionState currentState;
+        private System.Threading.Tasks.Task missionTask;
+        CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
+        private void Awake()
+        {
+            Player = GetComponent<Player>();
+        }
+
+        private void Start()
+        {
+            UpdateTaskUI();
+        }
 
         public void AcceptMission(Mission mission)
         {
             mission.Active();
-            ActiveMissions.Add(mission);
+            AvailableMissions.Add(mission);
+            if(ActiveMission is null)
+                StartMission(mission);
         }
 
         public void CancelMission(Mission mission)
         {
-            
+            if (ActiveMission != null)
+            {
+                _cancellationTokenSource.Cancel();
+                UpdateTaskUI(null);
+                ActiveMission = null;
+            }
+        }
+
+        async void StartMission(Mission mission)
+        {
+            if (ActiveMission != null && ActiveMission != mission)
+            {
+                CancelMission(ActiveMission);
+            }
+
+            ActiveMission = mission;
+            UpdateTaskUI(mission);
+
+            var task = System.Threading.Tasks.Task.Run(() => mission.Start(Player), _cancellationTokenSource.Token);
+
+            try
+            {
+                await task;
+                
+                CompleteMission(mission);
+            }
+            catch
+            {
+                Debug.Log("Mission cancelled.");
+            }
+        }
+
+        void CompleteMission(Mission mission)
+        {
+            UpdateTaskUI(mission);
+            AvailableMissions.Remove(mission);
+            if (AvailableMissions.Count > 0)
+                StartMission(AvailableMissions[0]);
+            else
+                UpdateTaskUI(null);
         }
         
-        
+
+        void UpdateTaskUI(Mission mission)
+        {
+            missionUIUpdateQueue.Enqueue(new MissionState(mission, mission?.ActiveTask));
+        }
+
+        async void UpdateTaskUI()
+        {
+            while (true)
+            {
+                if (missionUIUpdateQueue.Count > 0)
+                {
+                    var state = missionUIUpdateQueue.Dequeue();
+                    if (state.Task != currentState.Task)
+                    {
+                        if (currentState.Task != null)
+                            await TodoListUI.Instance.RemoveTask(currentState.Task);
+                        if (state.Task != null)
+                            await TodoListUI.Instance.AddTask(state.Mission, state.Task);
+                    }
+                    else
+                        TodoListUI.Instance.UpdateTask(state.Mission, state.Task);
+                }
+
+                await System.Threading.Tasks.Task.Delay(TimeSpan.FromSeconds(1f));
+            }
+        }
     }
 }

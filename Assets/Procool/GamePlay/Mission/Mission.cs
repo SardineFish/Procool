@@ -64,7 +64,10 @@ namespace Procool.GamePlay.Mission
         public void Active()
         {
             if (State == MissionState.Pending)
+            {
                 State = MissionState.Active;
+                ActiveTask = Tasks[0];
+            }
         }
 
         public static Mission Generate(City city, PRNG prng)
