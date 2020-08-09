@@ -8,7 +8,7 @@ namespace Procool.GamePlay.Mission
         public List<Mission> ActiveMissions { get; } = new List<Mission>();
         public Mission TrackingMission = null;
 
-        public void TakeMission(Mission mission)
+        public void AcceptMission(Mission mission)
         {
             ActiveMissions.Add(mission);
         }

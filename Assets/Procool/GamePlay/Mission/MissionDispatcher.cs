@@ -64,11 +64,9 @@ namespace Procool.GamePlay.Mission
             var result = await MissionUI.Instance.Show(Missions[idx], true);
             if (result == MissionUI.Result.Accept)
             {
-                player.GetComponent<PlayerMissionList>().TakeMission(Missions[idx]);
+                player.GetComponent<PlayerMissionList>().AcceptMission(Missions[idx]);
             }
             
-            // TODO: Complete GameObjects of ConversationUI, Selection UI, Mission UI.
-            // TODO: Add sprites into Resources Manager.
             // TODO: Make NPC Prefab.
             // TODO: Add PlayerMissionList onto Player.
             // TODO: Complete Mission generator.

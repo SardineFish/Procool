@@ -356,10 +356,15 @@ public static class Utility
             canvasGroup.alpha = alpha + t * (1 - alpha);
             await Task.Yield();
         }
+
+        canvasGroup.blocksRaycasts = true;
+        canvasGroup.interactable = true;
     }
 
     public static IEnumerator HideUI(CanvasGroup canvasGroup, float time, bool deactivate = true)
     {
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
         foreach (var t in TimerNormalized(time))
         {
             canvasGroup.alpha = 1 - t;

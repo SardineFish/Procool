@@ -13,6 +13,7 @@ namespace Procool.UI
         protected virtual void Awake()
         {
             _canvasGroup = GetComponent<CanvasGroup>();
+            // gameObject.SetActive(false);
         }
 
         public async Task Show(float time = .2f)
