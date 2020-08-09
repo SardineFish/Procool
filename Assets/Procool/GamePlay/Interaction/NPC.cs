@@ -9,7 +9,6 @@ namespace Procool.GamePlay.Interaction
     [RequireComponent(typeof(Player), typeof(InteractiveObject))]
     public class NPC : MonoBehaviour
     {
-        public readonly List<Mission.Mission> AvailableMissions = new List<Mission.Mission>();
         public PRNG prng { get; private set; }
 
         public void Active(PRNG prng)
@@ -20,7 +19,5 @@ namespace Procool.GamePlay.Interaction
                 lazyLoadComponent.Load();
             }
         }
-        
-        
     }
 }

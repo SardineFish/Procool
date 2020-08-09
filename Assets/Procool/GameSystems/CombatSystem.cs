@@ -16,9 +16,39 @@ namespace Procool.GameSystems
         public StreetFight GenerateStreetFight(City city, Vector2 location, PRNG prng)
         {
             var size = Mathf.Lerp(StreetFightRange.x, StreetFightRange.y, GameRNG.GetScalarByVec2(location));
-            var streetFight = GameObjectPool.Get<StreetFight>();
-            streetFight.PreLoadCombat(city, location, size, prng);
+            var streetFight = new StreetFight(city, location, size, prng);
             return streetFight;
+        }
+
+        public Vector2 RandomLocation(City city, PRNG prng = null)
+        {
+            prng = CreatePRNGIfNull(prng);
+
+            var block = city.BuildingBlocks.RandomTake(prng.GetScalar());
+            return RandomLocation(city, block, prng);
+        }
+
+        public Vector2 RandomLocation(City city, BuildingBlock block, PRNG prng = null)
+        {
+            prng = CreatePRNGIfNull(prng);
+
+            if (!block.OpenSpaces.Empty() && prng.GetScalar() < OpenSpaceSpawnRate)
+            {
+                var region = block.OpenSpaces.RandomTake(prng.GetScalar());
+                var obb = region.ComputeOMBB();
+                var pos = prng.GetVec2InBox(obb.HalfSize);
+                pos = obb.ObbToWorld(pos);
+                return pos;
+                return pos;
+            }
+            else
+            {
+                var region = block.SubSpace.Regions.RandomTake(prng.GetScalar());
+                var edge = region.Edges.RandomTake(prng.GetScalar());
+                var (a, b) = edge.Points;
+                var pos = Vector2.Lerp(a.Pos, b.Pos, prng.GetScalar());
+                return pos;
+            }
         }
 
         public EnemyController SpawnEnemy(City city, BuildingBlock block, Vector2 location, PRNG prng = null)
@@ -39,22 +69,9 @@ namespace Procool.GameSystems
         {
             prng = CreatePRNGIfNull(prng);
 
-            if (!block.OpenSpaces.Empty() && prng.GetScalar() < OpenSpaceSpawnRate)
-            {
-                var region = block.OpenSpaces.RandomTake(prng.GetScalar());
-                var obb = region.ComputeOMBB();
-                var pos = prng.GetVec2InBox(obb.HalfSize);
-                pos = obb.ObbToWorld(pos);
-                return SpawnEnemy(city, block, pos, prng);
-            }
-            else
-            {
-                var region = block.SubSpace.Regions.RandomTake(prng.GetScalar());
-                var edge = region.Edges.RandomTake(prng.GetScalar());
-                var (a, b) = edge.Points;
-                var pos = Vector2.Lerp(a.Pos, b.Pos, prng.GetScalar());
-                return SpawnEnemy(city, block, pos, prng);
-            }
+            var pos = RandomLocation(city, block, prng);
+            
+            return SpawnEnemy(city, block, pos, prng);
         }
 
         public EnemyController SpawnEnemy(City city, PRNG prng = null)

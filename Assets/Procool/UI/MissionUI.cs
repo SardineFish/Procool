@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Procool.GamePlay.Mission;
 using Procool.Utils;
@@ -23,7 +24,7 @@ namespace Procool.UI
         public Button buttonCancel;
         public Button buttonClose;
         private Mission _mission;
-
+        private readonly List<MissionTaskUI> taskUIList = new List<MissionTaskUI>();
         public async Task<Result> Show(Mission mission, bool acceptable)
         {
             foreach (var task in mission.Tasks)
@@ -31,6 +32,7 @@ namespace Procool.UI
                 var taskUI = GameObjectPool.Get<MissionTaskUI>(taskUIPrefab);
                 taskUI.transform.SetParent(taskList);
                 taskUI.Display(task);
+                taskUIList.Add(taskUI);
             }
 
             if (acceptable)
@@ -86,6 +88,12 @@ namespace Procool.UI
             }
 
             await Hide();
+            
+            foreach(var taskUI in taskUIList)
+            {
+                GameObjectPool.Release(taskUIPrefab, taskUI);
+            }
+            taskUIList.Clear();
             
             return finalResult;
 

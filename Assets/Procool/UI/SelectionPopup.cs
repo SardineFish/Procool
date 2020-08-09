@@ -27,22 +27,25 @@ namespace Procool.UI
             List<SelectionItem> selectionItems = items
                 .Select(item => GameObjectPool.Get<SelectionItem>(SelectionItemPrefab))
                 .ToList();
+
+            selectionItems.ForEach(item => item.transform.SetParent(ItemsContainer));
+            
+            Show();
             
             var task = await Task<int>.WhenAny(selectionItems.Select(async (selectionItem, idx) =>
             {
-                selectionItem.transform.SetParent(ItemsContainer);
                 return await selectionItem.WaitSelected(items[idx], idx);
             }));
-
-            await Show();
+            
+            await Hide();
             
             foreach (var selectionItem in selectionItems)
             {
                 selectionItem.Reset();
                 GameObjectPool.Release(SelectionItemPrefab, selectionItem);
             }
+            selectionItems.Clear();
 
-            await Hide();
 
             return task.Result;
         }

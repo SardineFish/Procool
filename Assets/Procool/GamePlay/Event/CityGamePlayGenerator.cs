@@ -14,9 +14,10 @@ using UnityEngine.InputSystem;
 namespace Procool.GamePlay.Event
 {
     [RequireComponent(typeof(CityLoader))]
-    public class CityGamePlayGenerator : MonoBehaviour
+    public class CityGamePlayGenerator : LazyLoadComponent
     {
-        [SerializeField] private Vector2 NPCCount = new Vector2(10, 20);
+        [SerializeField] private Vector2Int NPCCount = new Vector2Int(10, 20);
+        [SerializeField] private Vector2Int NPCMissionCount = new Vector2Int(1, 4);
         private readonly List<CombatEvent> Events = new List<CombatEvent>();
         private CityLoader cityLoader;
         
@@ -50,6 +51,11 @@ namespace Procool.GamePlay.Event
 
         private void Update()
         {
+        }
+
+        public override void Load()
+        {
+            GenerateMission();
         }
 
         // void GenerateEvent()
@@ -86,6 +92,8 @@ namespace Procool.GamePlay.Event
                 var pos = Vector2.Lerp(a.Pos, b.Pos, prng.GetScalar());
                 var npc = SpawnNPC(pos);
                 npc.Active(prng.GetPRNG());
+                npc.GetComponent<MissionDispatcher>()
+                    .GenerateMissions(cityLoader.City, prng.GetInRange(NPCMissionCount), prng);
             }
         }
     }

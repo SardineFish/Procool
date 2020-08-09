@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -6,22 +7,25 @@ using UnityEngine.EventSystems;
 
 namespace Procool.UI
 {
+    [RequireComponent(typeof(Button))]
     public class SelectionItem : MonoBehaviour
     {
-        public class SelectEvent : UnityEvent<SelectionPopup.Item>
-        {
-        }
 
         public Image Icon;
         public Text Title;
 
         public SelectionPopup.Item Item;
 
-        public SelectEvent OnSelected;
-
         private TaskCompletionSource<int> promise;
         private int selectionIndex;
-        
+
+        private Button button;
+
+        private void Awake()
+        {
+            button = GetComponent<Button>();
+        }
+
 
         public void Select()
         {
@@ -30,11 +34,11 @@ namespace Procool.UI
 
         public async Task<int> WaitSelected(SelectionPopup.Item item, int idx)
         {
+            Item = item;
             Icon.sprite = item.Sprite;
             Title.text = item.Title;
             selectionIndex = idx;
-            promise = new TaskCompletionSource<int>();
-            return await promise.Task;
+            return await button.WaitForClick(idx);
         }
 
         public void Reset()

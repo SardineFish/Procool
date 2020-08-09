@@ -68,5 +68,12 @@ namespace Procool.Map
         {
             return Buildings.Where(building => Vector2.Distance(center, building.Center) < distance);
         }
+
+        public BuildingBlock FindBlockAt(Vector2 pos)
+        {
+            return BuildingBlocks
+                .Where(block => block.OBB.IsOverlap(pos))
+                .FirstOrDefault(block => block.Region.OverlapPoint(pos));
+        }
     }
 }

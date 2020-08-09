@@ -16,7 +16,6 @@ namespace Procool.GamePlay.Combat
     public class StreetFight : Combat
     {
         public readonly List<BuildingBlock> InvolvedBlocks = new List<BuildingBlock>();
-        public readonly List<EnemyController> Enemies = new List<EnemyController>();
         public Vector2 Location;
         public float Size;
         public float StartDistance = 10f;
@@ -26,9 +25,9 @@ namespace Procool.GamePlay.Combat
         public bool Started { get; private set; }
         public bool Cleared { get; private set; }
 
-        public void PreLoadCombat(City city, Vector2 location, float size, PRNG prng)
+        public StreetFight(City city, Vector2 location, float size, PRNG prng)
         {
-            prng = prng is null ? GameRNG.GetPRNG(location) : prng;
+            prng = prng is null ? GameRNG.GetPRNG(location) : prng.GetPRNG();
             InvolvedBlocks.Clear();
             InvolvedBlocks.AddRange(city.FindBlocksInDistance(location, size));
             City = city;
@@ -40,23 +39,16 @@ namespace Procool.GamePlay.Combat
         {
             if(Started)
                 return;
+
+            var instance = CreateInstance();
             Cleared = false;
             Started = true;
-            StartCoroutine(ProcessCombat());
+            instance.StartCoroutine(ProcessCombat());
         }
 
         public override void ClearCombat()
         {
-            foreach (var enemy in Enemies)
-            {
-                GameObjectPool.Release(PrefabManager.Instance.EnemyPrefab, enemy);
-            }
-
-            Cleared = false;
-            Started = false;
-            InvolvedBlocks.Clear();
-            Enemies.Clear();
-            
+            DestroyInstance();
         }
 
         EnemyController SpawnEnemy()
@@ -78,12 +70,12 @@ namespace Procool.GamePlay.Combat
             var enemyCount = prng.GetInRange(10, 30);
             for (var i = 0; i < enemyCount; i++)
             {    
-                Enemies.Add(SpawnEnemy());
+                Instance.AddEnemy(SpawnEnemy());
             }
 
             while (true)
             {
-                if (Enemies.All(enemy=>enemy.Player.Dead))
+                if (Instance.Enemies.All(enemy=>enemy.Player.Dead))
                 {
                     Cleared = true;
                     yield break;

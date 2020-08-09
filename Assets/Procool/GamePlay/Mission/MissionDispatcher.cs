@@ -4,6 +4,9 @@ using System.Linq;
 using Procool.GamePlay.Controller;
 using Procool.GamePlay.Interaction;
 using Procool.GameSystems;
+using Procool.Map;
+using Procool.Map.SpacePartition;
+using Procool.Random;
 using Procool.UI;
 using Procool.Utils;
 using UnityEngine;
@@ -13,10 +16,9 @@ namespace Procool.GamePlay.Mission
     [RequireComponent(typeof(Conversation))]
     public class MissionDispatcher : LazyLoadComponent
     {
-        public List<Mission> Missions;
+        public readonly List<Mission> Missions=  new List<Mission>();
         // private InteractiveObject _interactiveObject;
         private Conversation _conversation;
-        
 
         private void Awake()
         {
@@ -67,8 +69,6 @@ namespace Procool.GamePlay.Mission
                 player.GetComponent<PlayerMissionList>().AcceptMission(Missions[idx]);
             }
             
-            // TODO: Make NPC Prefab.
-            // TODO: Add PlayerMissionList onto Player.
             // TODO: Complete Mission generator.
             
         }
@@ -76,6 +76,20 @@ namespace Procool.GamePlay.Mission
         public override void Load()
         {
             
+        }
+
+        public override void Unload()
+        {
+            Missions.Clear();
+        }
+
+        public void GenerateMissions(City city, int count, PRNG prng)
+        {
+            Missions.Clear();
+            for (var i = 0; i < count; i++)
+            {
+                Missions.Add(Mission.Generate(city, prng));
+            }
         }
     }
 }

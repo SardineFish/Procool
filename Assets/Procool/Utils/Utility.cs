@@ -663,8 +663,14 @@ public static class Utility
     public static async Task<T> WaitForClick<T>(this Button button, T param)
     {
         var promise = new TaskCompletionSource<T>();
-        button.onClick.AddListener(() => promise.SetResult(param));
+        button.onClick.AddListener(ClickCallback);
         return await promise.Task;
+
+        void ClickCallback()
+        {
+            button.onClick.RemoveListener(ClickCallback);
+            promise.SetResult(param);
+        }
     }
 
     /// <summary>

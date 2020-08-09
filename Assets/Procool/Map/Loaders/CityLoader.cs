@@ -34,6 +34,8 @@ namespace Procool.Map.Loader
             City = city;
             prng = GameRNG.GetPRNG(city.WorldBlock.Block.Position);
             renderer.DrawCity(city);
+            GetComponents<LazyLoadComponent>().ForEach(component=>component.Load());
+            
         }
 
         public override void Unload()

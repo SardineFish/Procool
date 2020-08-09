@@ -77,6 +77,14 @@ namespace Procool.Random
         }
 
         /// <summary>
+        /// Random interger in [x, y)
+        /// </summary>
+        /// <param name="range"></param>
+        /// <returns></returns>
+        public int GetInRange(Vector2Int range)
+            => GetInRange(range.x, range.y);
+
+        /// <summary>
         /// x,y ∈ (0, 1)
         /// </summary>
         /// <returns></returns>

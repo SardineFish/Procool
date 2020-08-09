@@ -49,6 +49,7 @@ namespace Procool.GamePlay.Interaction
                 Title = topic.Title,
             }).ToList();
             var idx = await SelectionPopup.Instance.Popup(items);
+            await ConversationUI.Instance.Hide(.1f);
             await Topics[idx].OnActive(player);
             controller.UnlockPlayer();
         }

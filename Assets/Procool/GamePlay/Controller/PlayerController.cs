@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Procool.Input;
+using Procool.Utils;
 using UnityEngine.InputSystem;
 
 namespace Procool.GamePlay.Controller
 {
     [RequireComponent(typeof(Player), typeof(Rigidbody2D))]
-    public partial class PlayerController : MonoBehaviour
+    public partial class PlayerController : MonoBehaviour, ICustomEditorEX
     {
         public float maxSpeed = 3;
         public float maxAngularVelocity = 600f;
@@ -125,6 +126,7 @@ namespace Procool.GamePlay.Controller
             ChangeAction(null);
         }
 
+        [EditorButton]
         public void UnlockPlayer()
         {
             ChangeAction(_playerMove);

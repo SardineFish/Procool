@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Procool.GamePlay.Controller;
+using Procool.GameSystems;
+using Procool.Map;
+using Procool.Random;
 
 namespace Procool.GamePlay.Mission
 {
@@ -21,7 +25,12 @@ namespace Procool.GamePlay.Mission
         public event Action<Task> OnTaskActive; 
         public Task ActiveTask { get; private set; }
 
-        public IEnumerator Start()
+        private Mission()
+        {
+            
+        }
+
+        public async System.Threading.Tasks.Task<MissionState> Start(Player player)
         {
             State = MissionState.Active;
             
@@ -30,12 +39,12 @@ namespace Procool.GamePlay.Mission
                 ActiveTask = task;
                 OnTaskActive?.Invoke(task);
                 
-                yield return task.Start();
+                var result = await task.Start(player);
 
-                if (task.TaskState == MissionState.Failed)
+                if (result == MissionState.Failed)
                 {
                     State = MissionState.Failed;
-                    yield break;
+                    return MissionState.Failed;
                 }
                 
                 OnTaskCompleted?.Invoke(task);
@@ -43,6 +52,26 @@ namespace Procool.GamePlay.Mission
 
             ActiveTask = null;
             State = MissionState.Completed;
+            return State;
+        }
+
+        private static Func<City, PRNG, Task>[] TaskGenerators = new Func<City, PRNG, Task>[]
+        {
+            (city, prng) => new Assassination(city, CombatSystem.Instance.RandomLocation(city, prng), prng),
+            (city, prng) => new SuppressEnemies(city, CombatSystem.Instance.RandomLocation(city, prng), prng),
+        };
+
+        public static Mission Generate(City city, PRNG prng)
+        {
+            var mission = new Mission();
+            var generator = TaskGenerators.RandomTake(prng.GetScalar());
+            mission.Tasks.Add(generator.Invoke(city, prng));
+            while (mission.Tasks.Tail() != null)
+            {
+                mission.Tasks.Add(mission.Tasks.Tail().GenerateNextTask(prng));
+            }
+            mission.Tasks.RemoveAt(mission.Tasks.Count - 1);
+            return mission;
         }
     }
 }

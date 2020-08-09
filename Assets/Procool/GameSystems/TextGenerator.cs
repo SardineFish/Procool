@@ -35,5 +35,11 @@ namespace Procool.GameSystems
 
             return $"{GenerateRoadName(city, edge.GetData<Road>())}, {GenerateCityName(city)}";
         }
+
+        public static string GenerateAddress(City city, Vector2 position)
+        {
+            var block = city.FindBlockAt(position);
+            return GenerateAddress(city, block, position);
+        }
     }
 }

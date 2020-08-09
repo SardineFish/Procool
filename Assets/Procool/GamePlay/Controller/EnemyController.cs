@@ -70,6 +70,15 @@ namespace Procool.GamePlay.Controller
             ChangeState(Wander());
         }
 
+        public void Deactivate()
+        {
+            this.city = null;
+            target = null;
+            currentBlock = null;
+            prng = null;
+            StopAllCoroutines();
+        }
+
 
         bool CheckPlayerInSight()
         {
