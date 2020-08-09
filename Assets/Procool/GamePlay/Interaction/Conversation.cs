@@ -41,6 +41,7 @@ namespace Procool.GamePlay.Interaction
         {
             var controller = player.GetComponent<PlayerController>();
             controller.LockPlayer();
+            HUD.Instance.Hide();
             await ConversationUI.Instance.Show();
             await ConversationUI.Instance.ShowText(TextGenerator.GenerateGreeting());
             var items = Topics.Select(topic => new SelectionPopup.Item()
@@ -51,6 +52,7 @@ namespace Procool.GamePlay.Interaction
             var idx = await SelectionPopup.Instance.Popup(items);
             await ConversationUI.Instance.Hide(.1f);
             await Topics[idx].OnActive(player);
+            HUD.Instance.Show();
             controller.UnlockPlayer();
         }
 

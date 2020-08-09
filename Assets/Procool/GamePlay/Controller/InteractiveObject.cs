@@ -43,6 +43,7 @@ namespace Procool.GamePlay.Controller
 
         public void Interact(Player player)
         {
+            UpdateHint(0);
             if (Interactive)
                 OnInteract?.Invoke(player);
         }

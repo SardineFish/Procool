@@ -41,6 +41,8 @@ namespace Procool.GamePlay.Mission
                 switch (mission.State)
                 {
                     case MissionState.Pending:
+                        icon = ResourcesManager.Instance.MissionPendingIcon;
+                        break;
                     case MissionState.Active:
                         icon = ResourcesManager.Instance.MissionActiveIcon;
                         break;
@@ -63,10 +65,14 @@ namespace Procool.GamePlay.Mission
             if (idx < 0)
                 return;
 
-            var result = await MissionUI.Instance.Show(Missions[idx], true);
+            var result = await MissionUI.Instance.Show(Missions[idx], Missions[idx].State == MissionState.Pending);
             if (result == MissionUI.Result.Accept)
             {
                 player.GetComponent<PlayerMissionList>().AcceptMission(Missions[idx]);
+            }
+            else if (result == MissionUI.Result.Cancel)
+            {
+                player.GetComponent<PlayerMissionList>().CancelMission(Missions[idx]);
             }
             
             // TODO: Complete Mission generator.

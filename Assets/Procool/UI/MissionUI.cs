@@ -83,7 +83,7 @@ namespace Procool.UI
                 }
                 else if (!acceptable && result == Result.Cancel)
                 {
-                    buttonCancel.interactable = false;
+                    buttonCancel.gameObject.SetActive(false);
                 }
             }
 

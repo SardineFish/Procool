@@ -7,16 +7,17 @@ namespace Procool.UI
     public class GameUIManager : Singleton<GameUIManager>
     {
         public InputHint InputHint;
+        public HUD HUD;
 
         private void Update()
         {
         }
 
-        public void AddUI(GameObject gameObject)
+        public void AddHUDUI(GameObject gameObject)
         {
             if (gameObject.transform is RectTransform trans)
             {
-                trans.SetParent(transform);
+                trans.SetParent(HUD.transform);
             }
         }
     }

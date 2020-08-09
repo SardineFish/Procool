@@ -1,11 +1,13 @@
 // Modified from /UI/Default
-Shader "Procool/UI/HoldButtonHint" {
+Shader "Procool/UI/CircleProgress" {
     Properties
     {
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
 
         _RingWidthRatio ("Ring Width Ratio", Range(0, 1)) = 0.2
+        _StartAngle ("Start Angle", Range(0, 360)) = 0
+        _CCW ("CCW", Int) = 0
 
         _StencilComp ("Stencil Comparison", Float) = 8
         _Stencil ("Stencil ID", Float) = 0
@@ -85,6 +87,8 @@ Shader "Procool/UI/HoldButtonHint" {
             float4 _MainTex_ST;
 
             float _RingWidthRatio;
+            float _StartAngle;
+            int _CCW;
 
             v2f vert(appdata_t v)
             {
@@ -106,22 +110,26 @@ Shader "Procool/UI/HoldButtonHint" {
                 uv = uv.xy * 2 - 1;
 
                 float r = length(uv);
-                float ang = atan2(uv.y, uv.x);
-                ang -= PI / 2;
-                if(ang > 0)
-                    ang -= 2 * PI;
-                ang = -ang;
+                float ang = atan2(uv.y, uv.x) / PI * 180;
+                if(ang < 0)
+                    ang += 360;
+                ang -= _StartAngle;
+                if(ang < 0)
+                    ang += 360;
+                ang /= 360;
+                if(_CCW)
+                    ang = 1 - ang;
 
-                float t = ang / (2 * PI);
+                float t = ang;
 
                 float4 color = 1;
 
                 if(t > progress)
-                    color = 0;
+                    color = float4(1, 1, 1, 0);
                 else if(r < 1 - _RingWidthRatio)
-                    color = 0;
+                    color = float4(1, 1, 1, 0);
                 else if(r > 1)
-                    color = 0;
+                    color = float4(1, 1, 1, 0);
 
                 return color;
             }

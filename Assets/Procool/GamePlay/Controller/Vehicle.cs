@@ -62,6 +62,7 @@ namespace Procool.GamePlay.Controller
 
         public void StartDrive(Player player)
         {
+            Speedometer.Instance.Show(this);
             Driver = player;
             cameraForwardDirection = transform.up;
             _interactiveObject.Interactive = false;
@@ -69,6 +70,7 @@ namespace Procool.GamePlay.Controller
 
         public void StopDrive()
         {
+            Speedometer.Instance.Hide();
             _interactiveObject.Interactive = true;
         }
     }

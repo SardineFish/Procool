@@ -10,8 +10,15 @@ namespace Procool.GamePlay.Mission
 
         public void AcceptMission(Mission mission)
         {
+            mission.Active();
             ActiveMissions.Add(mission);
         }
+
+        public void CancelMission(Mission mission)
+        {
+            
+        }
+        
         
     }
 }

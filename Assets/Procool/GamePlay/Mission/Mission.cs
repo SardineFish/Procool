@@ -61,6 +61,12 @@ namespace Procool.GamePlay.Mission
             (city, prng) => new SuppressEnemies(city, CombatSystem.Instance.RandomLocation(city, prng), prng),
         };
 
+        public void Active()
+        {
+            if (State == MissionState.Pending)
+                State = MissionState.Active;
+        }
+
         public static Mission Generate(City city, PRNG prng)
         {
             var mission = new Mission();
@@ -72,6 +78,11 @@ namespace Procool.GamePlay.Mission
             }
             mission.Tasks.RemoveAt(mission.Tasks.Count - 1);
             return mission;
+        }
+
+        public override string ToString()
+        {
+            return "Mission 1";
         }
     }
 }

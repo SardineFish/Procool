@@ -295,6 +295,11 @@ public static class Utility
     }
     public static IEnumerable<float> TimerNormalized(float time)
     {
+        if (time == 0)
+        {
+            yield return 1;
+            yield break;
+        }
         foreach (var t in Timer(time))
         {
             yield return t / time;
@@ -356,6 +361,7 @@ public static class Utility
             canvasGroup.alpha = alpha + t * (1 - alpha);
             await Task.Yield();
         }
+        
 
         canvasGroup.blocksRaycasts = true;
         canvasGroup.interactable = true;

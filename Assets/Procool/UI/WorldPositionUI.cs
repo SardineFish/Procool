@@ -23,7 +23,7 @@ namespace Procool.UI
                 return _instanceTransform.GetComponent<T>();
             var component = GameObjectPool.Get<T>(prefab);
             _instanceTransform = component.transform as RectTransform;
-            GameUIManager.Instance.AddUI(component.gameObject);
+            GameUIManager.Instance.AddHUDUI(component.gameObject);
             return component;
         }
 
