@@ -548,6 +548,19 @@ namespace Procool.GamePlay.Controller
 
         }
 
+        public void ResetState()
+        {
+            LocalVelocity = Vector2.zero;
+            AngularVelocity = 0;
+            Gear = 1;
+            BackBreaking = 0;
+            FrontBreaking = 0;
+            Turning = 0;
+            NextPosition = transform.position;
+            DeltaPosition = Vector2.zero;
+
+        }
+
         public void Drive(float throttle, float breaking, float turnning, float handbreak)
         {
             FrontBreaking = breaking;

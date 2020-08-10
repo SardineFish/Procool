@@ -92,6 +92,34 @@ public static class Utility
         }
         return minItem;
     }
+
+    public static T MaxOf<T, TCompare>(this IEnumerable<T> ts, Func<T, TCompare> selector)
+        where TCompare : IComparable<TCompare>
+    {
+        var first = true;
+        TCompare maxValue = default;
+        T maxItem = default;
+        foreach (var item in ts)
+        {
+            if (first)
+            {
+                maxValue = selector(item);
+                maxItem = item;
+                first = false;
+            }
+            else
+            {
+                var value = selector(item);
+                if (value.CompareTo(maxValue) > 0)
+                {
+                    maxValue = value;
+                    maxItem = item;
+                }
+            }
+        }
+
+        return maxItem;
+    }
     public static void ForEach<T>(this IEnumerable<T> ts, Action<T> callback)
     {
         foreach (var item in ts)

@@ -520,6 +520,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfc41b73e1ca46e6bea1241a701f961d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxThrottle: 0.5
+  defaultBreaking: 0.5
+  maxBreaking: 1
+  breakDeltaSpeed: {x: 5, y: 10}
+  maxSpeed: 30
+  cornerSpeed: 10
+  cornerDistance: 2
+  cornerProbability: 0.4
+  obstacleDistance: {x: 5, y: 8}
 --- !u!114 &4991395369726019263
 MonoBehaviour:
   m_ObjectHideFlags: 0

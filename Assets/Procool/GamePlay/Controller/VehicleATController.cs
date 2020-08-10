@@ -62,12 +62,12 @@ namespace Procool.GamePlay.Controller
             if (_vehicleController.Gear == 0)
             {
                 (throttle, breaking) = (breaking, throttle);
-                if (_vehicleController.LocalVelocity.y >= 0 && breaking > 0.5f)
+                if (_vehicleController.LocalVelocity.y >= 0 && breaking > 0.1f)
                     targetGear = 1;
             }
             else
             {
-                if (_vehicleController.LocalVelocity.y <= 0 && breaking > 0.5f)
+                if (_vehicleController.LocalVelocity.y <= 0 && breaking > 0.1f)
                     targetGear = 0;
                 else
                 {

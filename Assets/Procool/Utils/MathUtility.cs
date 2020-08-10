@@ -79,6 +79,42 @@ public static class MathUtility
     public static Vector3 Abs(Vector3 v)
         => new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
 
+    /// <summary>
+    /// return one of two number, which has minimal abs value. if equal, a is return.
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static float MinAbs(float a, float b)
+        => Mathf.Abs(a) <= Mathf.Abs(b) ? a : b;
+
+    /// <summary>
+    /// return one of two number, which has maximal abs value. if equal, a is return.
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static float MaxAbs(float a, float b)
+        => Mathf.Abs(a) >= Mathf.Abs(b) ? a : b;
+
+    /// <summary>
+    /// min(|a|, |b|), result always >= 0
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static float AbsMin(float a, float b)
+        => Mathf.Min(Mathf.Abs(a), Mathf.Abs(b));
+
+    /// <summary>
+    /// max(|a|, |b|), result always >= 0
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static float AbsMax(float a, float b)
+        => Mathf.Max(Mathf.Abs(a), Mathf.Abs(b));
+
     public static Vector2 Floor(Vector2 v)
         => new Vector2(Mathf.Floor(v.x), Mathf.Floor(v.y));
     public static Vector2Int FloorToInt(Vector2 v)

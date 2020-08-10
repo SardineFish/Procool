@@ -33,12 +33,15 @@ namespace Procool.GamePlay.Event
 
         void TrySpawnAt(Vector2 pos, Lane lane)
         {
+            var viewportPos = CameraManager.Camera.WorldToViewportPoint(pos);
+            if (0 <= viewportPos.x && viewportPos.x < 1 && 0 <= viewportPos.y && viewportPos.y < 1)
+                return;
             if (Vehicles.All(vehicle => Vector2.Distance(pos, vehicle.transform.position) > spawnGap))
             {
-                var prefab = PrefabManager.Instance.VehiclePrefabs.RandomTake(prng.GetScalar());
-                var vehicle = GameObjectPool.Get<Vehicle>(prefab);
+                var vehicle = PrefabManager.Instance.SpawnVehicle(prng);
+                
                 Vehicles.Add(vehicle);
-                vehicle.GetComponent<AIDriver>().SpawnAt(ref lane, pos);
+                vehicle.GetComponent<AIDriver>().SpawnAt(ref lane, pos, this);
                 vehicle.GetComponent<AIDriver>().StartDrive();
             }
         }
@@ -55,13 +58,22 @@ namespace Procool.GamePlay.Event
                         foreach (var lane in road.Lanes)
                         {
                             TrySpawnAt(lane.WorldEntry, lane);
-
+                            // yield break;
                         }
 
-                        // yield return new WaitForSeconds(0.2f);
+                        yield return new WaitForSeconds(0.2f);
                     }
                 }
                 yield return new WaitForSeconds(1f);
+            }
+        }
+
+        public void Destroy(Vehicle vehicle)
+        {
+            if (Vehicles.Remove(vehicle))
+            {
+                vehicle.GetComponent<AIDriver>().StopDrive();
+                PrefabManager.Instance.ReleaseVehicle(vehicle);
             }
         }
     }
