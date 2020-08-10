@@ -387,6 +387,7 @@ GameObject:
   - component: {fileID: 2059528045}
   - component: {fileID: 2059528046}
   - component: {fileID: 2059528047}
+  - component: {fileID: 4991395369726019263}
   - component: {fileID: 2059528048}
   m_Layer: 9
   m_Name: Car
@@ -506,6 +507,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 5621942638122545758, guid: 35caedd84ed9e064a8c183a6fe1b1f5f, type: 3}
   worldSpaceOffset: {x: -2.69, y: 0.77}
+--- !u!114 &4991395369726019263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4399327076655920645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33b76856fbef401689ef38bab287fca5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shiftTime: 0.2
+  rpmRange: {x: 2000, y: 5000}
 --- !u!114 &2059528048
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -532,6 +547,7 @@ MonoBehaviour:
   heightCenterOfMass: 0.6
   wheelBase: 2.6
   maxTurningAngle: 40
+  steeringDamping: 0.911
   highSpeedCornerLerpRange: {x: 35, y: 40}
   frontWeightRatio: 0.606
   wheelStaticFrictionCoefficient: 0.6

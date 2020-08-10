@@ -9,17 +9,19 @@ using UnityEngine.Events;
 
 namespace Procool.GamePlay.Controller
 {
-    [RequireComponent(typeof(VehicleController), typeof(InteractiveObject))]
+    [RequireComponent(typeof(VehicleController), typeof(InteractiveObject), typeof(VehicleATController))]
     public class Vehicle : MonoBehaviour
     {
         public Transform GetOffLocation;
         public Transform CameraTarget;
         private InteractiveObject _interactiveObject;
         private VehicleController _vehicleController;
+        private VehicleATController _vehicleATController;
         
         public Player Driver { get; private set; }
 
         public VehicleController VehicleController => _vehicleController;
+        public VehicleATController VehicleATController => _vehicleATController;
 
         private Vector2 cameraForwardDirection;
 
@@ -27,6 +29,7 @@ namespace Procool.GamePlay.Controller
         {
             _interactiveObject = GetComponent<InteractiveObject>();
             _vehicleController = GetComponent<VehicleController>();
+            _vehicleATController = GetComponent<VehicleATController>();
             _interactiveObject.OnInteract.AddListener(OnInteract);
         }
 

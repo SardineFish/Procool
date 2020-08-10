@@ -35,6 +35,8 @@ namespace Procool.GamePlay.Controller
         public float heightCenterOfMass = 0.6f;
         public float wheelBase = 2.6f;
         public float maxTurningAngle = 30f;
+        [Range(0, 1)]
+        public float steeringDamping = 0.8f;
         public Vector2 highSpeedCornerLerpRange = new Vector2(35, 40); 
         [Range(0, 1)] public float frontWeightRatio = 0.5f;
         [Range(0, 1)] public float wheelStaticFrictionCoefficient = 0.6f;
@@ -63,7 +65,7 @@ namespace Procool.GamePlay.Controller
 
         [DisplayInInspector()] public float BackBreaking { get; private set; }
 
-        [DisplayInInspector()] public float Clutch { get; private set; } = 1;
+        [DisplayInInspector()] public float Clutch { get; set; } = 1;
         [DisplayInInspector()] public float Turning { get; private set; } = 0;
         [DisplayInInspector()] public int TractionDirection => MathUtility.SignInt(gearsRatio[Gear]);
 
@@ -550,7 +552,7 @@ namespace Procool.GamePlay.Controller
         {
             FrontBreaking = breaking;
             Throttle = throttle;
-            Turning = turnning;
+            Turning = Mathf.Lerp(Turning, turnning, (1 - steeringDamping));
             BackBreaking = handbreak;
         }
 

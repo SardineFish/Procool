@@ -50,8 +50,8 @@ namespace Procool.GamePlay.Controller
                 var steering = Controller.Input.Vehicle.Steering.ReadValue<float>();
                 var handBreak = Controller.Input.Vehicle.HandBreak.ReadValue<float>();
 
-                Vehicle.VehicleController.Drive(throttle, breaking, steering, handBreak);
-
+                // Vehicle.VehicleController.Drive(throttle, breaking, steering, handBreak);
+                Vehicle.VehicleATController.Drive(throttle, breaking, handBreak, steering);
 
                 if (CameraManager.Instance.State != CameraManager.CameraState.Player)
                     return;
