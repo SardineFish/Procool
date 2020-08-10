@@ -387,6 +387,7 @@ GameObject:
   - component: {fileID: 2059528045}
   - component: {fileID: 2059528046}
   - component: {fileID: 2059528047}
+  - component: {fileID: 2268368202089552163}
   - component: {fileID: 4991395369726019263}
   - component: {fileID: 2059528048}
   m_Layer: 9
@@ -507,6 +508,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 5621942638122545758, guid: 35caedd84ed9e064a8c183a6fe1b1f5f, type: 3}
   worldSpaceOffset: {x: -2.69, y: 0.77}
+--- !u!114 &2268368202089552163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4399327076655920645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfc41b73e1ca46e6bea1241a701f961d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4991395369726019263
 MonoBehaviour:
   m_ObjectHideFlags: 0

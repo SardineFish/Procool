@@ -1,4 +1,5 @@
-﻿using Procool.Utils;
+﻿using System.Collections.Generic;
+using Procool.Utils;
 using UnityEngine;
 
 namespace Procool.GameSystems
@@ -12,6 +13,7 @@ namespace Procool.GameSystems
         public GameObject CityLoaderPrefab;
         public GameObject InputHintUIPrefab;
         public GameObject NPCPrefab;
+        public List<GameObject> VehiclePrefabs = new List<GameObject>();
 
         protected override void Awake()
         {

@@ -23,7 +23,10 @@ namespace Procool.Map.Loader
             BuildingBlockLoader>();
         private readonly HashSet<BuildingBlock> unloadBlocks = new HashSet<BuildingBlock>();
         private readonly HashSet<BuildingBlock> preloadBlocks = new HashSet<BuildingBlock>();
-        
+
+        public IEnumerable<BuildingBlock> LoadedBlocks => loadedBlocks.Keys;
+        public int LoadedBlocksCount => loadedBlocks.Count;
+
         public City City { get; private set; }
         public Block Block => City.WorldBlock.Block;
 

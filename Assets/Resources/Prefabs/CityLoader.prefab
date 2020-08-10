@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2246082721227380626}
   - component: {fileID: 4746808712773604527}
   - component: {fileID: 4072902261771126959}
+  - component: {fileID: 3353033319597325633}
   m_Layer: 0
   m_Name: CityLoader
   m_TagString: Untagged
@@ -82,6 +83,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NPCCount: {x: 10, y: 20}
   NPCMissionCount: {x: 2, y: 4}
+--- !u!114 &3353033319597325633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2204612812105792018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 263eedfe50c742ff87461991704c81a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnGap: 5
 --- !u!1 &6200859716061244313
 GameObject:
   m_ObjectHideFlags: 0

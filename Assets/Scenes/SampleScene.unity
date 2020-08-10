@@ -1504,6 +1504,7 @@ MonoBehaviour:
     streetCrossMergePass: 2
     alleyCrossMergeThreshold: 1
     alleyCrossMergePass: 1
+    crossWalkWidth: 0
     sideWalkWidth: 2
     alleyWidth: 1
     streetWidth: 2.7
@@ -2446,6 +2447,8 @@ MonoBehaviour:
     type: 3}
   NPCPrefab: {fileID: 5342990345112679969, guid: 12e1ae25e0c668543ad7d5b82c903da6,
     type: 3}
+  VehiclePrefabs:
+  - {fileID: 4399327076655920645, guid: aaf5571fee95a544fae7b5865ee84868, type: 3}
 --- !u!1001 &728557977
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4268,6 +4271,7 @@ MonoBehaviour:
     streetCrossMergePass: 2
     alleyCrossMergeThreshold: 0
     alleyCrossMergePass: 0
+    crossWalkWidth: 2.5
     sideWalkWidth: 2
     alleyWidth: 1
     streetWidth: 2.7

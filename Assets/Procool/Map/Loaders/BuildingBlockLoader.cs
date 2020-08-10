@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Procool.GameSystems;
 using Procool.Utils;
@@ -10,6 +11,7 @@ namespace Procool.Map.Loader
     {
         private readonly List<PolygonCollider2D> buildingColliders = new List<PolygonCollider2D>();
         private readonly List<Vector2> vertices = new List<Vector2>(8);
+        private BuildingBlock block;
 
         public void Load(BuildingBlock buildingBlock)
         {
