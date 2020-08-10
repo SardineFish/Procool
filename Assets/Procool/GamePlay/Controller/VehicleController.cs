@@ -98,7 +98,7 @@ namespace Procool.GamePlay.Controller
 
         [DisplayInInspector] private float MaxCornerAngle => Mathf.Atan(wheelBase / MaxCornerRadius) * Mathf.Rad2Deg;
         
-        [DisplayInInspector] private bool IsDrifting { get; set; }
+        [DisplayInInspector] public bool IsDrifting { get; set; }
         
         [DisplayInInspector] private Vector2 NextPosition { get; set; }
         
