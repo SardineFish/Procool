@@ -101,6 +101,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f69940624d44b33be89f45e350636ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  HP: 0
+  MaxHP: 300
   GetOffLocation: {fileID: 3485421028616071249}
   CameraTarget: {fileID: 3485421028316150694}
   TrailPrefab: {fileID: 2770585783295670662, guid: 8ba08972c9588d3449a83e0b28872e18,

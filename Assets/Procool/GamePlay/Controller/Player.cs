@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Procool.GamePlay.Controller
 {
-    public class Player : ManagedMonobehaviour<Player>, IBlockPositionEntity
+    public class Player : ManagedMonobehaviour<Player>, IBlockPositionEntity, IDamageTarget
     {
         public float HP = 100;
         public float MaxHP = 100;

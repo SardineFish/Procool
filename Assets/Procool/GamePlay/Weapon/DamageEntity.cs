@@ -14,8 +14,7 @@ namespace Procool.GamePlay.Weapon
     {
         public Player Owner { get; private set; }
         public List<ContactPoint2D> Contacts { get; } = new List<ContactPoint2D>(16);
-        public HashSet<Player> ContactedPlayers = new HashSet<Player>();
-        public HashSet<Player> DamageRecord { get; } = new HashSet<Player>();
+        public HashSet<IDamageTarget> ContactedDamageTargets = new HashSet<IDamageTarget>();
         public Weapon Weapon { get; private set; }
         // public SpriteRenderer SpriteRenderer { get; private set; }
         // public CircleCollider2D CircleCollider { get; private set; }
@@ -88,15 +87,15 @@ namespace Procool.GamePlay.Weapon
             return raycastHitsList;
         }
 
-        public IEnumerable<Player> HitPlayer()
+        public IEnumerable<IDamageTarget> HitTarget()
         {
             var hits = QueryCollision();
             foreach (var hit in hits)
             {
-                var player = hit.rigidbody?.GetComponent<Player>();
-                if (player && ContactedPlayers.Add(player))
+                var target = hit.rigidbody?.GetComponent<IDamageTarget>();
+                if (target != null && target != Owner && ContactedDamageTargets.Add(target))
                 {
-                    yield return player;
+                    yield return target;
                 }
             }
         }
@@ -126,8 +125,7 @@ namespace Procool.GamePlay.Weapon
         public void Init(Player player, Weapon weapon, Transform inheritTransform)
         {
             Owner = player;
-            DamageRecord.Clear();
-            ContactedPlayers.Clear();
+            ContactedDamageTargets.Clear();
             Weapon = weapon;
             transform.position = inheritTransform.position;
             transform.rotation = inheritTransform.rotation;
@@ -172,7 +170,7 @@ namespace Procool.GamePlay.Weapon
         {
             Owner = null;
             Weapon = null;
-            ContactedPlayers.Clear();
+            ContactedDamageTargets.Clear();
             GameObjectPool.Release<DamageEntity>(this);
         }
         

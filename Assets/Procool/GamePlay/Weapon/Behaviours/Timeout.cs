@@ -17,7 +17,7 @@ namespace Procool.GamePlay.Weapon
         {   
             return new Timeout.Data(this)
             {
-                Timeout = prng.GetInRange(3, 5)
+                Timeout = prng.GetInRange(1.5f, 3)
             };
         }
 

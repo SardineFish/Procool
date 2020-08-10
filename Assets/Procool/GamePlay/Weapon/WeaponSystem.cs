@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Procool.GamePlay.Controller;
 using Procool.GameSystems;
 using Procool.Random;
 using Procool.Utils;
@@ -121,6 +122,23 @@ namespace Procool.GamePlay.Weapon
             var weapon = WeaponConstructor.BuildWeapon(prng);
             weapon.Sprite = weaponSprites.RandomTake(prng.GetScalar(), _ => 1);
             return weapon;
+        }
+
+        public void GenerateExplosion(Vector2 position, float radius, float damage, Player owner = null)
+        {
+            Explosion explosion;
+            if (radius > 7)
+            {
+                explosion = GameObjectPool.Get<Explosion>(PrefabManager.Instance.LargeExplosionPrefab);
+                explosion.Prefab = PrefabManager.Instance.LargeExplosionPrefab;
+            }
+            else
+            {
+                explosion = GameObjectPool.Get<Explosion>(PrefabManager.Instance.SmallExplosionPrefab);
+                explosion.Prefab = PrefabManager.Instance.SmallExplosionPrefab;
+            }
+            
+            explosion.Explode(position, radius, damage, owner);
         }
     }
 }

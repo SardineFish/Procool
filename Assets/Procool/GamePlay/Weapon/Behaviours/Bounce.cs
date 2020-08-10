@@ -7,7 +7,7 @@ namespace Procool.GamePlay.Weapon
     public class Bounce : WeaponBehaviour
     {
 
-        protected override float EvaluateDamageMultiply(EmptyBehaviourData data) => 2;
+        protected override float EvaluateDamageMultiply(EmptyBehaviourData data) => 1.5f;
 
         protected override IEnumerator Run(DamageEntity entity, EmptyBehaviourData data, DamageStage stage, Weapon weapon)
         {
@@ -18,7 +18,7 @@ namespace Procool.GamePlay.Weapon
                     Debug.DrawLine(hit.point, hit.point + hit.normal, Color.red);
                     if (Vector2.Dot(entity.transform.up, hit.normal) < 0)
                     {
-
+                        entity.ContactedDamageTargets.Clear();
                         var normal = hit.normal;
                         var direction = entity.transform.up;
                         var reflect = Vector2.Reflect(direction.ToVector2(), normal);

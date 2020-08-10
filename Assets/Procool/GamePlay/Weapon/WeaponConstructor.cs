@@ -335,6 +335,8 @@ namespace Procool.GamePlay.Weapon
             var stage = BuildStage(prng, PossibleBehaviours, true, false, false, 0, depthLimit);
 
             weapon.FirstStage = stage;
+            var damage = weapon.FirstStage.EvaluateDamage();
+            weapon.Damage = 100 / damage;
             GenerateBulletVFX(weapon, prng);
             return weapon;
         }

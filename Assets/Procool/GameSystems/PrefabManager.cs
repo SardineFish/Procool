@@ -17,6 +17,9 @@ namespace Procool.GameSystems
         public GameObject InputHintUIPrefab;
         public GameObject NPCPrefab;
         public List<GameObject> VehiclePrefabs = new List<GameObject>();
+        public GameObject LargeExplosionPrefab;
+        public GameObject SmallExplosionPrefab;
+        public GameObject FireVFXPrefab;
 
         protected override void Awake()
         {
@@ -36,11 +39,13 @@ namespace Procool.GameSystems
             if (!instance)
                 instance = vehicle.gameObject.AddComponent<InstanceGameObject>();
             instance.Prefab = prefab;
+            vehicle.Load();
             return vehicle;
         }
 
         public void ReleaseVehicle(Vehicle vehicle)
         {
+            vehicle.Unload();
             var instance = vehicle.GetComponent<InstanceGameObject>();
             if (instance)
                 GameObjectPool.Release(instance.Prefab, vehicle);

@@ -101,10 +101,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f69940624d44b33be89f45e350636ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  HP: 300
+  MaxHP: 300
+  explosionRadius: 10
+  explosionDamage: 200
   GetOffLocation: {fileID: 9168226988935565905}
   CameraTarget: {fileID: 9168226988631310758}
   TrailPrefab: {fileID: 2770585783295670662, guid: 8ba08972c9588d3449a83e0b28872e18,
     type: 3}
+  fireVFXLocation: {fileID: 0}
 --- !u!114 &9168226988867401346
 MonoBehaviour:
   m_ObjectHideFlags: 0

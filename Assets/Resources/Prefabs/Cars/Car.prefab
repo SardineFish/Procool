@@ -117,6 +117,36 @@ Transform:
   m_Father: {fileID: 4399327076655920642}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3868658863674084471
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 263918493971331527}
+  m_Layer: 9
+  m_Name: FireLocation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &263918493971331527
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3868658863674084471}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.73, z: -1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4399327076655920642}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4399327076655920645
 GameObject:
   m_ObjectHideFlags: 0
@@ -156,6 +186,7 @@ Transform:
   - {fileID: 1407552685}
   - {fileID: 2129757117}
   - {fileID: 1825706058}
+  - {fileID: 263918493971331527}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -218,10 +249,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f69940624d44b33be89f45e350636ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  HP: 300
+  MaxHP: 300
+  explosionRadius: 10
+  explosionDamage: 200
   GetOffLocation: {fileID: 2129757117}
   CameraTarget: {fileID: 1825706058}
   TrailPrefab: {fileID: 2770585783295670662, guid: 8ba08972c9588d3449a83e0b28872e18,
     type: 3}
+  fireVFXLocation: {fileID: 263918493971331527}
 --- !u!114 &2059528046
 MonoBehaviour:
   m_ObjectHideFlags: 0

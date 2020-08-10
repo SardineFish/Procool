@@ -10,13 +10,9 @@ namespace Procool.GamePlay.Weapon
         {
             while (true)
             {
-                foreach (var player in entity.HitPlayer())
+                foreach (var player in entity.HitTarget())
                 {
-                    if (!entity.DamageRecord.Contains(player))
-                    {
-                        entity.DamageRecord.Add(player);
-                        player.ApplyDamage(weapon.Damage);
-                    }
+                    player.ApplyDamage(weapon.Damage);
                 }
 
                 yield return null;

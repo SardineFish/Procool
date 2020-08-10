@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cinemachine;
+using Procool.GamePlay.Weapon;
 using Procool.GameSystems;
 using Procool.Input;
 using Procool.UI;
@@ -11,8 +12,12 @@ using UnityEngine.Events;
 namespace Procool.GamePlay.Controller
 {
     [RequireComponent(typeof(VehicleController), typeof(InteractiveObject), typeof(VehicleATController))]
-    public class Vehicle : MonoBehaviour
+    public class Vehicle : MonoBehaviour, IDamageTarget
     {
+        public float HP = 300;
+        public float MaxHP = 300;
+        public float explosionRadius = 10;
+        public float explosionDamage = 200;
         public Transform GetOffLocation;
         public Transform CameraTarget;
         public GameObject TrailPrefab;
@@ -27,6 +32,8 @@ namespace Procool.GamePlay.Controller
         public VehicleATController VehicleATController => _vehicleATController;
 
         private Vector2 cameraForwardDirection;
+        private GameObject fireVFX;
+        [SerializeField] private Transform fireVFXLocation; 
 
         private void Awake()
         {
@@ -51,9 +58,18 @@ namespace Procool.GamePlay.Controller
             
         }
 
-        private void OnDisable()
+        public void Load()
+        {
+            HP = MaxHP;
+        }
+        public void Unload()
         {
             TrailRenderers.ForEach(trail => trail.emitting = false);
+            if (fireVFX)
+            {
+                GameObjectPool.Release(PrefabManager.Instance.FireVFXPrefab, fireVFX);
+                fireVFX = null;
+            }
         }
 
         private void Update()
@@ -84,6 +100,7 @@ namespace Procool.GamePlay.Controller
             }
             else
                 TrailRenderers.ForEach(trail => trail.emitting = false);
+
             
             CameraTarget.transform.rotation = Quaternion.FromToRotation(Vector3.up, cameraForwardDirection);
         }
@@ -95,6 +112,7 @@ namespace Procool.GamePlay.Controller
 
         public void StartDrive(Player player)
         {
+            GetComponent<AIDriver>().StopDrive();
             Speedometer.Instance.Show(this);
             Driver = player;
             cameraForwardDirection = transform.up;
@@ -105,6 +123,31 @@ namespace Procool.GamePlay.Controller
         {
             Speedometer.Instance.Hide();
             _interactiveObject.Interactive = true;
+        }
+
+        public void ApplyDamage(float damage)
+        {
+            if(HP <= 0)
+                return;
+            HP -= damage;
+            if (HP < 0.3f * MaxHP && !fireVFX)
+            {
+                fireVFX = GameObjectPool.Get(PrefabManager.Instance.FireVFXPrefab);
+                fireVFX.transform.parent = fireVFXLocation;
+                fireVFX.transform.localPosition = Vector3.zero;
+            }
+
+            if (HP <= 0)
+            {
+                HP = 0;
+                if (fireVFX)
+                {
+                    GameObjectPool.Release(PrefabManager.Instance.FireVFXPrefab, fireVFX);
+                    fireVFX = null;
+                }
+
+                WeaponSystem.Instance.GenerateExplosion(transform.position, explosionRadius, explosionDamage);
+            }
         }
     }
 }
