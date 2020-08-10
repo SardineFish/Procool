@@ -113,11 +113,25 @@ namespace Procool.Map
             foreach (var vertex in Vertices)
                 vertex.GetData<CrossRoad>().LinkCrossRoads();
             foreach (var edge in Edges)
+            {
                 GenCrossPosition(edge);
+                var road = edge.GetData<Road>();
+                if (edge.EdgeType > EdgeType.ArterialRoad)
+                    edge.GetData<Road>().SetupLanes(2, 3.75f, 0);
+                else if(edge.EdgeType == EdgeType.Street)
+                    edge.GetData<Road>().SetupLanes(1, 2.7f, RoadParams.crossWalkWidth);
+                else edge.GetData<Road>().SetupLanes(1, 3.75f, RoadParams.crossWalkWidth);
+            }
             foreach (var region in Space.Regions)
             {
                 GenBuildingBlock(region);
                 yield return null;
+            }
+
+            foreach (var vertex in Vertices)
+            {
+                var crossRoad = vertex.GetData<CrossRoad>();
+                crossRoad.SetupLanes();
             }
         }
     }

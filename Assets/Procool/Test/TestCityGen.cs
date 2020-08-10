@@ -95,6 +95,22 @@ namespace Procool.Test
             GetComponent<CityRenderer>().DrawCity(generator.City);
             Debug.Log($"Generated city with totally {generator.City.Vertices.Count} vertices, {generator.City.Edges.Count} edges, {generator.City.Regions.Count} regions, {generator.City.Buildings.Count} buildings.");
 
+            while (true)
+            {
+                foreach (var edge in generator.City.Edges)
+                {
+                    var road = edge.GetData<Road>();
+                    foreach (var lane in road.Lanes)
+                    {
+                        var entry = road.RoadToWorld(lane.Entry);
+                        var exit = road.RoadToWorld(lane.Exit);
+                        Debug.DrawLine(entry, exit, Color.cyan);
+                    }
+                }
+                yield return null;
+            }
+
+            yield break;
 
             while (true)
             {

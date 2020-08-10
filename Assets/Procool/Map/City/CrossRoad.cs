@@ -11,6 +11,8 @@ namespace Procool.Map
         public Vertex Vertex { get; private set; } = null;
         private readonly List<CrossRoad> nextCrossRoad = new List<CrossRoad>(6);
         private readonly List<Road> roads = new List<Road>(6);
+        public readonly List<Lane> EntryLanes = new List<Lane>(4);
+        public readonly List<Lane> ExitLanes = new List<Lane>(4);
 
         public IReadOnlyList<CrossRoad> NextCrossRoads => nextCrossRoad.AsReadOnly();
         public IReadOnlyList<Road> Roads => roads.AsReadOnly();
@@ -34,6 +36,22 @@ namespace Procool.Map
                 var dir = road.Edge.GetAnother(Vertex).Pos - Vertex.Pos;
                 return Mathf.Atan2(dir.y, dir.x);
             }));
+        }
+
+        public void SetupLanes()
+        {
+            foreach (var road in roads)
+            {
+                foreach (var lane in road.Lanes)
+                {
+                    var roadDir = road.Edge.GetAnother(Vertex).Pos - Vertex.Pos;
+                    var laneDir = road.RoadToWorld(lane.Exit) - road.RoadToWorld(lane.Entry);
+                    if (Vector2.Dot(laneDir, roadDir) > 0)
+                        ExitLanes.Add(lane);
+                    else
+                        EntryLanes.Add(lane);
+                }
+            }
         }
 
         public void LinkCrossRoads()
