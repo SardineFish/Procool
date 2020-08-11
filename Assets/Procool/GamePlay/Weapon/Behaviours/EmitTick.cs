@@ -20,6 +20,7 @@ namespace Procool.GamePlay.Weapon
         {
             public float Interval = 1;
             public EmitType EmitType;
+            public float SpinVelocity;
             public Data(IWeaponBehaviour behaviour) : base(behaviour)
             {
                 
@@ -33,7 +34,8 @@ namespace Procool.GamePlay.Weapon
             return new EmitTick.Data(this)
             {
                 Interval = prng.GetInRange(.1f, .2f),
-                EmitType = (EmitType)prng.GetInRange(0, 4)
+                EmitType = (EmitType)prng.GetInRange(0, 4),
+                SpinVelocity = prng.GetInRange(20, 60)
             };
         }
 
@@ -58,8 +60,10 @@ namespace Procool.GamePlay.Weapon
                     else if (data.EmitType == EmitType.Random)
                         dir = GameRNG.GetVec2OnCircle();
                     else if (data.EmitType == EmitType.Spin)
-                        dir = MathUtility.Rotate(dir, Mathf.PI / 3);
+                        dir = MathUtility.Rotate(dir, data.SpinVelocity / 180 * Mathf.PI);
                 }
+                else
+                    dir = entity.transform.up;
 
                 var rotation = Quaternion.FromToRotation(Vector3.up, dir);
                 var emittedEntity = data.NextStage.CreateDetached(weapon, entity.transform.position, rotation);

@@ -2385,7 +2385,7 @@ MonoBehaviour:
   - {fileID: 5865828629858960206, guid: b8cd3737c12a492409eba491a462a73f, type: 3}
   LargeExplosionPrefab: {fileID: 6352681953130184178, guid: 946dc7d4778e4a24e958705dabae3f4c,
     type: 3}
-  SmallExplosionPrefab: {fileID: 6352681953130184178, guid: 946dc7d4778e4a24e958705dabae3f4c,
+  SmallExplosionPrefab: {fileID: 9130051943903464130, guid: 9cadcd67360e1a1448787369fcea7e8f,
     type: 3}
   FireVFXPrefab: {fileID: 1616030424011502955, guid: 3c9671c1b67ce4842b3054c0e6c97220,
     type: 3}
@@ -3990,9 +3990,9 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1044876552}
   m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!1 &1049388380
 GameObject:

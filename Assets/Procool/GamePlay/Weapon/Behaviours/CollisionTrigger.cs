@@ -10,8 +10,17 @@ namespace Procool.GamePlay.Weapon
             {
                 if (entity.GetMostContact(out var contact))
                 {
-                    data.NextStage?.Run(weapon, entity);
-                    entity.Terminate();
+                    if (data.NextStage)
+                        data.NextStage.Run(weapon, entity);
+                    else
+                        entity.Terminate();
+                    // entity.Terminate();
+                    while (true)
+                    {
+                        entity.transform.position = contact.point + contact.normal * entity.BulletVfx.BulletSize;
+                        yield return null;
+                    }
+                    
                     yield break;
                 }
 

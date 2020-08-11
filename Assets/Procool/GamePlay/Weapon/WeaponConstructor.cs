@@ -200,7 +200,7 @@ namespace Procool.GamePlay.Weapon
             if (depth >= depthLimit)
                 return null;
 
-            var maxComponents = prng.GetInRange(1, 4);
+            var maxComponents = prng.GetInRange(2, 4);
             var possibleBehaviours = ObjectPool<Dictionary<IWeaponBehaviour, PossibleBehaviour>>.Get();
             possibleBehaviours.Clear();
 
