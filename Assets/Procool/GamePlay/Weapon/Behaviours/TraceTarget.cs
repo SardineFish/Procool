@@ -23,7 +23,7 @@ namespace Procool.GamePlay.Weapon
             foreach (var player in Player.AssetsManager.Assets.Where(asset=>asset.isActiveAndEnabled))
             {
                 var distance = Vector2.Distance(player.transform.position, entity.transform.position);
-                if (distance < data.Radius && distance < minDist && player != entity.Owner)
+                if (distance < data.Radius && distance < minDist && player != entity.Owner && player.tag != entity.Owner.tag)
                 {
                     minDist = distance;
                     target = player;

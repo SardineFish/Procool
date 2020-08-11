@@ -56,6 +56,7 @@ namespace Procool.GamePlay.Weapon
             Player lockTarget;
             lockTarget = Player.AssetsManager.Assets
                 .Where(target => target.isActiveAndEnabled)
+                .Where(target => target != entity.Owner && target.tag != entity.Owner.tag)
                 .Where(target => Vector2.Distance(target.transform.position, entity.transform.position) < 20)
                 .MinOf(target => Vector2.Distance(target.transform.position, entity.transform.position));
 

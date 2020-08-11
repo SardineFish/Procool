@@ -44,6 +44,9 @@ namespace Procool.GamePlay.Mission
 
             combat.StartCombat();
 
+            while (!combat.Started)
+                await System.Threading.Tasks.Task.Delay(TimeSpan.FromSeconds(1));
+
             target = combat.Instance.Enemies.RandomTake(prng.GetScalar());
             description =
                 $"Assassinate the target at {TextGenerator.GenerateAddress(City, target.transform.position)}";

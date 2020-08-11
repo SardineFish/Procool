@@ -227,17 +227,6 @@
                 },
                 {
                     "name": "",
-                    "id": "481d8112-3f04-4ab5-bcb6-3e64159410fd",
-                    "path": "<Keyboard>/e",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard",
-                    "action": "Interact",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "231137f0-9c0b-44f8-83bc-6a9dcfa01337",
                     "path": "<Mouse>/forwardButton",
                     "interactions": "",

@@ -89,7 +89,7 @@ namespace Procool.GamePlay.Inventory
 
         public Item NextItem()
         {
-            for (var i = ActiveSlot + 1; i != ActiveSlot; i = (i + 1) % items.Count)
+            for (var i = (ActiveSlot + 1) % items.Count; i != ActiveSlot; i = (i + 1) % items.Count)
             {
                 if (items[i] != null)
                 {

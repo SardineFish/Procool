@@ -127,7 +127,7 @@ namespace Procool.GamePlay.Weapon
             transform.position = position;
             transform.rotation = rotation;
             previousCollisionCheckPos = position;
-            previousCollisionCheckTime = 0;
+            previousCollisionCheckTime = -10000;
 
             
 

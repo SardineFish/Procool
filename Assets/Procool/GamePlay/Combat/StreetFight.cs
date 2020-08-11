@@ -41,7 +41,6 @@ namespace Procool.GamePlay.Combat
 
             var instance = CreateInstance();
             Cleared = false;
-            Started = true;
             instance.StartCoroutine(ProcessCombat());
         }
 
@@ -73,6 +72,8 @@ namespace Procool.GamePlay.Combat
             {    
                 Instance.AddEnemy(SpawnEnemy());
             }
+
+            Started = true;
 
             while (true)
             {
