@@ -20,6 +20,8 @@ namespace Procool.GameSystems
         public GameObject LargeExplosionPrefab;
         public GameObject SmallExplosionPrefab;
         public GameObject FireVFXPrefab;
+        public GameObject MissionIndicator;
+        public GameObject NPCIndicator;
 
         protected override void Awake()
         {

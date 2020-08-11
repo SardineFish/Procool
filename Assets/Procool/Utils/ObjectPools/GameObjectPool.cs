@@ -149,6 +149,8 @@ namespace Procool.Utils
 
         public void Release(GameObject obj)
         {
+            if(!gameObject)
+                return;
             if (!obj)
                 return;
             // obj.transform.parent = transform;

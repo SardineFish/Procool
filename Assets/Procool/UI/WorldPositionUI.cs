@@ -11,6 +11,23 @@ namespace Procool.UI
         public GameObject prefab;
         public Vector2 worldSpaceOffset;
         private RectTransform _instanceTransform;
+        public bool showOnLoad = false;
+
+        private void Start()
+        {
+        }
+
+        private void OnEnable()
+        {
+            if (showOnLoad)
+                Show();
+        }
+
+        private void OnDisable()
+        {
+            if (showOnLoad)
+                Hide();
+        }
 
         public void Show()
         {

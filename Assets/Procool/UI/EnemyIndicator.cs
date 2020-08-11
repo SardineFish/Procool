@@ -47,9 +47,13 @@ namespace Procool.UI
             var point = pos.ToVector2() + dir * distance;
             var screenPoint = CameraManager.Camera.ViewportToScreenPoint(point);
             var transform = indicator.transform as RectTransform;
-            indicator.transform.position = screenPoint;
+            // screenPoint.y = -screenPoint.y;
+            screenPoint.z = 0;
+            transform.localPosition = Vector3.zero;
+            transform.anchoredPosition = screenPoint;
             indicator.transform.rotation = Quaternion.FromToRotation(Vector3.up,
                 (target.transform.position - CameraManager.Camera.transform.position).ToVector2());
+            indicator.transform.localScale = Vector3.one;
         }
     }
 }

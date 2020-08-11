@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using Procool.GamePlay.Controller;
+using Procool.GameSystems;
 using Procool.UI;
+using Procool.Utils;
 using UnityEngine;
 
 namespace Procool.GamePlay.Mission
@@ -30,9 +32,13 @@ namespace Procool.GamePlay.Mission
         private System.Threading.Tasks.Task missionTask;
         CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
+        private WorldPositionUI missionIndicatorUI;
+
         private void Awake()
         {
             Player = GetComponent<Player>();
+            missionIndicatorUI = GameObjectPool.Get<WorldPositionUI>();
+            missionIndicatorUI.prefab = PrefabManager.Instance.MissionIndicator;
         }
 
         private void Start()
@@ -98,6 +104,19 @@ namespace Procool.GamePlay.Mission
             missionUIUpdateQueue.Enqueue(new MissionState(mission, mission?.ActiveTask));
         }
 
+        private void Update()
+        {
+            if (currentState.Task is null)
+            {
+                missionIndicatorUI.Hide();
+            }
+            else
+            {
+                missionIndicatorUI.Show();
+                missionIndicatorUI.transform.position = currentState.Task.Location;
+            }
+        }
+
         async void UpdateTaskUI()
         {
             while (true)
@@ -105,6 +124,7 @@ namespace Procool.GamePlay.Mission
                 if (missionUIUpdateQueue.Count > 0)
                 {
                     var state = missionUIUpdateQueue.Dequeue();
+                    
                     if (state.Mission != null && state.Mission == currentState.Mission &&
                         (state.Mission.State == GamePlay.Mission.MissionState.Completed ||
                          state.Mission.State == GamePlay.Mission.MissionState.Failed))
