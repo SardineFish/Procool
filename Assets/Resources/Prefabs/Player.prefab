@@ -141,6 +141,7 @@ GameObject:
   - component: {fileID: 3763500940701439097}
   - component: {fileID: 3763500940701439098}
   - component: {fileID: 5714649944376858736}
+  - component: {fileID: 3705235008359755201}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -176,9 +177,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c6529a5f3c246a8a66513bc43143165, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HP: 100
-  MaxHP: 100
+  HP: 500
+  MaxHP: 500
   Armour: 0
+  MaxArmour: 100
+  OnDamage:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3705235008359755201}
+        m_MethodName: Stop
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnDead:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3763500940413585970}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3763500940701439099}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnLoaded:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!50 &3763500940701439097
 Rigidbody2D:
   serializedVersion: 4
@@ -265,3 +309,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 158b06b15f374cc9a3d9fdb17e01bf94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3705235008359755201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3763500940701439099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7819600b6e084fb997511c26175cf819, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healTime: 3
+  healSpeed: 40

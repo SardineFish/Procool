@@ -9,6 +9,7 @@ using Procool.Map.SpacePartition;
 using Procool.Random;
 using Procool.Utils;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
@@ -31,6 +32,9 @@ namespace Procool.GamePlay.Controller
         public Vector2 dynamicAvoidanceDistance = new Vector2(1, 10);
         public float dynamicAvoidanceScale = 1;
         public float dynamicObstacleMergeAngle = 5;
+
+        public UnityEvent OnActive;
+        
         public BlockPosition BlockPosition { get; set; }
         public Weapon.Weapon Weapon;
         private Player target;

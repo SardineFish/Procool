@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Procool.Utils;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 
 namespace Procool.UI
@@ -31,6 +32,8 @@ namespace Procool.UI
             selectionItems.ForEach(item => item.transform.SetParent(ItemsContainer));
             
             Show();
+
+            EventSystem.current.SetSelectedGameObject(selectionItems[0].gameObject);
             
             var task = await Task<int>.WhenAny(selectionItems.Select(async (selectionItem, idx) =>
             {

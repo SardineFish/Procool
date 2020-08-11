@@ -129,8 +129,8 @@ namespace Procool.GameSystems
             mapTransitionVirtualCamera.transform.position = gameplayVirtualCamera.transform.position;
             mapTransitionVirtualCamera.m_Lens = gameplayVirtualCamera.m_Lens;
 
-            mapTransitionVirtualCamera.transform.rotation = gameplayVirtualCamera.transform.rotation;
-            mapVirtualCamera.transform.rotation = gameplayVirtualCamera.transform.rotation;
+            mapTransitionVirtualCamera.transform.rotation = gameCamera.transform.rotation;
+            mapVirtualCamera.transform.rotation = gameCamera.transform.rotation;
             mapTransitionVirtualCamera.enabled = true;
             gameplayVirtualCamera.enabled = false;
             

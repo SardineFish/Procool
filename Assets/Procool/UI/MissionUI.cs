@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Procool.GamePlay.Mission;
 using Procool.Utils;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Task = System.Threading.Tasks.Task;
 
@@ -55,6 +56,11 @@ namespace Procool.UI
 
             await Show();
 
+            if (acceptable)
+                EventSystem.current.SetSelectedGameObject(buttonAccept.gameObject);
+            else
+                EventSystem.current.SetSelectedGameObject(buttonCancel.gameObject);
+
             Result finalResult = Result.Close;
 
             while (true)
@@ -75,15 +81,18 @@ namespace Procool.UI
                 {
                     buttonCancel.gameObject.SetActive(true);
                     buttonAccept.gameObject.SetActive(false);
+                    EventSystem.current.SetSelectedGameObject(buttonCancel.gameObject);
                 }
                 else if (acceptable && result == Result.Cancel)
                 {
                     buttonAccept.gameObject.SetActive(true);
                     buttonCancel.gameObject.SetActive(false);
+                    EventSystem.current.SetSelectedGameObject(buttonAccept.gameObject);
                 }
                 else if (!acceptable && result == Result.Cancel)
                 {
                     buttonCancel.gameObject.SetActive(false);
+                    EventSystem.current.SetSelectedGameObject(buttonClose.gameObject);
                 }
             }
 

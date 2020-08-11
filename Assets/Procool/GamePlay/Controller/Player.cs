@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Procool.GameSystems;
+using Procool.Misc;
 using Procool.Utils;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Procool.GamePlay.Controller
 {
@@ -12,6 +15,9 @@ namespace Procool.GamePlay.Controller
         public float Armour = 0;
         public float MaxArmour = 100;
         public bool Dead => HP <= 0;
+        public UnityEvent OnDamage;
+        public UnityEvent OnDead;
+        public UnityEvent OnLoaded;
         public Inventory.Inventory Inventory { get; private set; }
         
         public BlockPosition BlockPosition { get; set; }
@@ -32,7 +38,19 @@ namespace Procool.GamePlay.Controller
         {
             HP -= damage;
             if (HP <= 0)
+            {
                 HP = 0;
+                OnDead.Invoke();
+                var vfx = GameObjectPool.Get<ParticleSystem>(PrefabManager.Instance.DeadVFXPrefab);
+                vfx.transform.position = transform.position;
+                vfx.Play();
+            }
+            OnDamage.Invoke();
+        }
+
+        public void Heal(float deltaHP)
+        {
+            HP = Mathf.Clamp(HP + deltaHP, 0, MaxHP);
         }
     }
 }

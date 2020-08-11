@@ -128,7 +128,7 @@ namespace Procool.GamePlay.Weapon
                 .NextStage<Move>(3)
                 .NextStage<Throw>(1)
                 .NextStage<EmitOnce>()
-                .NextStage<EmitScatter>(1);
+                .NextStage<EmitScatter>(0.2f);
 
             WeaponConstructor.Behaviour<EmitScatter>(.6f)
                 .Primary()

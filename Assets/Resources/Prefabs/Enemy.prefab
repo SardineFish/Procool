@@ -52,6 +52,26 @@ MonoBehaviour:
   MaxHP: 100
   Armour: 0
   MaxArmour: 100
+  OnDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDead:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1857114129399434757}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnLoaded:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &8808844182185874221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,6 +108,9 @@ MonoBehaviour:
   dynamicAvoidanceDistance: {x: 1, y: 10}
   dynamicAvoidanceScale: 1
   dynamicObstacleMergeAngle: 5
+  OnActive:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!50 &1857114129399434778
 Rigidbody2D:
   serializedVersion: 4

@@ -22,6 +22,7 @@ namespace Procool.GameSystems
         public GameObject FireVFXPrefab;
         public GameObject MissionIndicator;
         public GameObject NPCIndicator;
+        public GameObject DeadVFXPrefab;
 
         protected override void Awake()
         {

@@ -140,12 +140,14 @@ namespace Procool.GamePlay.Controller
             {
                 var inputMovement = Controller.Input.GamePlay.Move.ReadValue<Vector2>();
                 inputMovement = Vector2.ClampMagnitude(inputMovement, 1);
+                inputMovement = CameraManager.Camera.transform.localToWorldMatrix.MultiplyVector(inputMovement);
                 Vector2 inputDirection = Vector2.zero;
                 if (InputManager.CurrentInputScheme == InputSchemeType.GamePad)
                 {
                     inputDirection = Controller.Input.GamePlay.Direction.ReadValue<Vector2>();
                     if (inputDirection.magnitude < 0.01f)
                         inputDirection = inputMovement.normalized;
+                    inputDirection = CameraManager.Camera.transform.localToWorldMatrix.MultiplyVector(inputDirection);
                 }
                 else if (InputManager.CurrentInputScheme == InputSchemeType.Keyboard)
                 {

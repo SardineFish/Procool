@@ -380,6 +380,8 @@ public static class Utility
 
     public static async Task ShowUIAsync(CanvasGroup canvasGroup, float time)
     {
+        canvasGroup.blocksRaycasts = true;
+        canvasGroup.interactable = true;
         time = (1 - canvasGroup.alpha) * time;
         canvasGroup.alpha = 0;
         canvasGroup.gameObject.SetActive(true);
@@ -391,8 +393,6 @@ public static class Utility
         }
         
 
-        canvasGroup.blocksRaycasts = true;
-        canvasGroup.interactable = true;
     }
 
     public static IEnumerator HideUI(CanvasGroup canvasGroup, float time, bool deactivate = true)

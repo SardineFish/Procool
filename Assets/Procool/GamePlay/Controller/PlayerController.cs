@@ -61,39 +61,6 @@ namespace Procool.GamePlay.Controller
         private void Update()
         {
             _currentAction?.Update();
-            // bool actionKeepRunning = false;
-            // foreach (var action in _playerActions)
-            // {
-            //     if (actionKeepRunning)
-            //     {
-            //         action.Bypass();
-            //         continue;
-            //     }
-            //
-            //     if (_currentAction is null || _currentAction != action)
-            //     {
-            //         if (action.CanEnter())
-            //         {
-            //             _currentAction?.Exit();
-            //             _currentAction = action;
-            //             _currentAction.Enter();
-            //         }
-            //         else
-            //             action.Bypass();
-            //     }
-            //
-            //     if (_currentAction == action)
-            //     {
-            //         var keep = _currentAction.Update();
-            //         if (keep)
-            //             actionKeepRunning = true;
-            //         else
-            //         {
-            //             _currentAction.Exit();
-            //             _currentAction = null;
-            //         }
-            //     }
-            //     
         }
 
         private void FixedUpdate()
