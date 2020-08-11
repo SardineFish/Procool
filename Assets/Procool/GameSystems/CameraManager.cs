@@ -96,6 +96,7 @@ namespace Procool.GameSystems
         {
             if (State == CameraState.Player)
             {
+                playerVirtualCamera.transform.rotation = gameCamera.transform.rotation;
                 playerVirtualCamera.enabled = true;
                 vehicleVirtualCamera.enabled = false;
             }
@@ -128,6 +129,8 @@ namespace Procool.GameSystems
             mapTransitionVirtualCamera.transform.position = gameplayVirtualCamera.transform.position;
             mapTransitionVirtualCamera.m_Lens = gameplayVirtualCamera.m_Lens;
 
+            mapTransitionVirtualCamera.transform.rotation = gameplayVirtualCamera.transform.rotation;
+            mapVirtualCamera.transform.rotation = gameplayVirtualCamera.transform.rotation;
             mapTransitionVirtualCamera.enabled = true;
             gameplayVirtualCamera.enabled = false;
             
@@ -188,7 +191,9 @@ namespace Procool.GameSystems
 
             mapTransitionVirtualCamera.transform.position = new Vector3(mapVirtualCamera.transform.position.x,
                 mapVirtualCamera.transform.position.y, -startDistance);
-            
+
+            mapTransitionVirtualCamera.transform.rotation = mapVirtualCamera.transform.rotation;
+            playerVirtualCamera.transform.rotation = mapVirtualCamera.transform.rotation;
             mapTransitionVirtualCamera.enabled = true;
             mapVirtualCamera.enabled = false;
             mapCamera.gameObject.SetActive(false);
