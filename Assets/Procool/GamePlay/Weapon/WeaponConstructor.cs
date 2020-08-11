@@ -330,6 +330,7 @@ namespace Procool.GamePlay.Weapon
 
 
             ObjectPool<Dictionary<IWeaponBehaviour, PossibleBehaviour>>.Release(possibleBehaviours);
+            stage.EvaluateEmitRate();
             return stage;
         }
 
@@ -337,7 +338,13 @@ namespace Procool.GamePlay.Weapon
         {
             var weapon = new Weapon();
             prng.GetScalar();
-            var depthLimit = prng.GetInRange(3, 6);
+            var depthLimit = prng.GetInRange(2, 3);
+            if (prng.GetScalar() < 0.8f)
+                depthLimit = 3;
+            else if (prng.GetScalar() < 0.5f)
+                depthLimit = 5;
+            else if (prng.GetScalar() < 0.3f)
+                depthLimit = 6;
             var stage = BuildStage(prng, PossibleBehaviours, true, false, false, 0, depthLimit);
             stage.IsFirstStage = true;
 

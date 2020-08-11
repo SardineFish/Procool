@@ -23,6 +23,7 @@ namespace Procool.GamePlay.Weapon
         // public BulletVFX BulletVFX;
         public bool Detach = false;
         public bool IsFirstStage = false;
+        public float EmitRate { get; private set; } = 0;
 
         // public IEnumerator Run(Weapon weapon, Transform attachTo = null)
         // {
@@ -46,6 +47,18 @@ namespace Procool.GamePlay.Weapon
             entity.AppendCoroutine(runner);
         }
 
+        public bool RequestEmit(Weapon weapon, DamageEntity entity)
+        {
+            var interval = EmitInterval(weapon);
+            if (Time.time - entity.PreviousEmitTime >= interval)
+            {
+                entity.PreviousEmitTime = Time.time;
+                return true;
+            }
+
+            return false;
+        }
+
         public DamageEntity CreateDetached(Weapon weapon, Transform inheritTransform)
             => CreateDetached(weapon, inheritTransform.position, inheritTransform.rotation);
 
@@ -56,6 +69,11 @@ namespace Procool.GamePlay.Weapon
             entity.StageInfo = this.ToString();
             Run(weapon, entity);
             return entity;
+        }
+
+        public float EmitInterval(Weapon weapon)
+        {
+            return EmitRate / weapon.EmitRateLimit;
         }
 
         public float EvaluateDamage()
@@ -69,6 +87,19 @@ namespace Procool.GamePlay.Weapon
             }
 
             return damage * multiply;
+        }
+
+        public float EvaluateEmitRate()
+        {
+            float emitRate = 0;
+            foreach (var behaviour in Behaviours)
+            {
+                emitRate += behaviour.Behaviour.EvaluateEmitRate(behaviour);
+            }
+
+            EmitRate = emitRate;
+
+            return emitRate;
         }
 
         public override string ToString()

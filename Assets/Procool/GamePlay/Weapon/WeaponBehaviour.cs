@@ -12,6 +12,7 @@ namespace Procool.GamePlay.Weapon
 
         float EvaluateAdditionalDamage(WeaponBehaviourData data);
         float EvaluateDamageMultiply(WeaponBehaviourData data);
+        float EvaluateEmitRate(WeaponBehaviourData data);
     }
     public abstract class WeaponBehaviour<T> : IWeaponBehaviour where T : WeaponBehaviourData
     {
@@ -36,6 +37,13 @@ namespace Procool.GamePlay.Weapon
             return 1;
         }
 
+        protected virtual float EvaluateEmitRate(T data)
+        {
+            if (data.NextStage)
+                return data.NextStage.EvaluateDamage();
+            return 0;
+        }
+
         public float EvaluateAdditionalDamage(WeaponBehaviourData data)
         {
             return EvaluateAdditionalDamage(data as T);
@@ -44,6 +52,11 @@ namespace Procool.GamePlay.Weapon
         public float EvaluateDamageMultiply(WeaponBehaviourData data)
         {
             return EvaluateDamageMultiply((data as T));
+        }
+
+        public float EvaluateEmitRate(WeaponBehaviourData data)
+        {
+            return EvaluateEmitRate(data as T);
         }
 
 

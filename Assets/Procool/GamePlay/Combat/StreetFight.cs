@@ -68,7 +68,7 @@ namespace Procool.GamePlay.Combat
             CreateInstance();
             
             // Spawn enemies
-            var enemyCount = prng.GetInRange(10, 30);
+            var enemyCount = prng.GetInRange(5, 10);
             for (var i = 0; i < enemyCount; i++)
             {    
                 Instance.AddEnemy(SpawnEnemy());

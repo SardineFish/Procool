@@ -23,6 +23,8 @@ namespace Procool.GamePlay.Weapon
 
         public BulletVFX BulletVfx { get; private set; }
 
+        public float PreviousEmitTime = 0;
+
         [SerializeField] private TrailRenderer trailRenderer;
         [SerializeField] private float physicsInterval = 0.1f;
 

@@ -32,9 +32,18 @@ namespace Procool.GamePlay.Weapon
             return data.Count;
         }
 
-        protected override IEnumerator Run(DamageEntity entity, Data data, DamageStage stage, Weapon weapon)
+        protected override float EvaluateEmitRate(Data data)
         {
             if (!data.NextStage)
+                return 0;
+            var next = data.NextStage ? data.NextStage.EvaluateEmitRate() : 1;
+            next = Mathf.Max(next, 1);
+            return data.Count * next;
+        }
+
+        protected override IEnumerator Run(DamageEntity entity, Data data, DamageStage stage, Weapon weapon)
+        {
+            if (!data.NextStage || !stage.RequestEmit(weapon, entity))
             {
                 entity.Terminate();
                 yield break;

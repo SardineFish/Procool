@@ -29,6 +29,15 @@ namespace Procool.GamePlay.Weapon
 
         protected override float EvaluateDamageMultiply(Data data) => 1 / data.Interval;
 
+        protected override float EvaluateEmitRate(Data data)
+        {
+            if (!data.NextStage)
+                return 0;
+            var next = data.NextStage ? data.NextStage.EvaluateEmitRate() : 1;
+            next = Mathf.Max(next, 1);
+            return 1 / data.Interval * next;
+        }
+
         public override WeaponBehaviourData GenerateBehaviourData(PRNG prng)
         {
             return new EmitTick.Data(this)
@@ -53,6 +62,11 @@ namespace Procool.GamePlay.Weapon
             var dir = entity.transform.up;
             while (true)
             {
+                if (!data.NextStage.RequestEmit(weapon, entity))
+                {
+                    yield return null;
+                    continue;
+                }
                 if (!stage.IsFirstStage)
                 {
                     if (data.EmitType == EmitType.Lockon && lockTarget)
@@ -61,6 +75,9 @@ namespace Procool.GamePlay.Weapon
                         dir = GameRNG.GetVec2OnCircle();
                     else if (data.EmitType == EmitType.Spin)
                         dir = MathUtility.Rotate(dir, data.SpinVelocity / 180 * Mathf.PI);
+                    else
+                        dir = entity.transform.up;
+                        
                 }
                 else
                     dir = entity.transform.up;
