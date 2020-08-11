@@ -1,13 +1,25 @@
 ﻿using System.Collections;
+using System.Linq;
+using Procool.GamePlay.Controller;
 using Procool.Random;
+using Unity.Mathematics;
+using UnityEngine;
 
 namespace Procool.GamePlay.Weapon
 {
     public class EmitTick : WeaponBehaviour<EmitTick.Data>
     {
+        public enum EmitType : int
+        {
+            Default = 0,
+            Spin,
+            Random,
+            Lockon,
+        }
         public class Data : EmitterBehaviourData
         {
             public float Interval = 1;
+            public EmitType EmitType;
             public Data(IWeaponBehaviour behaviour) : base(behaviour)
             {
                 
@@ -21,19 +33,38 @@ namespace Procool.GamePlay.Weapon
             return new EmitTick.Data(this)
             {
                 Interval = prng.GetInRange(.1f, .2f),
+                EmitType = (EmitType)prng.GetInRange(0, 4)
             };
         }
 
         protected override IEnumerator Run(DamageEntity entity, Data data, DamageStage stage, Weapon weapon)
         {
+            if (!data.NextStage)
+                yield break;
+
+            Player lockTarget;
+            lockTarget = Player.AssetsManager.Assets
+                .Where(target => target.isActiveAndEnabled)
+                .Where(target => Vector2.Distance(target.transform.position, entity.transform.position) < 20)
+                .MinOf(target => Vector2.Distance(target.transform.position, entity.transform.position));
+
+            var dir = entity.transform.up;
             while (true)
             {
-                if (data.NextStage)
+                if (!stage.IsFirstStage)
                 {
-                    var emittedEntity = data.NextStage.CreateDetached(weapon, entity.transform);
-                    emittedEntity.SetVFX(ref data.BulletVFX);
-                    emittedEntity.RunDetach();
+                    if (data.EmitType == EmitType.Lockon && lockTarget)
+                        dir = (lockTarget.transform.position - entity.transform.position).normalized;
+                    else if (data.EmitType == EmitType.Random)
+                        dir = GameRNG.GetVec2OnCircle();
+                    else if (data.EmitType == EmitType.Spin)
+                        dir = MathUtility.Rotate(dir, Mathf.PI / 3);
                 }
+
+                var rotation = Quaternion.FromToRotation(Vector3.up, dir);
+                var emittedEntity = data.NextStage.CreateDetached(weapon, entity.transform.position, rotation);
+                emittedEntity.SetVFX(ref data.BulletVFX);
+                emittedEntity.RunDetach();
                 
                 foreach (var t in Utility.Timer(data.Interval))
                     yield return null;

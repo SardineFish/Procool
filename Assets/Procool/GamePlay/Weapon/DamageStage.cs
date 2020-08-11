@@ -22,6 +22,7 @@ namespace Procool.GamePlay.Weapon
         public List<WeaponBehaviourData> Behaviours = new List<WeaponBehaviourData>();
         // public BulletVFX BulletVFX;
         public bool Detach = false;
+        public bool IsFirstStage = false;
 
         // public IEnumerator Run(Weapon weapon, Transform attachTo = null)
         // {
@@ -45,10 +46,13 @@ namespace Procool.GamePlay.Weapon
             entity.AppendCoroutine(runner);
         }
 
-        public DamageEntity CreateDetached(Weapon weapon, Transform parent)
+        public DamageEntity CreateDetached(Weapon weapon, Transform inheritTransform)
+            => CreateDetached(weapon, inheritTransform.position, inheritTransform.rotation);
+
+        public DamageEntity CreateDetached(Weapon weapon, Vector2 position, Quaternion rotation)
         {
             var entity = GameObjectPool.Get<DamageEntity>(PrefabManager.Instance.DamageEntityPrefab);
-            entity.Init(weapon.Owner, weapon, parent);
+            entity.Init(weapon.Owner, weapon, position, rotation);
             entity.StageInfo = this.ToString();
             Run(weapon, entity);
             return entity;

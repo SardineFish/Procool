@@ -61,7 +61,7 @@ Shader "Procool/Bullet" {
     SubShader {
         Pass {
             Blend SrcAlpha OneMinusSrcAlpha
-            ZTest Off
+            ZTest On
             ZWrite Off
 
             HLSLPROGRAM

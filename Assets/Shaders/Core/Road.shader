@@ -18,6 +18,9 @@
     {
         Tags { "RenderType"="Opaque" }
 
+        ZTest Less
+        ZWrite Off
+
         Pass
         {
             Tags { "LightMode"="OpaqueWithLOD" }

@@ -18,6 +18,7 @@ namespace Procool.GamePlay.Weapon
                     case EmitOnce emitOnce:
                     case EmitContinuous emitContinuous:
                     case EmitTick emitTick:
+                    case EmitScatter emitScatter:
                         maxDepth = Mathf.Max(1 + SearchEmitDepth(behaviour.NextStage));
                         break;
                 }
@@ -35,9 +36,9 @@ namespace Procool.GamePlay.Weapon
                 case 2:
                     return .3f;
                 case 1:
-                    return .15f;
+                    return .2f;
                 default:
-                    return .1f;
+                    return .15f;
             }
         }
 
@@ -69,13 +70,14 @@ namespace Procool.GamePlay.Weapon
                     vfx.PrimaryColor = Color.HSVToRGB(prng.GetScalar(), .8f, .8f);
                     vfx.SecondaryColor = Color.white;
                 }
-                if(behaviour.Behaviour is Move move && (behaviour as Move.Data).Speed > 6)
+
+                if (behaviour.Behaviour is Move move && (behaviour as Move.Data).Speed > 6)
                 {
                     vfx.EnableTrail = true;
                     vfx.TrailStartWidth = BulletSize(level) * .8f;
                     vfx.TrailEndWidth = 0;
                 }
-                
+
 
                 // if (behaviour.Behaviour is Throw)
                 // {
@@ -101,7 +103,7 @@ namespace Procool.GamePlay.Weapon
 
         void GenerateBulletVFX(PRNG prng, DamageStage stage, int level)
         {
-            if(!stage)
+            if (!stage)
                 return;
             foreach (var data in stage.Behaviours)
             {
@@ -109,6 +111,7 @@ namespace Procool.GamePlay.Weapon
                 {
                     case EmitOnce emitOnce:
                     case EmitTick emitTick:
+                    case EmitScatter emitScatter:
                         var emitData = data as EmitterBehaviourData;
                         emitData.BulletVFX = GenerateBulletVFXByNextStage(prng, data.NextStage, level);
                         GenerateBulletVFX(prng, data.NextStage, level - 1);
@@ -119,7 +122,7 @@ namespace Procool.GamePlay.Weapon
                 }
             }
         }
-        
+
         public void GenerateBulletVFX(Weapon weapon, PRNG prng)
         {
             var maxEmitDepth = SearchEmitDepth(weapon.FirstStage);

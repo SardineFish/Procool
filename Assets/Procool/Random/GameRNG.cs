@@ -43,6 +43,11 @@ namespace Procool.Random
         {
             return UnityEngine.Random.value;
         }
+
+        public static Vector2 GetVec2OnCircle()
+        {
+            return UnityEngine.Random.insideUnitCircle.normalized;
+        }
         
         
         #endregion

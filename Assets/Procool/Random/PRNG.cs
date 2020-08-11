@@ -83,6 +83,9 @@ namespace Procool.Random
         /// <returns></returns>
         public int GetInRange(Vector2Int range)
             => GetInRange(range.x, range.y);
+        
+        public bool GetBool(float trueProportion = .5f)
+            => GetScalar() < trueProportion;
 
         /// <summary>
         /// x,y ∈ (0, 1)

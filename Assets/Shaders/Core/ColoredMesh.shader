@@ -1,17 +1,19 @@
 Shader "Procool/Color" {
     Properties {
         _Color ("Color", Color) = (1, 1, 1, 1)
+        [ToggleOff] _ZWrite ("ZWrite", Float) = 1.0
+        _ZTest ("ZTest", Float) = 1.0
     }
     SubShader {
+        ZTest [_ZTest]
+        ZWrite [_ZWrite]
+
         Pass {
-            Tags { "LightMode"="BlockRender" }
 
             HLSLPROGRAM
 
             #pragma vertex vert
             #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
 
             #include "UnityCG.cginc"
 
@@ -26,7 +28,6 @@ Shader "Procool/Color" {
             };
 
             float4 _Color;
-            int2 _HexCoord;
 
             v2f vert (appdata v)
             {
@@ -37,7 +38,7 @@ Shader "Procool/Color" {
 
             float4 frag(v2f i) : SV_TARGET
             {
-                return 0;
+                return _Color;
             }
             
 

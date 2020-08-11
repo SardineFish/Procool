@@ -43,8 +43,11 @@ namespace Procool.GamePlay.Weapon
                 
                 yield return null;
             }
-
-            data.NextStage?.Run(weapon, entity);
+            
+            if(!data.NextStage)
+                entity.Terminate();
+            else 
+                data.NextStage?.Run(weapon, entity);
         }
     }
 }

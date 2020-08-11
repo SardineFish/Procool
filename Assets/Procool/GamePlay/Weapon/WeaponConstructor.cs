@@ -331,8 +331,9 @@ namespace Procool.GamePlay.Weapon
         {
             var weapon = new Weapon();
 
-            var depthLimit = prng.GetInRange(3, 5);
+            var depthLimit = prng.GetInRange(5, 5);
             var stage = BuildStage(prng, PossibleBehaviours, true, false, false, 0, depthLimit);
+            stage.IsFirstStage = true;
 
             weapon.FirstStage = stage;
             var damage = weapon.FirstStage.EvaluateDamage();

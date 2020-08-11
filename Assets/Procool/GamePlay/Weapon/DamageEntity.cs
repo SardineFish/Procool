@@ -21,12 +21,7 @@ namespace Procool.GamePlay.Weapon
         // private new CircleCollider2D collider;
         // private new Rigidbody2D rigidbody;
 
-        public BulletVFX BulletVfx { get; private set; } = new BulletVFX()
-        {
-            BulletSize = .2f,
-            PrimaryColor = Color.red,
-            SecondaryColor = Color.white,
-        };
+        public BulletVFX BulletVfx { get; private set; }
 
         [SerializeField] private TrailRenderer trailRenderer;
         [SerializeField] private float physicsInterval = 0.1f;
@@ -122,14 +117,14 @@ namespace Procool.GamePlay.Weapon
             runner.Append(coroutine);
         }
 
-        public void Init(Player player, Weapon weapon, Transform inheritTransform)
+        public void Init(Player player, Weapon weapon, Vector2 position, Quaternion rotation)
         {
             Owner = player;
             ContactedDamageTargets.Clear();
             Weapon = weapon;
-            transform.position = inheritTransform.position;
-            transform.rotation = inheritTransform.rotation;
-            previousCollisionCheckPos = transform.position;
+            transform.position = position;
+            transform.rotation = rotation;
+            previousCollisionCheckPos = position;
             previousCollisionCheckTime = 0;
 
             
@@ -144,7 +139,7 @@ namespace Procool.GamePlay.Weapon
             // SpriteRenderer.color = vfx.SpriteColor;
             // flicker.enabled = vfx.Flicking;
             // flicker.renderer.color = vfx.FlickingColor;
-            trailRenderer.endColor = trailRenderer.startColor = vfx.SpriteColor;
+            trailRenderer.endColor = trailRenderer.startColor = vfx.PrimaryColor;
             trailRenderer.startWidth = vfx.TrailStartWidth;
             trailRenderer.endWidth = vfx.TrailEndWidth;
             // trailRenderer.time = vfx.TrailLength;

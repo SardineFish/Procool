@@ -14,7 +14,7 @@ namespace Procool.Rendering
         public override void Create()
         {
             pass = new RenderPass();
-            pass.renderPassEvent = RenderPassEvent.AfterRenderingOpaques;
+            pass.renderPassEvent = RenderPassEvent.AfterRenderingTransparents;
         }
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)

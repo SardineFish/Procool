@@ -34,7 +34,7 @@ namespace Procool.GamePlay.Weapon
                 .CompatibleWith<CollisionTrigger>()
                 .CompatibleWith<Destructor>()
                 // .CompatibleWith<EmitContinuous>()
-                .CompatibleWith<EmitTick>()
+                .CompatibleWith<EmitTick>(1000)
                 .CompatibleWith<TraceTarget>()
                 .CompatibleWith<Timeout>();
 
@@ -101,7 +101,8 @@ namespace Procool.GamePlay.Weapon
                 .CompatibleWith<CollisionTrigger>()
                 .CompatibleWith<TraceTarget>()
                 .NextStage<EmitOnce>()
-                .NextStage<EmitTick>();
+                .NextStage<EmitTick>()
+                .NextStage<EmitScatter>();
 
             WeaponConstructor.Behaviour<EmitOnce>()
                 .DetachEmitter()
@@ -109,15 +110,24 @@ namespace Procool.GamePlay.Weapon
                 .NextStage<Move>(1)
                 .NextStage<Throw>(1);
 
-            WeaponConstructor.Behaviour<EmitTick>(8)
+            WeaponConstructor.Behaviour<EmitTick>(100)
                 .DetachEmitter()
                 .CompatibleWith<Destructor>()
                 .CompatibleWith<CollisionTrigger>()
                 .CompatibleWith<Damage>()
                 .CompatibleWith<Bounce>()
                 .CompatibleWith<TraceTarget>()
-                .NextStage<Move>(3)
-                .NextStage<Throw>(1);
+                .NextStage<Move>(100)
+                .NextStage<Throw>(1)
+                .NextStage<EmitOnce>()
+                .NextStage<EmitScatter>(1);
+
+            WeaponConstructor.Behaviour<EmitScatter>(1)
+                .Primary()
+                .DetachEmitter()
+                .Terminator()
+                .NextStage<Move>()
+                .NextStage<Throw>();
 
             // WeaponConstructor.Behaviour<EmitContinuous>()
             //     .Emitter()
@@ -134,6 +144,7 @@ namespace Procool.GamePlay.Weapon
 
         public Weapon GenerateWeapon(PRNG prng)
         {
+            prng.GetScalar();
             var weapon = WeaponConstructor.BuildWeapon(prng);
             weapon.Sprite = weaponSprites.RandomTake(prng.GetScalar(), _ => 1);
             return weapon;
