@@ -3,8 +3,10 @@ using System.Linq;
 using System.Net;
 using Cinemachine;
 using Procool.GamePlay.Inventory;
+using Procool.GamePlay.Weapon;
 using Procool.GameSystems;
 using Procool.Input;
+using Procool.Random;
 using Procool.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,9 +19,32 @@ namespace Procool.GamePlay.Controller
         {
             private IUsingState UsingItem = null;
             private Coroutine _actionCoroutine;
+            private int holdingItemIdx = 0;
 
             public PlayerMove(Player player, PlayerController controller) : base(player, controller)
             {
+                controller.Input.GamePlay.NextItem.performed += (ctx) =>
+                {
+                    for (var i = holdingItemIdx + 1; i != holdingItemIdx; i = (i + 1) % player.Inventory.Capacity)
+                    {
+                        if (player.Inventory.GetItem(i) != null)
+                        {
+                            holdingItemIdx = i;
+                            break;
+                        }
+                    }
+                };
+                controller.Input.GamePlay.PrevItem.performed += (ctx) =>
+                {
+                    for (var i = holdingItemIdx + 1; i != holdingItemIdx; i = (i - 1 + player.Inventory.Capacity) % player.Inventory.Capacity)
+                    {
+                        if (player.Inventory.GetItem(i) != null)
+                        {
+                            holdingItemIdx = i;
+                            break;
+                        }
+                    }
+                };
             }
 
             public override void Enter()
@@ -40,10 +65,14 @@ namespace Procool.GamePlay.Controller
                 {
                     if (Controller.Input.GamePlay.Fire.IsPressed())
                     {
-                        var item = Controller.Player.Inventory.GetItem(0);
+                        var item = Controller.Player.Inventory.GetItem(holdingItemIdx);
                         var usingState = item.Activate();
-                        while (Controller.Input.GamePlay.Fire.IsPressed() && usingState.Tick())
+                        while (Controller.Input.GamePlay.Fire.IsPressed())
+                        {
+                            usingState.Tick();
                             yield return null;
+                        }
+                        usingState.Terminate();
                     }
                     else if (Controller.Input.GamePlay.Interact.IsPressed())
                     {
@@ -92,6 +121,19 @@ namespace Procool.GamePlay.Controller
                             
                     }
                 }
+
+                if (UnityEngine.Input.GetKeyDown(KeyCode.F6))
+                {
+                    var weapon = WeaponSystem.Instance.GenerateWeapon(GameRNG.GetPRNG());
+                    Debug.Log("\r\n" + weapon.FirstStage);
+                    Player.Inventory.Add(weapon);
+                }
+
+                if (Controller.Input.GamePlay.NextItem.phase == InputActionPhase.Performed)
+                {
+                    Debug.Log("NExt");
+                }
+                
             }
 
             public override void FixedUpdate()

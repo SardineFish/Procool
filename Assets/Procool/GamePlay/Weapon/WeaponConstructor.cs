@@ -62,6 +62,12 @@ namespace Procool.GamePlay.Weapon
                 return this;
             }
 
+            public BehaviourConstructor<T> NoNext(float probability = 1)
+            {
+                NextStages.Add(new PossibleBehaviour(Constructor.GetBehaviourConstructor<EmptyBehaviour>(), probability));
+                return this;
+            }
+
             public BehaviourConstructor<T> Emitter()
             {
                 IsEmitter = true;
@@ -200,7 +206,7 @@ namespace Procool.GamePlay.Weapon
             if (depth >= depthLimit)
                 return null;
 
-            var maxComponents = prng.GetInRange(2, 4);
+            var maxComponents = prng.GetInRange(1, 8);
             var possibleBehaviours = ObjectPool<Dictionary<IWeaponBehaviour, PossibleBehaviour>>.Get();
             possibleBehaviours.Clear();
 
@@ -242,7 +248,7 @@ namespace Procool.GamePlay.Weapon
                     else
                         behaviour = possibleBehaviours.Values.RandomTake(prng.GetScalar(), b => b.Probability);
 
-                    if (behaviour.ConstructData is null)
+                    if (behaviour.ConstructData?.Behaviour is null || behaviour is EmptyBehaviour)
                     {
                         if (i == 0)
                         {
@@ -330,8 +336,8 @@ namespace Procool.GamePlay.Weapon
         public Weapon BuildWeapon(PRNG prng)
         {
             var weapon = new Weapon();
-
-            var depthLimit = prng.GetInRange(5, 5);
+            prng.GetScalar();
+            var depthLimit = prng.GetInRange(3, 6);
             var stage = BuildStage(prng, PossibleBehaviours, true, false, false, 0, depthLimit);
             stage.IsFirstStage = true;
 

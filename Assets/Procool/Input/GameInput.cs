@@ -67,6 +67,22 @@ namespace Procool.Input
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""NextItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""92d429ce-4203-4bbd-ad9e-fa65214027fc"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""PrevItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""296355e6-825c-4369-aca1-9624d6d98a1b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -232,6 +248,50 @@ namespace Procool.Input
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
                     ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""231137f0-9c0b-44f8-83bc-6a9dcfa01337"",
+                    ""path"": ""<Mouse>/forwardButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""NextItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f4f70134-5b1b-4bb5-8f2b-dd0801946a9a"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""GamePad"",
+                    ""action"": ""NextItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""98460365-f79f-48a0-8e76-8f366188e494"",
+                    ""path"": ""<Mouse>/backButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""PrevItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3ea074cb-0f44-4f27-8a56-9b614dd2f2e1"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""GamePad"",
+                    ""action"": ""PrevItem"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -587,6 +647,8 @@ namespace Procool.Input
             m_GamePlay_Fire = m_GamePlay.FindAction("Fire", throwIfNotFound: true);
             m_GamePlay_Pointer = m_GamePlay.FindAction("Pointer", throwIfNotFound: true);
             m_GamePlay_Interact = m_GamePlay.FindAction("Interact", throwIfNotFound: true);
+            m_GamePlay_NextItem = m_GamePlay.FindAction("NextItem", throwIfNotFound: true);
+            m_GamePlay_PrevItem = m_GamePlay.FindAction("PrevItem", throwIfNotFound: true);
             // Vehicle
             m_Vehicle = asset.FindActionMap("Vehicle", throwIfNotFound: true);
             m_Vehicle_Accelerator = m_Vehicle.FindAction("Accelerator", throwIfNotFound: true);
@@ -654,6 +716,8 @@ namespace Procool.Input
         private readonly InputAction m_GamePlay_Fire;
         private readonly InputAction m_GamePlay_Pointer;
         private readonly InputAction m_GamePlay_Interact;
+        private readonly InputAction m_GamePlay_NextItem;
+        private readonly InputAction m_GamePlay_PrevItem;
         public struct GamePlayActions
         {
             private @GameInput m_Wrapper;
@@ -664,6 +728,8 @@ namespace Procool.Input
             public InputAction @Fire => m_Wrapper.m_GamePlay_Fire;
             public InputAction @Pointer => m_Wrapper.m_GamePlay_Pointer;
             public InputAction @Interact => m_Wrapper.m_GamePlay_Interact;
+            public InputAction @NextItem => m_Wrapper.m_GamePlay_NextItem;
+            public InputAction @PrevItem => m_Wrapper.m_GamePlay_PrevItem;
             public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -691,6 +757,12 @@ namespace Procool.Input
                     @Interact.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnInteract;
                     @Interact.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnInteract;
                     @Interact.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnInteract;
+                    @NextItem.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnNextItem;
+                    @NextItem.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnNextItem;
+                    @NextItem.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnNextItem;
+                    @PrevItem.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnPrevItem;
+                    @PrevItem.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnPrevItem;
+                    @PrevItem.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnPrevItem;
                 }
                 m_Wrapper.m_GamePlayActionsCallbackInterface = instance;
                 if (instance != null)
@@ -713,6 +785,12 @@ namespace Procool.Input
                     @Interact.started += instance.OnInteract;
                     @Interact.performed += instance.OnInteract;
                     @Interact.canceled += instance.OnInteract;
+                    @NextItem.started += instance.OnNextItem;
+                    @NextItem.performed += instance.OnNextItem;
+                    @NextItem.canceled += instance.OnNextItem;
+                    @PrevItem.started += instance.OnPrevItem;
+                    @PrevItem.performed += instance.OnPrevItem;
+                    @PrevItem.canceled += instance.OnPrevItem;
                 }
             }
         }
@@ -857,6 +935,8 @@ namespace Procool.Input
             void OnFire(InputAction.CallbackContext context);
             void OnPointer(InputAction.CallbackContext context);
             void OnInteract(InputAction.CallbackContext context);
+            void OnNextItem(InputAction.CallbackContext context);
+            void OnPrevItem(InputAction.CallbackContext context);
         }
         public interface IVehicleActions
         {

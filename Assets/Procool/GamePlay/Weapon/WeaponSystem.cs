@@ -30,10 +30,9 @@ namespace Procool.GamePlay.Weapon
             WeaponConstructor.Behaviour<Move>()
                 .Primary()
                 .CompatibleWith<Bounce>()
-                .CompatibleWith<Damage>()
-                .CompatibleWith<CollisionTrigger>(100)
+                .CompatibleWith<Damage>(100000)
+                .CompatibleWith<CollisionTrigger>(2)
                 .CompatibleWith<Destructor>()
-                // .CompatibleWith<EmitContinuous>()
                 .CompatibleWith<EmitTick>()
                 .CompatibleWith<TraceTarget>()
                 .CompatibleWith<Timeout>();
@@ -43,17 +42,15 @@ namespace Procool.GamePlay.Weapon
                 .CompatibleWith<Bounce>()
                 .CompatibleWith<Damage>()
                 .CompatibleWith<Destructor>()
-                .CompatibleWith<CollisionTrigger>(100)
-                // .CompatibleWith<EmitContinuous>()
+                .CompatibleWith<CollisionTrigger>()
                 .CompatibleWith<EmitTick>()
-                .NextStage<Explode>()
+                .NextStage<Explode>(2)
                 .NextStage<Sticky>();
             
             WeaponConstructor.Behaviour<Bounce>()
                 .Collider()
                 .CompatibleWith<Damage>()
                 .CompatibleWith<Destructor>()
-                // .CompatibleWith<EmitContinuous>()
                 .CompatibleWith<EmitTick>()
                 .CompatibleWith<TraceTarget>()
                 .CompatibleWith<Timeout>();
@@ -70,12 +67,12 @@ namespace Procool.GamePlay.Weapon
                 .Collider()
                 .CompatibleWith<Damage>()
                 .CompatibleWith<Destructor>()
-                // .CompatibleWith<EmitContinuous>()
                 .CompatibleWith<EmitTick>()
                 .CompatibleWith<TraceTarget>()
                 .CompatibleWith<Timeout>()
                 .NextStage<Explode>()
-                .NextStage<Sticky>(100);
+                .NextStage<Sticky>()
+                .NoNext(2);
 
             WeaponConstructor.Behaviour<Sticky>()
                 .CompatibleWith<Timeout>()
@@ -113,15 +110,15 @@ namespace Procool.GamePlay.Weapon
                 .NextStage<EmitOnce>()
                 .NextStage<EmitTick>()
                 .NextStage<EmitScatter>()
-                .NextStage<Explode>(1000);
+                .NextStage<Explode>(2);
 
-            WeaponConstructor.Behaviour<EmitOnce>(100)
+            WeaponConstructor.Behaviour<EmitOnce>()
                 .DetachEmitter()
                 .Terminator()
                 .NextStage<Move>(1)
-                .NextStage<Throw>(100);
+                .NextStage<Throw>();
 
-            WeaponConstructor.Behaviour<EmitTick>()
+            WeaponConstructor.Behaviour<EmitTick>(2)
                 .DetachEmitter()
                 .CompatibleWith<Destructor>()
                 .CompatibleWith<CollisionTrigger>()
@@ -133,7 +130,7 @@ namespace Procool.GamePlay.Weapon
                 .NextStage<EmitOnce>()
                 .NextStage<EmitScatter>(1);
 
-            WeaponConstructor.Behaviour<EmitScatter>(1)
+            WeaponConstructor.Behaviour<EmitScatter>(.6f)
                 .Primary()
                 .DetachEmitter()
                 .Terminator()
