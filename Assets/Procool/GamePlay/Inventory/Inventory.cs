@@ -11,7 +11,10 @@ namespace Procool.GamePlay.Inventory
         public Player Owner { get; private set; }
         private readonly List<Item> items = new List<Item>();
         public IReadOnlyList<Item> Items => items.AsReadOnly();
-        public int Capacity = 16;
+        public int Capacity = 32;
+
+        public int ActiveSlot { get; private set; } = 0;
+        public Item ActiveItem => items.Count <= ActiveSlot ? null : items[ActiveSlot];
 
         public bool IsFull => Items.Count >= Capacity;
 
@@ -26,6 +29,7 @@ namespace Procool.GamePlay.Inventory
                 throw new Exception("Cannot take other player's item.");
             item.Owner = Owner;
             items.Add(item);
+            UpdateActiveSlot();
         }
 
         public Item Take(Item item)
@@ -65,6 +69,52 @@ namespace Procool.GamePlay.Inventory
             var dropedItem = GameObjectPool.Get<DropedItem>(PrefabManager.Instance.DropedItemPrefab);
             dropedItem.Init(item, Owner.transform.position);
             return dropedItem;
+        }
+
+        void UpdateActiveSlot()
+        {
+            if (ActiveItem is null)
+            {
+                for (var i = ActiveSlot + 1; i != ActiveSlot; i = (i + 1) % items.Count)
+                {
+                    if (items[i] != null)
+                    {
+                        ActiveSlot = i;
+                        break;
+                    }
+                    
+                }
+            }
+        }
+
+        public Item NextItem()
+        {
+            for (var i = ActiveSlot + 1; i != ActiveSlot; i = (i + 1) % items.Count)
+            {
+                if (items[i] != null)
+                {
+                    ActiveSlot = i;
+                    break;
+                }
+
+            }
+
+            return ActiveItem;
+        }
+
+        public Item PreviousItem()
+        {
+            for (var i = (ActiveSlot - 1 + items.Count) % items.Count; i != ActiveSlot; i = (i - 1 + items.Count) % items.Count)
+            {
+                if (items[i] != null)
+                {
+                    ActiveSlot = i;
+                    break;
+                }
+
+            }
+
+            return ActiveItem;
         }
     }
 }

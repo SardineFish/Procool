@@ -19,31 +19,16 @@ namespace Procool.GamePlay.Controller
         {
             private IUsingState UsingItem = null;
             private Coroutine _actionCoroutine;
-            private int holdingItemIdx = 0;
 
             public PlayerMove(Player player, PlayerController controller) : base(player, controller)
             {
                 controller.Input.GamePlay.NextItem.performed += (ctx) =>
                 {
-                    for (var i = holdingItemIdx + 1; i != holdingItemIdx; i = (i + 1) % player.Inventory.Capacity)
-                    {
-                        if (player.Inventory.GetItem(i) != null)
-                        {
-                            holdingItemIdx = i;
-                            break;
-                        }
-                    }
+                    player.Inventory.NextItem();
                 };
                 controller.Input.GamePlay.PrevItem.performed += (ctx) =>
                 {
-                    for (var i = holdingItemIdx + 1; i != holdingItemIdx; i = (i - 1 + player.Inventory.Capacity) % player.Inventory.Capacity)
-                    {
-                        if (player.Inventory.GetItem(i) != null)
-                        {
-                            holdingItemIdx = i;
-                            break;
-                        }
-                    }
+                    player.Inventory.PreviousItem();
                 };
             }
 
@@ -65,7 +50,7 @@ namespace Procool.GamePlay.Controller
                 {
                     if (Controller.Input.GamePlay.Fire.IsPressed())
                     {
-                        var item = Controller.Player.Inventory.GetItem(holdingItemIdx);
+                        var item = Controller.Player.Inventory.ActiveItem;
                         var usingState = item.Activate();
                         while (Controller.Input.GamePlay.Fire.IsPressed())
                         {
@@ -127,6 +112,8 @@ namespace Procool.GamePlay.Controller
                     var weapon = WeaponSystem.Instance.GenerateWeapon(GameRNG.GetPRNG());
                     Debug.Log("\r\n" + weapon.FirstStage);
                     Player.Inventory.Add(weapon);
+                    Player.Inventory.NextItem();
+
                 }
 
                 if (Controller.Input.GamePlay.NextItem.phase == InputActionPhase.Performed)

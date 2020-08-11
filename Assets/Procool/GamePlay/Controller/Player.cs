@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Procool.GamePlay.Inventory;
 using Procool.GameSystems;
 using Procool.Misc;
 using Procool.Utils;
