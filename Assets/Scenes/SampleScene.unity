@@ -3173,9 +3173,9 @@ RectTransform:
   m_Father: {fileID: 1141065798}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 186.76, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 186.76, y: -8}
   m_SizeDelta: {x: 357.52, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &894711208
@@ -4953,6 +4953,14 @@ MonoBehaviour:
   MissionCompleteIcon: {fileID: 21300000, guid: 0c8ad0f363d0e4f4b8159323bf8eac31,
     type: 3}
   MissionFailedIcon: {fileID: 21300000, guid: a4f76c576732e3d42bd1937df7155ef4, type: 3}
+  VehiclePaints:
+  - {fileID: 2100000, guid: 5ff517a26f183e2478f233d471d01794, type: 2}
+  - {fileID: 2100000, guid: 7268ea1dfcd4cd64c81c3acd46e05ca3, type: 2}
+  - {fileID: 2100000, guid: 327d56e0f099e8c40bd29843272de624, type: 2}
+  - {fileID: 2100000, guid: 0df25632d86f6e343871a87c5625f71a, type: 2}
+  - {fileID: 2100000, guid: c99ac7ef81c3dee41851df220149a34f, type: 2}
+  - {fileID: 2100000, guid: 2daef161f61472645b6b72deb3937abc, type: 2}
+  BrokenVehicle: {fileID: 2100000, guid: df6feac612fcee94192cfc00cc85d44c, type: 2}
 --- !u!1 &1391960724
 GameObject:
   m_ObjectHideFlags: 0

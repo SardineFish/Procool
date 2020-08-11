@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 2654330809360477800}
   - component: {fileID: 4300039421049786404}
   - component: {fileID: 7030941908298043320}
+  - component: {fileID: -4154732786738677033}
   - component: {fileID: 2654330809360477815}
   m_Layer: 9
   m_Name: Car-3
@@ -39,6 +40,7 @@ Transform:
   - {fileID: 2654330810050151850}
   - {fileID: 2654330809430706874}
   - {fileID: 2654330809193699661}
+  - {fileID: 2751634066701997846}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -103,10 +105,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HP: 0
   MaxHP: 300
+  explosionRadius: 10
+  explosionDamage: 200
   GetOffLocation: {fileID: 2654330809430706874}
   CameraTarget: {fileID: 2654330809193699661}
   TrailPrefab: {fileID: 2770585783295670662, guid: 8ba08972c9588d3449a83e0b28872e18,
     type: 3}
+  fireVFXLocation: {fileID: 2751634066701997846}
 --- !u!114 &2654330809360477801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,6 +177,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shiftTime: 0.2
   rpmRange: {x: 2000, y: 5000}
+--- !u!114 &-4154732786738677033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1863258123974409986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a62a0ed57e2c45aa94a0ece48c8aebf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &2654330809360477815
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -464,6 +481,36 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 3.9442654, y: 6.7173567}
   m_EdgeRadius: 0
+--- !u!1 &7848083996124193683
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2751634066701997846}
+  m_Layer: 9
+  m_Name: Fire
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2751634066701997846
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7848083996124193683}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.62, z: -0.98}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1863258123974409989}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &8661054002921246770
 PrefabInstance:
   m_ObjectHideFlags: 0

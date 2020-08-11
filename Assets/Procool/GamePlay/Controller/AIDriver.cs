@@ -42,12 +42,21 @@ namespace Procool.GamePlay.Controller
 
         public void StartDrive()
         {
+
+            enabled = true;
             StartCoroutine(Drive());
+
         }
 
         public void StopDrive()
         {
-            StopAllCoroutines();
+            if (enabled)
+            {
+                _vehicleController.Drive(0, 0, 0, 0);
+                _vehicleController.ShiftGear(1 - _vehicleController.Gear);
+                StopAllCoroutines();
+                enabled = false;
+            }
         }
 
         IEnumerator Drive()

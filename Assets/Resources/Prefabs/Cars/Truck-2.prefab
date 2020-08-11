@@ -818,6 +818,36 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!1 &3232437265382135796
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4991278842564662754}
+  m_Layer: 9
+  m_Name: Fire
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4991278842564662754
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3232437265382135796}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -1.13, z: -3.16}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5865828629858960201}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5865828629858960206
 GameObject:
   m_ObjectHideFlags: 0
@@ -834,6 +864,7 @@ GameObject:
   - component: {fileID: 7812074808377332260}
   - component: {fileID: 8291351734514412648}
   - component: {fileID: 2967571993011336180}
+  - component: {fileID: -3709989007310635895}
   - component: {fileID: 7812074808377332283}
   m_Layer: 9
   m_Name: Truck-2
@@ -857,6 +888,7 @@ Transform:
   - {fileID: 7812074807725373926}
   - {fileID: 7812074808445482742}
   - {fileID: 7812074808745141505}
+  - {fileID: 4991278842564662754}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -920,11 +952,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HP: 0
-  MaxHP: 300
+  MaxHP: 400
+  explosionRadius: 30
+  explosionDamage: 500
   GetOffLocation: {fileID: 7812074808445482742}
   CameraTarget: {fileID: 7812074808745141505}
   TrailPrefab: {fileID: 2770585783295670662, guid: 8ba08972c9588d3449a83e0b28872e18,
     type: 3}
+  fireVFXLocation: {fileID: 4991278842564662754}
 --- !u!114 &7812074808377332261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -990,6 +1025,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shiftTime: 0.2
   rpmRange: {x: 1500, y: 2800}
+--- !u!114 &-3709989007310635895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5865828629858960206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a62a0ed57e2c45aa94a0ece48c8aebf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7812074808377332283
 MonoBehaviour:
   m_ObjectHideFlags: 0

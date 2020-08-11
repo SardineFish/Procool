@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 9168226988867401347}
   - component: {fileID: 6937453286572165327}
   - component: {fileID: 4213375261839349587}
+  - component: {fileID: -5075211366019602143}
   - component: {fileID: 9168226988867401372}
   m_Layer: 9
   m_Name: Car-6
@@ -39,6 +40,7 @@ Transform:
   - {fileID: 9168226988181380417}
   - {fileID: 9168226988935565905}
   - {fileID: 9168226988631310758}
+  - {fileID: 8939993598955984497}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -101,15 +103,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f69940624d44b33be89f45e350636ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HP: 300
-  MaxHP: 300
+  HP: 3200
+  MaxHP: 200
   explosionRadius: 10
   explosionDamage: 200
   GetOffLocation: {fileID: 9168226988935565905}
   CameraTarget: {fileID: 9168226988631310758}
   TrailPrefab: {fileID: 2770585783295670662, guid: 8ba08972c9588d3449a83e0b28872e18,
     type: 3}
-  fireVFXLocation: {fileID: 0}
+  fireVFXLocation: {fileID: 8939993598955984497}
 --- !u!114 &9168226988867401346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175,6 +177,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shiftTime: 0.1
   rpmRange: {x: 1500, y: 5000}
+--- !u!114 &-5075211366019602143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4769762205594003433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a62a0ed57e2c45aa94a0ece48c8aebf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &9168226988867401372
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -350,6 +364,36 @@ MonoBehaviour:
   - 0.84
   - 0.65
   efficiency: 0.7
+--- !u!1 &7808813083901857858
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8939993598955984497}
+  m_Layer: 9
+  m_Name: Fire
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8939993598955984497
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7808813083901857858}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.33, z: -0.99}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4769762205594003438}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9168226988181380416
 GameObject:
   m_ObjectHideFlags: 0
@@ -529,6 +573,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -90
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 0bd5855ee7fb2e340adaf93f5823de24,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 5ff517a26f183e2478f233d471d01794, type: 2}
     - target: {fileID: 919132149155446097, guid: 0bd5855ee7fb2e340adaf93f5823de24,
         type: 3}
       propertyPath: m_Name

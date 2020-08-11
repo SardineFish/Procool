@@ -24,7 +24,11 @@ namespace Procool.GamePlay.Weapon
                 var target = involvedColliders[i].attachedRigidbody?.GetComponent<IDamageTarget>();
                 if (target != null && target != owner)
                 {
-                    target.ApplyDamage(damage);
+                    var distance = MathUtility.RangeMapClamped(
+                        0, radius,
+                        1, 2,
+                        Vector2.Distance(involvedColliders[i].transform.position, position));
+                    target.ApplyDamage(damage / (distance * distance));
                 }
             }
             

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Procool.GameSystems
 {
@@ -13,5 +14,7 @@ namespace Procool.GameSystems
         public Sprite MissionActiveIcon;
         public Sprite MissionCompleteIcon;
         public Sprite MissionFailedIcon;
+        public List<Material> VehiclePaints = new List<Material>();
+        public Material BrokenVehicle;
     }
 }

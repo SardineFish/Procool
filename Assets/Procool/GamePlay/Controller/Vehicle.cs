@@ -4,6 +4,7 @@ using Cinemachine;
 using Procool.GamePlay.Weapon;
 using Procool.GameSystems;
 using Procool.Input;
+using Procool.Misc;
 using Procool.UI;
 using Procool.Utils;
 using UnityEngine;
@@ -61,9 +62,11 @@ namespace Procool.GamePlay.Controller
         public void Load()
         {
             HP = MaxHP;
+            GetComponents<LazyLoadComponent>().ForEach(component=>component.Load());
         }
         public void Unload()
         {
+            GetComponents<LazyLoadComponent>().ForEach(component => component.Unload());
             TrailRenderers.ForEach(trail => trail.emitting = false);
             if (fireVFX)
             {
@@ -125,28 +128,52 @@ namespace Procool.GamePlay.Controller
             _interactiveObject.Interactive = true;
         }
 
+        void SpawnFire()
+        {
+            if (!fireVFX)
+            {
+                fireVFX = GameObjectPool.Get(PrefabManager.Instance.FireVFXPrefab);
+                fireVFX.transform.parent = fireVFXLocation;
+                fireVFX.transform.localPosition = Vector3.zero;
+                fireVFX.GetComponentsInChildren<ParticleSystem>().ForEach(particleSystem => particleSystem.Play());
+            }
+        }
+
+        void DestroyFire()
+        {
+            if (fireVFX)
+            {
+                fireVFX.GetComponentsInChildren<ParticleSystem>().ForEach(particleSystem => particleSystem.Stop());
+                GameObjectPool.Release(PrefabManager.Instance.FireVFXPrefab, fireVFX);
+                fireVFX = null;
+            }
+        }
+
+        void Explode()
+        {
+            WeaponSystem.Instance.GenerateExplosion(transform.position, explosionRadius, explosionDamage);
+            GetComponent<AIDriver>().StopDrive();
+            GetComponent<VehiclePaint>().SetBrokenPaint();
+            _interactiveObject.Interactive = false;
+        }
+
         public void ApplyDamage(float damage)
         {
             if(HP <= 0)
                 return;
             HP -= damage;
+            GetComponent<AIDriver>().StopDrive();
             if (HP < 0.3f * MaxHP && !fireVFX)
             {
-                fireVFX = GameObjectPool.Get(PrefabManager.Instance.FireVFXPrefab);
-                fireVFX.transform.parent = fireVFXLocation;
-                fireVFX.transform.localPosition = Vector3.zero;
+                SpawnFire();
             }
 
             if (HP <= 0)
             {
                 HP = 0;
-                if (fireVFX)
-                {
-                    GameObjectPool.Release(PrefabManager.Instance.FireVFXPrefab, fireVFX);
-                    fireVFX = null;
-                }
+                DestroyFire();
 
-                WeaponSystem.Instance.GenerateExplosion(transform.position, explosionRadius, explosionDamage);
+                Explode();
             }
         }
     }
