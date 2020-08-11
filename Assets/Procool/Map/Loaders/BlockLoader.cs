@@ -18,7 +18,8 @@ namespace Procool.Map.Loader
 
         IEnumerator LoadProgressive()
         {
-            yield return generator.RunProgressive();
+            generator.Run();
+            // yield return generator.RunProgressive();
             if (generator.Completed)
             {
                 WorldBlock = generator.GetWorldBlock();
@@ -30,6 +31,7 @@ namespace Procool.Map.Loader
             {
                 Debug.LogError($"Block {Block.Position} generation failed.");
             }
+            yield break;
         }
 
         void LoadContents()

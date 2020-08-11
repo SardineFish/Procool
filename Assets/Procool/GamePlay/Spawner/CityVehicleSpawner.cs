@@ -48,6 +48,7 @@ namespace Procool.GamePlay.Event
 
         IEnumerator SpawnVehicles()
         {
+            yield break;
             while (true)
             {
                 if (_cityLoader.LoadedBlocksCount > 0)

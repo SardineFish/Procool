@@ -36,12 +36,16 @@ namespace Procool.Map
             return null;
         }
 
+        public void Run()
+        {
+            CoroutineRunner.Run(RunProgressive());
+        }
+
         public IEnumerator RunProgressive()
         {
             Running = true;
             foreach (var generator in ContentGenerators)
                 generatorRunner.Append(generator.RunProgressive());
-            
             while (generatorRunner.Tick())
                 yield return null;
 
