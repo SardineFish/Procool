@@ -1,4 +1,5 @@
 ﻿using System;
+using Procool.GameSystems;
 using Procool.Map;
 using UnityEngine;
 
@@ -12,10 +13,21 @@ namespace Procool.Rendering
         public Material roadMaterial;
         public Material sidewalkMaterial;
         public Material buildingMagerial;
+        public Material buildingMapMaterial;
         private CityMeshGenerator meshGenerator;
         private void Awake()
         {
             InitRenderer();
+        }
+
+        private void Update()
+        {
+            if (CameraManager.Instance.State == CameraManager.CameraState.Player)
+                buildingRenderer.material = buildingMagerial;
+            else if (CameraManager.Instance.State == CameraManager.CameraState.Map)
+                buildingRenderer.material = buildingMapMaterial;
+            else
+                buildingRenderer.material = buildingMagerial;
         }
 
         MeshRenderer CreateRenderer(string name)

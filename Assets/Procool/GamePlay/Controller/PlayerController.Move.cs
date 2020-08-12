@@ -58,6 +58,7 @@ namespace Procool.GamePlay.Controller
                             yield return null;
                         }
                         usingState.Terminate();
+                        usingState.Dispose();
                     }
                     else if (Controller.Input.GamePlay.Interact.IsPressed())
                     {

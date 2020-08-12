@@ -144,6 +144,8 @@ namespace Procool.GamePlay.Weapon
             trailRenderer.endColor = trailRenderer.startColor = vfx.PrimaryColor;
             trailRenderer.startWidth = vfx.TrailStartWidth;
             trailRenderer.endWidth = vfx.TrailEndWidth;
+            if (vfx.EnableTrail)
+                trailRenderer.emitting = true;
             // trailRenderer.time = vfx.TrailLength;
         }
 

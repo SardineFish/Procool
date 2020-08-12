@@ -136,7 +136,7 @@ TrailRenderer:
     generateLightingData: 0
   m_MinVertexDistance: 0.2
   m_Autodestruct: 0
-  m_Emitting: 1
+  m_Emitting: 0
 --- !u!1 &4057401273059050079
 GameObject:
   m_ObjectHideFlags: 0
@@ -232,6 +232,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 320326b47adf4750b2b0a798fe7e5231, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PreviousEmitTime: 0
   trailRenderer: {fileID: 4057401272939887935}
   physicsInterval: 0.016
   StageInfo: 

@@ -69,6 +69,7 @@ MonoBehaviour:
   roadMaterial: {fileID: 2100000, guid: 82383ddd1ed0cce40bb401b53d033b37, type: 2}
   sidewalkMaterial: {fileID: 2100000, guid: 4407494e596dc484aa62e2d851d8016e, type: 2}
   buildingMagerial: {fileID: 2100000, guid: e8a1cbc2463b44646871f5765b05e4ed, type: 2}
+  buildingMapMaterial: {fileID: 2100000, guid: 15f44410dbea0e14ea74c3a19985424c, type: 2}
 --- !u!114 &4072902261771126959
 MonoBehaviour:
   m_ObjectHideFlags: 0
