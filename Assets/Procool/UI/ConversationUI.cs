@@ -13,13 +13,21 @@ namespace Procool.UI
         public Text Text;
         public float worldsPerSecond = 10;
         public float leastReadTime = 2;
-        
+
+        public override Task Show(float time = 0.2f)
+        {
+            Text.text = "";
+            return base.Show(time);
+        }
+
         public async Task ShowText(string text)
         {
             Text.text = "";
             var displayText = "";
             var startTime = Time.time;
-            for (var i = 0; i < displayText.Length; i++)
+            await Task.Yield();
+            InputManager.InputState.UIInput.SkipText.Consume();
+            for (var i = 0; i < text.Length; i++)
             {
                 displayText += text[i];
                 Text.text = displayText;

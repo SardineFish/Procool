@@ -20,7 +20,7 @@ namespace Procool.Map
         public int BoundaryEdges = 6; 
         public float BoundaryExtend = 5;
         private List<Vector2> points;
-        private BowyerWatson delaunayTriangulatior;
+        public BowyerWatson delaunayTriangulatior;
 
         private readonly Dictionary<UInt64, Edge> EdgesById = new Dictionary<ulong, Edge>();
         private readonly Dictionary<Vector2, Vertex> VerticesByVector = new Dictionary<Vector2, Vertex>();

@@ -51,6 +51,12 @@ namespace Procool.GamePlay.Event
 
         private void Update()
         {
+            if (UnityEngine.Input.GetKeyDown(KeyCode.F4))
+            {
+                var combat = CombatSystem.Instance.GenerateStreetFight(cityLoader.City,
+                    GameSystem.Player.transform.localPosition, GameRNG.GetPRNG(new Vector2(1, 3)));
+                combat.StartCombat();
+            }
         }
 
         public override void Load()

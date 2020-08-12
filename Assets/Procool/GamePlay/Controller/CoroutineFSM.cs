@@ -10,8 +10,8 @@ namespace Procool.GamePlay.Controller
         public void ChangeState(IEnumerator state)
         {
             if(currentState != null)
-                StopCoroutine(currentState);
-            StartCoroutine(state);
+                StopAllCoroutines();
+            currentState = StartCoroutine(state);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Procool.GameSystems
 
         private static string[] greeting = new[]
         {
-            "Hey~"
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula nisl justo, sollicitudin auctor metus dapibus vitae. Quisque sodales maximus porta. Nullam laoreet, nunc a commodo sodales, dui nisi euismod.",
         };
         public static string GenerateGreeting(PRNG prng = null)
         {

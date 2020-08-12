@@ -54,6 +54,16 @@ namespace Procool.GamePlay.Mission
                 StartMission(mission);
         }
 
+        void TaskComplete(Task task)
+        {
+            UpdateTaskUI(ActiveMission);
+        }
+
+        void TaskActive(Task task)
+        {
+            UpdateTaskUI(ActiveMission);
+        }
+
         public void CancelMission(Mission mission)
         {
             if (ActiveMission != null)
@@ -73,6 +83,8 @@ namespace Procool.GamePlay.Mission
 
             ActiveMission = mission;
             UpdateTaskUI(mission);
+            mission.OnTaskActive += TaskActive;
+            mission.OnTaskCompleted += TaskComplete;
 
             //var task = System.Threading.Tasks.Task.Run(() => mission.Start(Player), _cancellationTokenSource.Token);
 

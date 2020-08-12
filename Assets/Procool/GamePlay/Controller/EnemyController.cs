@@ -37,7 +37,7 @@ namespace Procool.GamePlay.Controller
         
         public BlockPosition BlockPosition { get; set; }
         public Weapon.Weapon Weapon;
-        private Player target;
+        private Player target => GameSystem.Player;
         private City city;
         private CityPathFinder pathFinder = null;
         private BuildingBlock currentBlock = null;
@@ -53,9 +53,9 @@ namespace Procool.GamePlay.Controller
         private void Update()
         {
             BlockPosition = new BlockPosition(new Block(0, 0, 5), transform.position);
-            if (Keyboard.current.f5Key.wasPressedThisFrame)
+            if (UnityEngine.Input.GetKeyDown(KeyCode.F5))
             {
-                ChangeState(Chase());   
+                ChangeState(Chase());
             }
             Region.Utils.DrawDebug(currentBlock.Region, Color.magenta);
         }
@@ -67,7 +67,7 @@ namespace Procool.GamePlay.Controller
                 pathFinder = new CityPathFinder(city);
             else
                 pathFinder.Rest(city);
-            target = GameSystem.Player;
+            // target = GameSystem.Player;
             currentBlock = startBlock;
             transform.position = startPostion;
             prng = GameRNG.GetPRNG(UnityEngine.Random.insideUnitCircle);
@@ -77,7 +77,7 @@ namespace Procool.GamePlay.Controller
         public void Deactivate()
         {
             this.city = null;
-            target = null;
+            // target = null;
             currentBlock = null;
             prng = null;
             StopAllCoroutines();

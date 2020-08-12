@@ -16,12 +16,12 @@ namespace Procool.UI
             // gameObject.SetActive(false);
         }
 
-        public async Task Show(float time = .2f)
+        public virtual async Task Show(float time = .2f)
         {
             await Utility.ShowUIAsync(_canvasGroup, time);
         }
 
-        public async Task Hide(float time = .2f)
+        public virtual async Task Hide(float time = .2f)
         {
             await Utility.HideUIAsync(_canvasGroup, time, true);
         }

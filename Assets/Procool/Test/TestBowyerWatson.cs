@@ -117,6 +117,11 @@ namespace Procool.Test
             while (true)
             {
                 int x = 0;
+                foreach (var triangle in voronoiGenerator.delaunayTriangulatior.Triangles)
+                {
+                    var (a, b, c) = triangle.Positions;
+                    Utility.DebugDrawTriangle(a, b, c, Color.green);
+                }
                 foreach (var spaceRegion in voronoiGenerator.Space.Regions)
                 {
                     Utility.DebugDrawPolygon(spaceRegion.Vertices.Select(v => v.Pos), Color.cyan);

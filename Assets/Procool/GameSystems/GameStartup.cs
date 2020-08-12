@@ -25,5 +25,21 @@ namespace Procool.GameSystems
             
             CameraManager.Instance.Follow(player.transform);
         }
+
+        private void Update()
+        {
+            if (UnityEngine.Input.GetKeyDown(KeyCode.F12))
+            {
+                Destroy(GameSystem.Player.gameObject);
+                var player = GameSystem.SpawnPlayer();
+                var weapon = WeaponSystem.Instance.GenerateWeapon(GameRNG.GetPRNG());
+                player.transform.position = PlayerSpawnPosition.position;
+
+                player.Inventory.Add(weapon);
+                Debug.Log("\r\n" + weapon.FirstStage.ToString());
+
+                CameraManager.Instance.Follow(player.transform);
+            }
+        }
     }
 }

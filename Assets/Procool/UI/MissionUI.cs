@@ -49,9 +49,9 @@ namespace Procool.UI
                 buttonAccept.gameObject.SetActive(false);
             }
 
-            rewardsText.text = mission.Rewards
-                .Select(reward => reward.ToString())
-                .Join(", ");
+            // rewardsText.text = mission.Rewards
+            //     .Select(reward => reward.ToString())
+            //     .Join(", ");
                 
 
             await Show();
