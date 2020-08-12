@@ -88,8 +88,10 @@ namespace Procool.Rendering
                     src = tempRT;
                 }
                 
-                Blit(cmd, src, blurryScreen, mat, (int) BlurPass.UpScale);
+                // Blit(cmd, src, blurryScreen, mat, (int) BlurPass.UpScale);
+                cmd.Blit(src, blurryScreen, mat, (int) BlurPass.UpScale);
                 cmd.ReleaseTemporaryRT(src);
+                cmd.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
                 
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();

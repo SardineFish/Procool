@@ -16,7 +16,7 @@ namespace Procool.Rendering
 
         void AddBuilding(List<Vector2> regionVerts)
         {
-            var height = Mathf.Lerp(5, 100, Mathf.Pow(UnityEngine.Random.value, 2));
+            var height = Mathf.Lerp(10, 40, Mathf.Pow(UnityEngine.Random.value, 2));
             var offset = buildingMeshVerts.Count;
             for (var i = 0; i < regionVerts.Count; i++)
             {

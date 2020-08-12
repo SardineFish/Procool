@@ -289,6 +289,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 5621942638122545758, guid: 35caedd84ed9e064a8c183a6fe1b1f5f, type: 3}
   worldSpaceOffset: {x: -2.69, y: 0.77}
+  showOnLoad: 0
 --- !u!114 &2268368202089552163
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -336,7 +337,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a62a0ed57e2c45aa94a0ece48c8aebf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  renderer: {fileID: 3083867381885847354}
 --- !u!114 &2059528048
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -370,7 +370,7 @@ MonoBehaviour:
   wheelLateralFrictionCoefficient: 0.8
   rearLateralFrictionScale: 1
   handbreakRearLateralFriction: 0.2
-  driftingLateralVelocityThreshold: {x: 0.5, y: 1.2}
+  driftingLateralVelocityThreshold: {x: 0.3, y: 1.2}
   wheelSlipFrictionCurve:
     serializedVersion: 2
     m_Curve:
@@ -609,12 +609,6 @@ PrefabInstance:
 --- !u!4 &4217398777275202645 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 28c41df3013d51846bdef6c78b0d166d,
-    type: 3}
-  m_PrefabInstance: {fileID: 4399327075553172414}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &3083867381885847354 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 28c41df3013d51846bdef6c78b0d166d,
     type: 3}
   m_PrefabInstance: {fileID: 4399327075553172414}
   m_PrefabAsset: {fileID: 0}

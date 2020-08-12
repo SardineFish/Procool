@@ -256,7 +256,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abad73331dbe4814b0593ac9656f5f20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 3
+  maxSpeed: 5
   maxAngularVelocity: 900
   minAngularVelocity: 300
   moveDamping: 0.73
