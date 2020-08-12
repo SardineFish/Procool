@@ -83,7 +83,7 @@ namespace Procool.GamePlay.Controller
         public float Weight => mass * Gravity;
         public Vector2 Velocity => transform.localToWorldMatrix.MultiplyVector(LocalVelocity);
 
-        [DisplayInInspector] public Vector2 LocalVelocity { get; private set; }
+        [DisplayInInspector] public Vector2 LocalVelocity { get; set; }
         [DisplayInInspector()] public float AngularVelocity { get; private set; }
         // => new Vector2(Vector2.Dot(Velocity, Right), Vector2.Dot(Velocity, Forward));
 

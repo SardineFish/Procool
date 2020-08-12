@@ -38,6 +38,7 @@ namespace Procool.GamePlay.Controller
             transform.rotation = Quaternion.FromToRotation(Vector3.up, lane.Direction);
             _spawner = spawner;
             _vehicleController.ResetState();
+            _vehicleController.LocalVelocity = Vector2.up * GameRNG.GetInRange(0.3f, 1) * maxSpeed;
         }
 
         public void StartDrive()
@@ -184,7 +185,7 @@ namespace Procool.GamePlay.Controller
             return steering;
         }
 
-        RaycastHit2D[] hits = new RaycastHit2D[4];
+        RaycastHit2D[] hits = new RaycastHit2D[8];
         float ObstacleAvoidance()
         {
             var frontPos = (transform.position + transform.up * _vehicleController.wheelBase / 2).ToVector2();

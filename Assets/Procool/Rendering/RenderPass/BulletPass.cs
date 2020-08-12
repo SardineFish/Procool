@@ -45,7 +45,8 @@ namespace Procool.Rendering
             
             public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
             {
-                UpdateData();
+                if (!UpdateData())
+                    return;
 
                 var cmd = CommandBufferPool.Get("Render Bullets");
                 cmd.SetGlobalBuffer(IDBulletData, dataBuffer);
@@ -56,7 +57,7 @@ namespace Procool.Rendering
                 CommandBufferPool.Release(cmd);
             }
 
-            unsafe void UpdateData()
+            unsafe bool UpdateData()
             {
                 // var bullets = DamageEntity.AssetsManager.Assets
                 //     .Where(entity => entity.gameObject && entity.gameObject.activeInHierarchy)
@@ -83,6 +84,9 @@ namespace Procool.Rendering
                         });
                 }
 
+                if (bullets.Count <= 0)
+                    return false;
+
                 dataBuffer?.Release();
                 argsBuffer?.Release();
                 dataBuffer = new ComputeBuffer(bullets.Count, sizeof(InstanceData));
@@ -96,6 +100,8 @@ namespace Procool.Rendering
                 argsBuffer = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
                 argsBuffer.SetData(args);
                 Utils.ListPool<InstanceData>.Release(bullets);
+
+                return true;
             }
             
 

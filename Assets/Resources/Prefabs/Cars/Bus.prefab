@@ -289,6 +289,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 5621942638122545758, guid: 35caedd84ed9e064a8c183a6fe1b1f5f, type: 3}
   worldSpaceOffset: {x: -2.69, y: 0.77}
+  showOnLoad: 0
 --- !u!114 &6335657419231722705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -305,11 +306,11 @@ MonoBehaviour:
   defaultBreaking: 0.5
   maxBreaking: 1
   breakDeltaSpeed: {x: 5, y: 10}
-  maxSpeed: 30
+  maxSpeed: 20
   cornerSpeed: 10
   cornerDistance: 2
   cornerProbability: 0.4
-  obstacleDistance: {x: 5, y: 8}
+  obstacleDistance: {x: 8, y: 10}
 --- !u!114 &996110954779747149
 MonoBehaviour:
   m_ObjectHideFlags: 0

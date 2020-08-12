@@ -54,6 +54,7 @@ namespace Procool.GamePlay.Controller
 
             var movement = Input.GamePlay.Move.ReadValue<Vector2>();
             movement = Vector2.ClampMagnitude(movement, 1);
+            movement = CameraManager.Camera.transform.localToWorldMatrix.MultiplyVector(movement);
             transform.Translate(movement * moveSpeed * virtualCamera.m_Lens.OrthographicSize * Time.deltaTime, Space.World);
         }
     }

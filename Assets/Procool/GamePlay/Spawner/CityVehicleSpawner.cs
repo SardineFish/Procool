@@ -34,7 +34,7 @@ namespace Procool.GamePlay.Event
         void TrySpawnAt(Vector2 pos, Lane lane)
         {
             var viewportPos = CameraManager.Camera.WorldToViewportPoint(pos);
-            if (0 <= viewportPos.x && viewportPos.x < 1 && 0 <= viewportPos.y && viewportPos.y < 1)
+            if (-0.2f <= viewportPos.x && viewportPos.x < 1.2f && -0.2f <= viewportPos.y && viewportPos.y < 1.2f)
                 return;
             if (Vehicles.All(vehicle => Vector2.Distance(pos, vehicle.transform.position) > spawnGap))
             {
@@ -48,10 +48,10 @@ namespace Procool.GamePlay.Event
 
         IEnumerator SpawnVehicles()
         {
-            yield break;
+            // yield break;
             while (true)
             {
-                if (_cityLoader.LoadedBlocksCount > 0)
+                if (_cityLoader.LoadedBlocksCount > 0 && Vehicles.Count < 20)
                 {
                     var block = _cityLoader.LoadedBlocks.RandomTake(prng.GetScalar());
                     foreach (var road in block.Region.Edges.Select(edge => edge.GetData<Road>()))
@@ -62,7 +62,7 @@ namespace Procool.GamePlay.Event
                             // yield break;
                         }
 
-                        yield return new WaitForSeconds(0.2f);
+                        yield return new WaitForSeconds(.1f);
                     }
                 }
                 yield return new WaitForSeconds(1f);

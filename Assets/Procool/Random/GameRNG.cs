@@ -44,6 +44,11 @@ namespace Procool.Random
             return UnityEngine.Random.value;
         }
 
+        public static float GetInRange(float min, float max)
+        {
+            return Mathf.Lerp(min, max, GetScalar());
+        }
+
         public static Vector2 GetVec2OnCircle()
         {
             return UnityEngine.Random.insideUnitCircle.normalized;

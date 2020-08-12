@@ -310,7 +310,7 @@ MonoBehaviour:
   cornerSpeed: 10
   cornerDistance: 2
   cornerProbability: 0.4
-  obstacleDistance: {x: 5, y: 8}
+  obstacleDistance: {x: 6, y: 10}
 --- !u!114 &4991395369726019263
 MonoBehaviour:
   m_ObjectHideFlags: 0
